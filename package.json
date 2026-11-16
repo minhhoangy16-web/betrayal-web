@@ -1,0 +1,22 @@
+{
+  "name": "betrayal-web",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Game web multiplayer lấy cảm hứng từ thể loại khám phá nhà ma có kẻ phản bội",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "start": "npm run start -w server",
+    "build": "npm run build -w client",
+    "server": "npm run start -w server",
+    "server:dev": "npm run dev -w server",
+    "client": "npm run dev -w client",
+    "test": "npm test -w server",
+    "art": "node tools/generate-art.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

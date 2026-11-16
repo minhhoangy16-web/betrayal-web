@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+<defs><radialGradient id="g" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#37453e"/><stop offset="100%" stop-color="#0b1912"/></radialGradient></defs>
+<rect width="300" height="300" rx="16" fill="url(#g)"/>
+<rect x="8" y="8" width="284" height="284" rx="11" fill="none" stroke="#4f9a78" stroke-width="2.5" opacity="0.9"/>
+<path d="M 20 54 L 20 20 L 54 20" fill="none" stroke="#4f9a78" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 280 54 L 280 20 L 246 20" fill="none" stroke="#4f9a78" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 20 246 L 20 280 L 54 280" fill="none" stroke="#4f9a78" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 280 246 L 280 280 L 246 280" fill="none" stroke="#4f9a78" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="150" cy="150" r="112" fill="#000" opacity="0.22"/>
+<g transform="translate(50 50)"><path d="M 62 170 L 62 96 Q 56 60 66 58 Q 74 58 76 88 L 80 44 Q 82 34 90 36 Q 96 38 94 86 L 100 36 Q 104 28 110 32 Q 114 36 110 86 L 120 50 Q 126 44 130 50 Q 132 58 124 100 L 140 84 Q 150 80 152 90 Q 150 100 128 132 L 124 170 Z" fill="#5a3a22"/><rect x="58" y="150" width="70" height="22" fill="#3a2415" rx="5"/></g>
+</svg>

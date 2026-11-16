@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "roomTile.schema.json",
+  "title": "RoomTile",
+  "description": "Định nghĩa một gạch phòng. Dữ liệu tĩnh, nằm ở server/src/data/tiles.js.",
+  "type": "object",
+  "required": ["id", "name", "floors", "doors", "symbol"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "floors": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "enum": ["basement", "ground", "upper"] },
+      "description": "Các tầng mà gạch được phép đặt."
+    },
+    "doors": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "type": "integer", "minimum": 0, "maximum": 3 },
+      "description": "Hướng có cửa ở góc xoay 0: 0 = Bắc, 1 = Đông, 2 = Nam, 3 = Tây."
+    },
+    "symbol": {
+      "enum": ["omen", "event", "item", null],
+      "description": "Loại thẻ phải rút khi khám phá ra phòng này."
+    },
+    "text": { "type": "string", "description": "Mô tả luật riêng của phòng (hiển thị cho người chơi)." },
+    "start": {
+      "type": "object",
+      "description": "Chỉ có ở gạch khởi đầu: vị trí cố định khi bắt đầu ván.",
+      "required": ["floor", "x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "floor": { "enum": ["basement", "ground", "upper"] },
+        "x": { "type": "integer" },
+        "y": { "type": "integer" }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Id các gạch nối trực tiếp với gạch này (cầu thang giữa các tầng). Đi qua tốn 1 bước."
+    },
+    "effect": {
+      "type": "object",
+      "required": ["trigger", "effects"],
+      "additionalProperties": false,
+      "properties": {
+        "trigger": { "enum": ["discover", "endTurn"] },
+        "effects": { "type": "array", "items": { "$ref": "#/$defs/effect" } }
+      }
+    }
+  },
+  "$defs": {
+    "effect": {
+      "type": "object",
+      "description": "Một hiệu ứng, cùng định dạng với hiệu ứng của thẻ (xem card.schema.json).",
+      "required": ["op"],
+      "properties": { "op": { "type": "string" } }
+    }
+  }
+}

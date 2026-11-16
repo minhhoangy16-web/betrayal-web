@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "card.schema.json",
+  "title": "Card",
+  "description": "Một thẻ Omen / Item / Event. Dữ liệu tĩnh, nằm ở server/src/data/cards/.",
+  "type": "object",
+  "required": ["id", "type", "name", "text"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "enum": ["omen", "item", "event"] },
+    "name": { "type": "string" },
+    "text": { "type": "string", "description": "Nội dung hiển thị trên thẻ." },
+    "effects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/effect" },
+      "description": "Chỉ dùng cho Event: giải quyết ngay khi rút."
+    },
+    "onGain": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/effect" },
+      "description": "Omen/Item: hiệu ứng khi nhận thẻ."
+    },
+    "onLose": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/effect" },
+      "description": "Omen/Item: hiệu ứng khi mất thẻ (trao đi, dùng hết)."
+    },
+    "weapon": {
+      "type": "object",
+      "required": ["trait", "bonusDice"],
+      "additionalProperties": false,
+      "properties": {
+        "trait": { "$ref": "#/$defs/trait" },
+        "bonusDice": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "use": {
+      "type": "object",
+      "description": "Hành động «dùng vật phẩm» trong lượt của mình (mỗi thẻ một lần mỗi lượt).",
+      "required": ["effects", "consume"],
+      "additionalProperties": false,
+      "properties": {
+        "effects": { "type": "array", "items": { "$ref": "#/$defs/effect" } },
+        "consume": { "type": "boolean", "description": "true = bỏ thẻ sau khi dùng." }
+      }
+    }
+  },
+  "$defs": {
+    "trait": { "enum": ["speed", "might", "sanity", "knowledge"] },
+    "effect": {
+      "type": "object",
+      "description": "Một bước hiệu ứng. Trường đi kèm tuỳ theo op.",
+      "required": ["op"],
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "enum": ["gain", "lose", "heal", "damage", "roll", "draw", "teleport", "log"],
+          "description": "gain: tăng chỉ số | lose: giảm một chỉ số cụ thể | heal: về mức khởi đầu | damage: sát thương tự chia | roll: đổ xúc xắc rồi tra outcomes | draw: rút thẻ | teleport: tới một gạch đã có trên bàn | log: ghi nhật ký."
+        },
+        "trait": { "$ref": "#/$defs/trait" },
+        "choice": {
+          "anyOf": [
+            { "enum": ["any", "physical", "mental"] },
+            { "type": "array", "items": { "$ref": "#/$defs/trait" } }
+          ],
+          "description": "gain: để người chơi chọn chỉ số trong nhóm này (thay cho trait)."
+        },
+        "amount": { "type": "integer", "minimum": 0 },
+        "type": { "enum": ["physical", "mental", "general"], "description": "damage: loại sát thương." },
+        "dice": { "type": "integer", "minimum": 1, "description": "roll: số xúc xắc cố định | damage: sát thương = tổng số xúc xắc này." },
+        "group": { "enum": ["physical", "mental", "any"], "description": "heal: nhóm chỉ số được hồi." },
+        "traits": { "type": "array", "items": { "$ref": "#/$defs/trait" }, "description": "heal: danh sách chỉ số cụ thể." },
+        "deck": { "enum": ["omen", "item", "event"] },
+        "tileId": { "type": "string" },
+        "label": { "type": "string" },
+        "text": { "type": "string" },
+        "bonus": { "type": "integer" },
+        "outcomes": {
+          "type": "array",
+          "description": "roll: áp dụng dòng có min cao nhất mà tổng xúc xắc >= min.",
+          "items": {
+            "type": "object",
+            "required": ["min", "effects"],
+            "additionalProperties": false,
+            "properties": {
+              "min": { "type": "integer", "minimum": 0 },
+              "text": { "type": "string" },
+              "effects": { "type": "array", "items": { "$ref": "#/$defs/effect" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

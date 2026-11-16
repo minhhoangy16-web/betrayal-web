@@ -1,0 +1,12 @@
+# Cấu hình triển khai trên Render (render.com). Render đọc file này khi bạn tạo "Blueprint".
+services:
+  - type: web
+    name: betrayal-web
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"

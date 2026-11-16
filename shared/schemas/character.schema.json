@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "character.schema.json",
+  "title": "Character",
+  "description": "Một nhân vật (Explorer). Dữ liệu tĩnh, nằm ở server/src/data/characters.js.",
+  "type": "object",
+  "required": ["id", "name", "traits"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "description": "Định danh duy nhất, dạng kebab-case." },
+    "name": { "type": "string" },
+    "age": { "type": "integer", "minimum": 0 },
+    "bio": { "type": "string" },
+    "color": { "type": "string", "description": "Màu quân cờ (mã hex)." },
+    "traits": {
+      "type": "object",
+      "required": ["speed", "might", "sanity", "knowledge"],
+      "additionalProperties": false,
+      "properties": {
+        "speed": { "$ref": "#/$defs/traitTrack" },
+        "might": { "$ref": "#/$defs/traitTrack" },
+        "sanity": { "$ref": "#/$defs/traitTrack" },
+        "knowledge": { "$ref": "#/$defs/traitTrack" }
+      }
+    }
+  },
+  "$defs": {
+    "traitTrack": {
+      "type": "object",
+      "description": "Thanh trượt 8 nấc. Index 0 là nấc thấp nhất (critical); đầu lâu nằm dưới nấc 0.",
+      "required": ["track", "start"],
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": { "type": "integer", "minimum": 0, "maximum": 8 },
+          "description": "Giá trị (số xúc xắc) ở từng nấc, từ thấp lên cao."
+        },
+        "start": { "type": "integer", "minimum": 0, "maximum": 7, "description": "Index nấc khởi đầu." }
+      }
+    }
+  }
+}

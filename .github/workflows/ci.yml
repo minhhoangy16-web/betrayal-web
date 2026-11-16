@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm test
+      - run: npm run build
+      - name: Chạy thử server và kiểm tra giao diện + API
+        run: |
+          PORT=3055 npm start &
+          for i in $(seq 1 20); do curl -sf http://localhost:3055/health && break || sleep 1; done
+          curl -sf http://localhost:3055/health
+          curl -sf http://localhost:3055/ | grep -q '<div id="root">'
+          curl -sf http://localhost:3055/api/catalog | grep -q '"characters"'
+          curl -sf http://localhost:3055/media/manifest.json | grep -q '"tiles"'
+          curl -sf "http://localhost:3055/socket.io/?EIO=4&transport=polling" | grep -q '"sid"'

@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* Chủ đề Gothic: đá tối, giấy da cũ, đỏ máu. */
+@theme {
+  --font-display: "Cinzel", "Times New Roman", serif;
+  --font-body: "EB Garamond", Georgia, "Times New Roman", serif;
+
+  --color-ink: #0c0a09;
+  --color-crypt: #151211;
+  --color-stonework: #221d1b;
+  --color-mortar: #3a322e;
+  --color-parchment: #e7dcc3;
+  --color-bone: #b8ab90;
+  --color-blood: #8b1a1a;
+  --color-ember: #c2410c;
+  --color-candle: #e0a43a;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at top, #241c19 0%, #0c0a09 60%) fixed;
+  color: var(--color-parchment);
+  font-family: var(--font-body);
+  font-size: 17px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Thanh cuộn mảnh cho các bảng bên. */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-mortar) transparent;
+}
+
+/* Nền bàn cờ: lưới mờ như sàn đá. */
+.board-surface {
+  background-color: #0e0c0b;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+  touch-action: none;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  45% { opacity: 0.82; }
+  60% { opacity: 0.95; }
+}
+
+.flicker {
+  animation: flicker 2.6s ease-in-out infinite;
+}
+
+@keyframes pop-in {
+  from { transform: scale(0.6) rotate(-12deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.die-pop {
+  animation: pop-in 0.28s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flicker,
+  .die-pop {
+    animation: none;
+  }
+}
