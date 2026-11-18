@@ -6,6 +6,7 @@
 //   const view = getView(state, playerId);
 
 import { CHARACTERS_BY_ID, START_TILES, STACK_TILES, DECK_IDS } from '../data/index.js';
+import { SCENARIOS, SCENARIOS_BY_ID } from '../data/scenarios.js';
 import { DEFAULT_RULES } from './constants.js';
 import { GameError } from './errors.js';
 import { shuffle, randInt } from './rng.js';
@@ -29,7 +30,7 @@ export { DEFAULT_RULES } from './constants.js';
  * @param {number} [opts.seed]          Seed RNG (để tái lập ván chơi khi test).
  * @param {object} [opts.rules]         Ghi đè DEFAULT_RULES.
  */
-export function createGame({ code, players, seed, rules = {} }) {
+export function createGame({ code, players, seed, rules = {}, scenarioId = null }) {
   const merged = { ...DEFAULT_RULES, ...rules };
   if (players.length < merged.minPlayers || players.length > merged.maxPlayers) {
     throw new GameError(`Cần từ ${merged.minPlayers} đến ${merged.maxPlayers} người chơi.`);
@@ -67,7 +68,11 @@ export function createGame({ code, players, seed, rules = {} }) {
     rollSeq: 0,
     cardSeq: 0,
     winner: null,
+    scenarioId: null,
   };
+
+  // Thẻ kịch bản: chủ phòng chọn, hoặc rút ngẫu nhiên.
+  state.scenarioId = SCENARIOS_BY_ID[scenarioId] ? scenarioId : SCENARIOS[randInt(state, SCENARIOS.length)].id;
 
   for (const tile of START_TILES) placeTile(state, tile.id, tile.start, 0);
   const entrance = START_TILES.find((t) => t.id === 'entrance-hall').start;
@@ -96,6 +101,7 @@ export function createGame({ code, players, seed, rules = {} }) {
 
   // Giữ thứ tự chỗ ngồi, chọn ngẫu nhiên người đi đầu.
   state.turnOrder = players.map((p) => p.id);
+  addLog(state, `📜 Kịch bản: «${SCENARIOS_BY_ID[state.scenarioId].title}».`, 'system');
   addLog(state, 'Cánh cửa đóng sầm sau lưng. Cuộc khám phá bắt đầu.', 'system');
   startTurn(state, state.turnOrder[randInt(state, state.turnOrder.length)]);
   return state;

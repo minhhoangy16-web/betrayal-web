@@ -5,6 +5,7 @@ import { Check, Copy, Crown, DoorOpen, LogOut, Play, UserX, Users, WifiOff } fro
 import { useGameStore } from '../store/useGameStore.js';
 import { Art, Button, Panel, TraitIcon } from './ui.jsx';
 import { TRAITS, TRAIT_LABEL, mediaUrl } from '../lib/constants.js';
+import { SCENARIO_ICON, ScenarioFace } from './ScenarioCard.jsx';
 
 const inputClass =
   'w-full rounded border border-mortar bg-ink px-3 py-2 text-parchment placeholder:text-stone-600 ' +
@@ -130,6 +131,59 @@ function CharacterCard({ character, owner, mine, disabled, onPick }) {
   );
 }
 
+// Chọn thẻ kịch bản: chủ phòng bấm chọn, người khác chỉ xem. 'random' = rút ngẫu nhiên khi bắt đầu.
+function ScenarioPicker({ isHost }) {
+  const catalog = useGameStore((s) => s.catalog);
+  const lobby = useGameStore((s) => s.lobby);
+  const setScenario = useGameStore((s) => s.setScenario);
+  const [preview, setPreview] = useState(null);
+  const current = lobby.scenarioId ?? 'random';
+  const options = [
+    { id: 'random', title: 'Ngẫu nhiên', tagline: 'Rút một thẻ kịch bản khi bắt đầu ván.', icon: 'random' },
+    ...(catalog.scenarios ?? []),
+  ];
+  return (
+    <Panel title="Thẻ kịch bản" icon={SCENARIO_ICON.scroll}>
+      <ul className="divide-y divide-mortar/60">
+        {options.map((sc) => {
+          const Icon = SCENARIO_ICON[sc.icon] ?? SCENARIO_ICON.scroll;
+          const on = current === sc.id;
+          return (
+            <li key={sc.id} className={`flex items-start gap-2 px-3 py-2 ${on ? 'bg-candle/10' : ''}`}>
+              <button type="button" disabled={!isHost} onClick={() => setScenario(sc.id)}
+                className={`flex min-w-0 flex-1 items-start gap-2 text-left ${isHost ? 'hover:text-parchment' : 'cursor-default'}`}
+                aria-pressed={on}>
+                <Icon size={16} className={`mt-0.5 shrink-0 ${on ? 'text-candle' : 'text-stone-500'}`} aria-hidden="true" />
+                <span className="min-w-0">
+                  <span className={`block text-sm ${on ? 'text-candle' : 'text-bone'}`}>{sc.title}</span>
+                  {on && <span className="block text-xs text-stone-500">{sc.tagline}</span>}
+                </span>
+              </button>
+              {sc.story && (
+                <button type="button" className="shrink-0 text-xs text-stone-500 underline hover:text-parchment" onClick={() => setPreview(sc)}>
+                  Đọc
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {!isHost && <p className="px-3 pb-2 text-xs text-stone-500">Chủ phòng chọn kịch bản.</p>}
+      {preview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3" onClick={(e) => e.target === e.currentTarget && setPreview(null)}>
+          <div role="dialog" aria-modal="true" aria-label={preview.title} className="thin-scroll max-h-full w-full max-w-xl overflow-y-auto">
+            <ScenarioFace scenario={preview} />
+            <div className="mt-3 flex justify-center gap-2">
+              {isHost && <Button variant="primary" onClick={() => { setScenario(preview.id); setPreview(null); }}>Chọn kịch bản này</Button>}
+              <Button onClick={() => setPreview(null)}>Đóng</Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </Panel>
+  );
+}
+
 export function LobbyRoom() {
   const lobby = useGameStore((s) => s.lobby);
   const session = useGameStore((s) => s.session);
@@ -215,6 +269,8 @@ export function LobbyRoom() {
               })}
             </ul>
           </Panel>
+
+          <ScenarioPicker isHost={isHost} />
 
           <div>
             {isHost && (

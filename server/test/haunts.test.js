@@ -113,3 +113,23 @@ test('Trục vong: không ai ngoài Kẻ bị nhập biết danh tính, lựa ch
   }
   assert.ok(checkedRite, 'chưa gặp lần làm lễ nào để kiểm tra');
 });
+
+test('Thẻ kịch bản: bảng Haunt đầy đủ, hợp lệ, và kịch bản được chọn khi tạo ván', async () => {
+  const { SCENARIOS } = await import('../src/data/scenarios.js');
+  const { DECK_IDS } = await import('../src/data/index.js');
+  for (const sc of SCENARIOS) {
+    assert.deepEqual(Object.keys(sc.table).sort(), [...DECK_IDS.omen].sort(), sc.id);
+    const used = new Set();
+    for (const [omen, row] of Object.entries(sc.table)) {
+      assert.equal(row.length, 2);
+      for (const id of row) { assert.ok(HAUNTS[id], `${sc.id}/${omen}: ${id}`); used.add(id); }
+      // Kịch bản cần nhiều người phải có phương án thay ở cột còn lại.
+      if (row.some((id) => HAUNTS[id].minPlayers)) assert.ok(row.some((id) => !HAUNTS[id].minPlayers), `${sc.id}/${omen}`);
+    }
+    assert.equal(used.size, Object.keys(HAUNTS).length, `${sc.id} phải dùng đủ mọi Haunt`);
+    assert.ok(sc.title && sc.story && sc.purpose && sc.tagline);
+  }
+  const s = newGame(3, 5, { minPlayers: 3 });
+  assert.ok(SCENARIOS.some((sc) => sc.id === s.scenarioId));
+  assert.equal(getView(s, s.turnOrder[0]).scenarioId, s.scenarioId);
+});

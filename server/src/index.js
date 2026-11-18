@@ -20,6 +20,7 @@ import { Server } from 'socket.io';
 import { RoomManager } from './rooms/RoomManager.js';
 import { registerSocketHandlers } from './socket/handlers.js';
 import { getCatalog } from './data/index.js';
+import { hauntSummaries } from './haunts/index.js';
 import { DEFAULT_RULES } from './engine/Game.js';
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -44,7 +45,7 @@ const app = express();
 app.use(cors({ origin: ORIGINS }));
 app.get('/health', (req, res) => res.json({ ok: true }));
 // Dữ liệu tĩnh (nhân vật, gạch, thẻ) để client vẽ giao diện. Không chứa bí mật Haunt.
-app.get('/api/catalog', (req, res) => res.json({ ...getCatalog(), rules: { ...DEFAULT_RULES, ...rules } }));
+app.get('/api/catalog', (req, res) => res.json({ ...getCatalog(), haunts: hauntSummaries(), rules: { ...DEFAULT_RULES, ...rules } }));
 
 // Giao diện đã build (client/dist). Mọi đường dẫn không phải API trả về index.html.
 const CLIENT_DIST = fileURLToPath(new URL('../../client/dist', import.meta.url));

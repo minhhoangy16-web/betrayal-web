@@ -1,6 +1,7 @@
 // Sổ đăng ký kịch bản Haunt. Thêm Haunt mới: tạo file module rồi thêm vào HAUNT_LIST.
 
 import { setHauntResolver } from '../engine/hooks.js';
+import { SCENARIOS_BY_ID, DEFAULT_SCENARIO_ID } from '../data/scenarios.js';
 import haunt01 from './haunt01-vong-hon.js';
 import trungTang from './haunt-trung-tang.js';
 import maDa from './haunt-ma-da.js';
@@ -21,19 +22,13 @@ export function getHaunt(state) {
 
 setHauntResolver(getHaunt);
 
-// Thẻ kịch bản: Haunt nào nổ ra tuỳ thẻ Điềm báo vừa rút và tầng của căn phòng.
-// [rút ở tầng trệt hoặc tầng trên, rút ở tầng hầm]
-export const SCENARIO_TABLE = {
-  'om-leather-journal': ['haunt-lo-ban', 'haunt-trung-tang'],
-  'om-porcelain-mask': ['haunt-truc-vong', 'haunt-ma-lai'],
-  'om-ritual-knife': ['haunt-01', 'haunt-trung-tang'],
-  'om-engraved-ring': ['haunt-ma-giu-cua', 'haunt-truc-vong'],
-  'om-stray-dog': ['haunt-co-hon', 'haunt-01'],
-  'om-crystal-orb': ['haunt-lo-ban', 'haunt-ma-da'],
-  'om-cracked-skull': ['haunt-ma-lai', 'haunt-ma-giu-cua'],
-  'om-silver-necklace': ['haunt-ma-da', 'haunt-co-hon'],
-  'om-girl-in-mirror': ['haunt-truc-vong', 'haunt-ma-da'],
-};
+// Mỗi thẻ kịch bản (data/scenarios.js) có bảng Haunt riêng: Haunt nào nổ ra tuỳ thẻ Điềm báo vừa rút
+// và tầng của căn phòng. Bảng của thẻ mặc định dùng khi ván không có kịch bản.
+export const SCENARIO_TABLE = SCENARIOS_BY_ID[DEFAULT_SCENARIO_ID].table;
+export const scenarioTable = (state) => SCENARIOS_BY_ID[state.scenarioId]?.table ?? SCENARIO_TABLE;
+
+// Tên các Haunt (công khai) để hiển thị bảng trên thẻ kịch bản.
+export const hauntSummaries = () => HAUNT_LIST.map((h) => ({ id: h.id, name: h.name, minPlayers: h.minPlayers ?? null }));
 
 const playable = (state, id) => {
   const h = HAUNTS[id];
@@ -48,7 +43,7 @@ export function selectHaunt(state, revealerId) {
     if (!HAUNTS[forced]) throw new Error(`Không có Haunt ${forced}`);
     return HAUNTS[forced];
   }
-  const row = SCENARIO_TABLE[state.lastCard?.cardId];
+  const row = scenarioTable(state)[state.lastCard?.cardId];
   if (row) {
     const basement = state.players[revealerId]?.pos.floor === 'basement';
     const [first, second] = basement ? [row[1], row[0]] : row;

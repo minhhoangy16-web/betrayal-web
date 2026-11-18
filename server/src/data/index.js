@@ -3,6 +3,7 @@ import { TILES } from './tiles.js';
 import { OMENS } from './cards/omens.js';
 import { ITEMS } from './cards/items.js';
 import { EVENTS } from './cards/events.js';
+import { SCENARIOS } from './scenarios.js';
 
 const byId = (list, kind) => {
   const map = {};
@@ -30,5 +31,5 @@ export const DECK_IDS = {
 
 // Dữ liệu tĩnh công khai gửi cho client (không chứa nội dung bí mật của Haunt).
 export function getCatalog() {
-  return { characters: CHARACTERS, tiles: TILES, cards: CARDS };
+  return { characters: CHARACTERS, tiles: TILES, cards: CARDS, scenarios: SCENARIOS };
 }

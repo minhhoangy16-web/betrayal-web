@@ -4,6 +4,7 @@
 
 import { randomBytes, randomUUID, randomInt } from 'node:crypto';
 import { CHARACTERS_BY_ID } from '../data/index.js';
+import { SCENARIOS_BY_ID } from '../data/scenarios.js';
 import { createGame, GameError, DEFAULT_RULES } from '../engine/Game.js';
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // bỏ các ký tự dễ nhầm: I, O, 0, 1
@@ -104,6 +105,17 @@ export class RoomManager {
     return { room, player };
   }
 
+  // Chủ phòng chọn thẻ kịch bản ('random' = rút ngẫu nhiên khi bắt đầu).
+  setScenario(code, playerId, scenarioId) {
+    const room = this.getRoom(code);
+    if (room.hostId !== playerId) throw new GameError('Chỉ chủ phòng mới được chọn kịch bản.', 'NOT_HOST');
+    if (room.status !== 'lobby') throw new GameError('Ván chơi đã bắt đầu.', 'ALREADY_STARTED');
+    if (scenarioId !== 'random' && !SCENARIOS_BY_ID[scenarioId]) throw new GameError('Không có kịch bản này.');
+    room.scenarioId = scenarioId;
+    room.touchedAt = Date.now();
+    return room;
+  }
+
   selectCharacter(code, playerId, characterId) {
     const room = this.getRoom(code);
     const player = this.getPlayer(room, playerId);
@@ -171,6 +183,7 @@ export class RoomManager {
       players: room.players.map((p) => ({ id: p.id, name: p.name, characterId: p.characterId })),
       seed,
       rules: this.rules,
+      scenarioId: room.scenarioId === 'random' ? null : room.scenarioId,
     });
     room.status = 'playing';
     room.touchedAt = Date.now();
@@ -187,6 +200,7 @@ export class RoomManager {
       status: room.status,
       minPlayers: this.rules.minPlayers,
       maxPlayers: this.rules.maxPlayers,
+      scenarioId: room.scenarioId ?? 'random',
       players: room.players.map((p) => ({
         id: p.id, name: p.name, characterId: p.characterId, connected: p.connected,
       })),

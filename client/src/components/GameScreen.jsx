@@ -13,6 +13,7 @@ import CharacterSheet from './TraitPanel.jsx';
 import ActionPanel from './ActionPanel.jsx';
 import HauntStatus from './HauntStatus.jsx';
 import HauntBook from './HauntBook.jsx';
+import ScenarioCard, { useScenarioIntro } from './ScenarioCard.jsx';
 import DisconnectBanner from './DisconnectBanner.jsx';
 import { CardViewer } from './TableEffects.jsx';
 import { AudioControls, useTurnAlert } from './AudioControls.jsx';
@@ -32,7 +33,7 @@ function useIsWide() {
   );
 }
 
-function TopBar({ onOpenBook, wide }) {
+function TopBar({ onOpenBook, onOpenScenario, wide }) {
   const game = useGameStore((s) => s.game);
   const leave = useGameStore((s) => s.leave);
   const me = game.players[game.you];
@@ -63,6 +64,11 @@ function TopBar({ onOpenBook, wide }) {
       )}
       <span className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-2">
         <AudioControls compact={!wide} />
+        {game.scenarioId && (
+          <Button onClick={onOpenScenario} aria-label="Thẻ kịch bản" title="Thẻ kịch bản">
+            <ScrollText size={16} aria-hidden="true" /><span className="hidden xl:inline">Kịch bản</span>
+          </Button>
+        )}
         {game.haunt && (
           <Button variant="candle" onClick={onOpenBook} aria-label="Sách Haunt">
             <BookOpen size={16} aria-hidden="true" /><span className="hidden sm:inline">Sách Haunt</span>
@@ -139,6 +145,7 @@ export default function GameScreen() {
   const catalog = useGameStore((s) => s.catalog);
   const wide = useIsWide();
   const [bookOpen, setBookOpen] = useState(false);
+  const [scenarioOpen, setScenarioOpen] = useScenarioIntro(game.code, game.scenarioId);
   const [inspectedId, setInspectedId] = useState(game.you ?? game.turnOrder[0]);
   const [tab, setTab] = useState('turn');
 
@@ -180,7 +187,7 @@ export default function GameScreen() {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar onOpenBook={() => setBookOpen(true)} wide={wide} />
+      <TopBar onOpenBook={() => setBookOpen(true)} onOpenScenario={() => setScenarioOpen(true)} wide={wide} />
       <DisconnectBanner />
       {wide ? (
         <div className="grid min-h-0 flex-1 grid-cols-[310px_minmax(0,1fr)_340px] gap-3 p-3">
@@ -246,6 +253,7 @@ export default function GameScreen() {
         </>
       )}
       {bookOpen && game.haunt && <HauntBook onClose={() => setBookOpen(false)} />}
+      {scenarioOpen && <ScenarioCard onClose={() => setScenarioOpen(false)} />}
       <CardViewer />
     </div>
   );

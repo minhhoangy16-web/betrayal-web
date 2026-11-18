@@ -86,6 +86,7 @@ export function getView(state, viewerId) {
       item: state.decks.item.length,
       event: state.decks.event.length,
     },
+    scenarioId: state.scenarioId,
     omensRevealed: state.omensRevealed,
     pending: pendingView(state, viewerId),
     monsters: state.monsters,

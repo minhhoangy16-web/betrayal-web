@@ -181,6 +181,12 @@ export function registerSocketHandlers(io, manager, { logger = console, autoSkip
       broadcastLobby(room);
     });
 
+    on('room:scenario', ({ scenarioId = 'random' }) => {
+      const { room, player } = session();
+      manager.setScenario(room.code, player.id, String(scenarioId));
+      broadcastLobby(room);
+    });
+
     on('room:kick', ({ playerId }) => {
       const { room, player } = session();
       const { target } = manager.kick(room.code, player.id, playerId);

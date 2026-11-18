@@ -156,6 +156,7 @@ export const useGameStore = create((set, get) => ({
   },
   selectCharacter: (characterId) => get().send('room:selectCharacter', { characterId }),
   kick: (playerId) => get().send('room:kick', { playerId }),
+  setScenario: (scenarioId) => get().send('room:scenario', { scenarioId }),
   startGame: () => get().send('room:start', {}),
   act: (action) => get().send('game:action', action),
   skipTurn: () => get().send('game:skip', {}),
