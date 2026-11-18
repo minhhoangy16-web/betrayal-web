@@ -91,7 +91,13 @@ function decideExplorer(state, actor, options, rand) {
     return end;
   }
   const specials = options.filter((o) => o.type === 'special');
-  const real = specials.filter((a) => !isTokenAction(a));
+  let real = specials.filter((a) => !isTokenAction(a));
+  // Trục vong: ưu tiên làm lễ; tố giác thỉnh thoảng thôi (người thật sẽ bàn bạc trước khi tố).
+  if (state.haunt?.id === 'haunt-truc-vong') {
+    const rite = real.find((a) => a.actionId === 'rite');
+    if (rite) return rite;
+    real = real.filter((a) => a.actionId !== 'accuse' || rand() < 0.08);
+  }
   if (real.length) return pick(real, rand);
   const pickUp = specials.find((a) => a.actionId === 'pickToken');
   if (pickUp) return pickUp;
@@ -104,10 +110,13 @@ function decideExplorer(state, actor, options, rand) {
   if (attacks.length) return attacks[0];
   if (moves.length) {
     let targets;
-    if (me.side === 'traitor') {
+    if (me.side === 'traitor' && state.haunt?.id === 'haunt-truc-vong' && !state.haunt.data.revealed) {
+      targets = [state.board.index[state.haunt.data.altar]].filter((k) => k !== posKey(me.pos));
+    } else if (me.side === 'traitor') {
       targets = Object.values(state.players).filter((p) => inPlay(p) && p.id !== me.id).map((p) => posKey(p.pos));
     } else {
       targets = goalRooms(state, me).filter((k) => k !== posKey(me.pos));
+      if (state.haunt?.id === 'haunt-truc-vong') targets = [state.board.index[state.haunt.data.altar]].filter((k) => k !== posKey(me.pos));
       const coffin = state.haunt?.data?.coffin;
       if (coffin && specials.some((a) => a.actionId === 'giveToken') === false && Object.values(state.haunt.data.tokens ?? {}).some((t) => t.holder === me.id)) {
         targets = [coffin];

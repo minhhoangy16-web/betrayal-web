@@ -202,7 +202,7 @@ function ExplorerActions({ game, catalog, act }) {
         <Section title="Hành động đặc biệt">
           <div className="flex flex-col gap-1">
             {specials.map((a) => (
-              <Button key={`${a.actionId}:${a.trait}`} variant="candle" className="justify-start text-left" onClick={() => act(a)}>
+              <Button key={`${a.actionId}:${a.trait}:${a.targetId}:${a.tokenId}:${a.toPlayerId}`} variant="candle" className="justify-start text-left" onClick={() => act(a)}>
                 <Flame size={15} className="shrink-0" aria-hidden="true" /> {a.label}
               </Button>
             ))}

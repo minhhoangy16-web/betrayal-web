@@ -8,8 +8,9 @@ import loBan from './haunt-lo-ban.js';
 import maLai from './haunt-ma-lai.js';
 import coHon from './haunt-co-hon.js';
 import maGiuCua from './haunt-ma-giu-cua.js';
+import trucVong from './haunt-truc-vong.js';
 
-const HAUNT_LIST = [haunt01, trungTang, maDa, loBan, maLai, coHon, maGiuCua];
+const HAUNT_LIST = [haunt01, trungTang, maDa, loBan, maLai, coHon, maGiuCua, trucVong];
 
 export const HAUNTS = Object.fromEntries(HAUNT_LIST.map((h) => [h.id, h]));
 

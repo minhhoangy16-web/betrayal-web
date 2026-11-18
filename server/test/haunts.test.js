@@ -80,3 +80,36 @@ test('Bùa Lỗ Ban: vị trí bùa chỉ Kẻ phản bội thấy', () => {
   }
   assert.fail('không tạo được tình huống kiểm thử');
 });
+
+test('Trục vong: không ai ngoài Kẻ bị nhập biết danh tính, lựa chọn khi làm lễ được giấu', () => {
+  let checkedRite = false;
+  for (let seed = 1; seed <= 40 && !checkedRite; seed++) {
+    const s = newGame(5, seed, { minPlayers: 3, hauntRollThreshold: 99, forcedHauntId: 'haunt-truc-vong' });
+    const rand = makeRng(seed);
+    let checkedStart = false;
+    for (let n = 0; n < 20000 && !s.winner; n++) {
+      if (s.round >= 3 && s.phase === 'explore') s.rules.hauntRollThreshold = 0;
+      if (s.haunt && !s.haunt.data.revealed) {
+        const traitorId = s.haunt.traitorId;
+        for (const id of s.turnOrder.filter((x) => x !== traitorId)) {
+          const v = getView(s, id);
+          assert.equal(v.haunt.traitorId, null);
+          assert.ok(Object.values(v.players).every((p) => p.id === id || p.side === 'unknown'));
+          assert.ok(!JSON.stringify(v).includes('"drains"'));
+          assert.ok(!v.legal.some((a) => a.actionId === 'drain'));
+          if (s.pending?.type === 'choose' && s.pending.playerId !== id) {
+            assert.deepEqual(v.pending.options, []);
+            checkedRite = true;
+          }
+        }
+        if (!checkedStart) {
+          assert.equal(getView(s, traitorId).haunt.traitorId, traitorId);
+          checkedStart = true;
+        }
+      }
+      const a = currentActor(s);
+      applyAction(s, a, smartAction(s, a, rand));
+    }
+  }
+  assert.ok(checkedRite, 'chưa gặp lần làm lễ nào để kiểm tra');
+});
