@@ -179,7 +179,10 @@ test('Haunt: phân phe, quái vật xuất hiện, lượt đầu thuộc về n
   const heroes = Object.values(state.players).filter((p) => p.side === 'hero');
   assert.equal(heroes.length, 3);
   assert.equal(Object.keys(state.monsters).length, 2);
-  for (const m of Object.values(state.monsters)) assert.deepEqual(m.pos, { floor: 'basement', x: 0, y: 0 });
+  // Vong hồn trồi lên từ các phòng Điềm báo khác nhau.
+  const spots = Object.values(state.monsters).map((m) => tileAt(state, m.pos));
+  for (const t of spots) assert.ok(TILES_BY_ID[t.tileId].symbol === 'omen' || t.tileId === 'basement-landing');
+  assert.equal(new Set(spots.map((t) => t.tileId)).size, spots.length);
   const order = state.turnOrder;
   assert.equal(state.turn.playerId, order[(order.indexOf(traitorId) + 1) % order.length]);
 });
@@ -270,6 +273,30 @@ test('Haunt #1: yểm bùa đủ số phòng thì người sống sót thắng',
   assert.equal(state.phase, 'ended');
   assert.equal(tileAt(state, hero.pos).sealed, true);
   assert.throws(() => applyAction(state, heroId, { type: 'endTurn' }), /kết thúc/);
+});
+
+test('Haunt #1: Kẻ phản bội thổi tắt nến làm phòng mất bùa', () => {
+  const state = gameInHaunt(35);
+  const { traitorId } = state.haunt;
+  const traitor = state.players[traitorId];
+  const spot = Object.values(state.board.tiles).find((t) => TILES_BY_ID[t.tileId].symbol === 'omen');
+  const key = `${spot.floor}:${spot.x}:${spot.y}`;
+  state.haunt.data.sealed.push(key);
+  spot.sealed = true;
+  traitor.pos = { floor: spot.floor, x: spot.x, y: spot.y };
+  traitor.traits.sanity = 7;
+  state.turn.playerId = traitorId;
+  state.turn.phase = 'explorer';
+  for (let attempt = 0; attempt < 20 && state.haunt.data.sealed.includes(key); attempt++) {
+    state.turn.hasAttacked = false;
+    const snuff = legalActions(state, traitorId).find((a) => a.actionId === 'snuff');
+    assert.ok(snuff, 'Kẻ phản bội đứng trong phòng đã yểm phải thổi tắt nến được');
+    applyAction(state, traitorId, snuff);
+    applyAction(state, traitorId, { type: 'roll' });
+    assert.ok(!legalActions(state, traitorId).some((a) => a.actionId === 'snuff'), 'thay cho tấn công: mỗi lượt một lần');
+  }
+  assert.ok(!state.haunt.data.sealed.includes(key));
+  assert.equal(state.board.tiles[key].sealed, false);
 });
 
 test('Haunt #1: mọi người sống sót chết thì Traitor thắng; đồ rơi lại trong phòng', () => {

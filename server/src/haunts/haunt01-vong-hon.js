@@ -9,18 +9,38 @@ import { addLog } from '../engine/log.js';
 import { GameError } from '../engine/errors.js';
 import { TRAIT_LABEL, defaultAttackTraits } from '../engine/constants.js';
 import { registerOp, enqueueFront } from '../engine/effects.js';
-import { spawnMonster, aliveHeroes } from './helpers.js';
+import { spawnMonster, aliveHeroes, rooms, roomName } from './helpers.js';
+import { shuffle } from '../engine/rng.js';
 
-const SEAL_TARGET = 4; // tổng xúc xắc cần đạt để yểm bùa thành công
+const SEAL_TARGET = 5; // tổng xúc xắc cần đạt để yểm bùa thành công
 const SEAL_TRAITS = ['knowledge', 'sanity'];
+const SNUFF_TARGET = 4; // Kẻ phản bội thổi tắt nến (gỡ bùa)
 
-const WRAITH = { type: 'wraith', name: 'Vong hồn', traits: { speed: 2, might: 4, sanity: 3 } };
+const WRAITH = { type: 'wraith', name: 'Vong hồn', traits: { speed: 3, might: 5, sanity: 3 } };
 
 function canSealHere(state, player) {
   if (player.side !== 'hero' || !player.alive) return false;
+  const d = state.haunt.data;
   const tile = tileAt(state, player.pos);
-  return TILES_BY_ID[tile.tileId].symbol === 'omen' && !state.haunt.data.sealed.includes(posKey(player.pos));
+  if (TILES_BY_ID[tile.tileId].symbol !== 'omen' || d.sealed.includes(posKey(player.pos))) return false;
+  return true;
 }
+
+const canSnuff = (state, player) => player.side === 'traitor' && player.alive && !state.turn.hasAttacked
+  && state.haunt.data.sealed.includes(posKey(player.pos));
+
+registerOp('haunt01:snuff', (state, it) => {
+  const player = state.players[it.playerId];
+  const data = state.haunt.data;
+  const name = TILES_BY_ID[state.board.tiles[it.tileKey].tileId].name;
+  if (it.total >= SNUFF_TARGET && data.sealed.includes(it.tileKey)) {
+    data.sealed = data.sealed.filter((k) => k !== it.tileKey);
+    state.board.tiles[it.tileKey].sealed = false;
+    addLog(state, `💨 ${player.name} thổi tắt ngọn nến ở ${name}. Bùa yểm mất linh (${data.sealed.length}/${data.sealsRequired}).`, 'haunt');
+  } else {
+    addLog(state, `${player.name} cố thổi tắt ngọn nến ở ${name} nhưng lửa vẫn cháy.`, 'haunt');
+  }
+});
 
 // Kết quả lần đổ yểm bùa (được gọi qua `then` của op 'roll').
 registerOp('haunt01:seal', (state, it) => {
@@ -67,22 +87,24 @@ export default {
       'miễn là không ai còn sống để rời khỏi đây.',
     objective: 'Bạn thắng khi mọi người sống sót đều đã chết (người chết là khi một chỉ số bất kỳ tụt xuống đầu lâu).',
     lose: [
-      'Người sống sót yểm bùa xong đủ số phòng Điềm báo: 3 phòng nếu họ có 2–3 người, 4 phòng nếu có từ 4 người.',
+      'Người sống sót yểm bùa xong đủ số phòng Điềm báo: 4 phòng nếu họ có 2–3 người, 5 phòng nếu có từ 4 người.',
       'Bạn chết không làm bạn thua: các Vong hồn vẫn tiếp tục săn người trong lượt của bạn.',
     ],
     setup: [
       'Bạn là người vừa lật Haunt.',
-      'Vong hồn xuất hiện ở Chiếu nghỉ tầng hầm: 2 con nếu người sống sót có 2–3 người, 3 con nếu có từ 4 người.',
+      'Vong hồn trồi lên từ các phòng Điềm báo ngẫu nhiên, mỗi con một phòng: 2 con nếu người sống sót có 2–3 người, 3 con nếu có từ 4 người.',
     ],
     rules: [
       'Mỗi lượt của bạn gồm hai phần: bạn đi và hành động như thường, sau đó là lượt quái vật để bạn điều khiển các Vong hồn.',
-      'Vong hồn: Tốc độ 2, Sức mạnh 4, Tinh thần 3. Đầu lượt quái vật, mỗi con đổ Tốc độ để biết được đi mấy bước (ít nhất 1 bước).',
+      'Vong hồn: Tốc độ 3, Sức mạnh 5, Tinh thần 3. Đầu lượt quái vật, mỗi con đổ Tốc độ để biết được đi mấy bước (ít nhất 1 bước).',
       'Mỗi Vong hồn được tấn công một lần mỗi lượt, bằng Sức mạnh. Thua thì người sống sót chịu sát thương thể chất bằng phần chênh lệch.',
       'Vong hồn không vào được phòng đã yểm bùa. Vong hồn đang đứng trong phòng lúc phòng đó được yểm thì bị choáng.',
       'Vong hồn bị choáng (do yểm bùa hoặc thua trận) bỏ qua một lượt quái vật rồi tỉnh lại.',
+      `«Thổi tắt nến» (thay cho tấn công trong lượt đó): đứng trong một phòng đã yểm, đổ Tinh thần ${SNUFF_TARGET}+. Thành công thì bùa ở phòng đó mất linh: phòng không còn được tính là đã yểm và Vong hồn lại vào được. Bạn vào phòng đã yểm như thường.`,
       'Bạn vẫn là người: tự tấn công bằng Sức mạnh như thường, và người sống sót cũng đánh được bạn.',
     ],
     tips: [
+      'Người sống sót hay trú trong phòng đã yểm: hãy tới đó thổi tắt nến để Vong hồn ùa vào.',
       'Người sống sót cần đứng ở phòng có biểu tượng Điềm báo mới yểm được. Hãy chặn các phòng đó và đừng để họ đứng yên.',
       'Dồn Vong hồn vào người có Sức mạnh thấp.',
     ],
@@ -93,14 +115,14 @@ export default {
     story:
       'Trong cuốn gia phả có một trang bị xé: nghi thức yểm bùa bằng nến tại những nơi điềm gở từng xuất hiện. ' +
       'Đủ số ngọn nến thì ngôi nhà sẽ ngủ yên trở lại.',
-    objective: 'Các bạn thắng khi yểm bùa đủ số phòng: 3 phòng nếu lúc Haunt bắt đầu có 2–3 người sống sót, 4 phòng nếu có từ 4 người.',
+    objective: 'Các bạn thắng khi cùng lúc có đủ số phòng đang được yểm bùa: 4 phòng nếu lúc Haunt bắt đầu có 2–3 người sống sót, 5 phòng nếu có từ 4 người.',
     lose: [
       'Mọi người sống sót đều chết (một chỉ số bất kỳ tụt xuống đầu lâu là chết).',
       'Giết Kẻ phản bội KHÔNG làm các bạn thắng: Vong hồn vẫn hoạt động.',
     ],
     setup: [
       'Kẻ phản bội là người vừa lật Haunt.',
-      'Vong hồn xuất hiện ở Chiếu nghỉ tầng hầm (2 con nếu có 2–3 người sống sót, 3 con nếu có từ 4 người).',
+      'Vong hồn (Tốc độ 3, Sức mạnh 5) trồi lên từ các phòng Điềm báo ngẫu nhiên, mỗi con một phòng: 2 con nếu có 2–3 người sống sót, 3 con nếu có từ 4 người.',
     ],
     rules: [
       `«Yểm bùa» (mỗi lượt một lần): đứng trong phòng có biểu tượng Điềm báo chưa được yểm, đổ Tri thức hoặc Tinh thần (tự chọn). Đạt ${SEAL_TARGET}+ là thành công. Trượt thì chịu 1 sát thương tinh thần.`,
@@ -109,22 +131,26 @@ export default {
       'Không đánh Vong hồn bằng Sức mạnh được. Bạn tấn công chúng bằng Tinh thần: thắng thì Vong hồn bị choáng, thua thì bạn chịu sát thương tinh thần bằng phần chênh lệch.',
       'Khi Vong hồn tấn công bạn, hai bên đổ Sức mạnh. Thua thì chịu sát thương thể chất bằng phần chênh lệch.',
       'Rời một phòng có Vong hồn (chưa choáng) hoặc Kẻ phản bội tốn thêm 1 bước cho mỗi kẻ địch ở đó.',
+      `Kẻ phản bội có thể «Thổi tắt nến» ở một phòng đã yểm (thay cho tấn công, đổ Tinh thần ${SNUFF_TARGET}+): phòng đó mất bùa, không còn được tính và Vong hồn lại vào được. Các bạn phải yểm lại.`,
       'Kẻ phản bội đánh được bằng Sức mạnh như người thường.',
     ],
     tips: [
       'Người có Tri thức hoặc Tinh thần cao nên lo yểm bùa, người khỏe đi chặn Kẻ phản bội.',
-      'Đứng trong phòng đã yểm để nghỉ khi bị thương nặng.',
+      'Đứng trong phòng đã yểm để nghỉ khi bị thương nặng, nhưng canh chừng Kẻ phản bội tới thổi tắt nến.',
     ],
   },
 
   setup(state) {
     const heroes = aliveHeroes(state).length;
-    state.haunt.data = { sealed: [], sealsRequired: heroes >= 4 ? 4 : 3 };
+    state.haunt.data = { sealed: [], sealsRequired: heroes >= 4 ? 5 : 4 };
     const count = heroes >= 4 ? 3 : 2;
+    // Vong hồn trồi lên từ các phòng Điềm báo (nơi điềm gở từng xuất hiện), mỗi con một phòng.
+    const omenRooms = shuffle(state, rooms(state, (pos, def) => def.symbol === 'omen'));
     for (let i = 1; i <= count; i++) {
-      spawnMonster(state, { ...WRAITH, id: `wraith-${i}`, name: `${WRAITH.name} ${i}` }, 'basement-landing');
+      const where = omenRooms[i - 1] ?? 'basement-landing';
+      const w = spawnMonster(state, { ...WRAITH, id: `wraith-${i}`, name: `${WRAITH.name} ${i}` }, where);
+      addLog(state, `${w.name} trồi lên ở ${roomName(state, w.pos)}.`, 'haunt');
     }
-    addLog(state, `${count} Vong hồn trồi lên ở Chiếu nghỉ tầng hầm.`, 'haunt');
   },
 
   // Dữ liệu Haunt công khai cho mọi người chơi (hiển thị tiến độ trên UI).
@@ -149,6 +175,9 @@ export default {
   // Các hành động đặc biệt mà người chơi này có thể làm ngay bây giờ.
   specialActions(state, playerId) {
     const player = state.players[playerId];
+    if (canSnuff(state, player)) {
+      return [{ type: 'special', actionId: 'snuff', label: `Thổi tắt nến (thay cho tấn công, đổ Tinh thần, cần ${SNUFF_TARGET}+)` }];
+    }
     if (state.turn.usedSpecial || !canSealHere(state, player)) return [];
     return SEAL_TRAITS.map((trait) => ({
       type: 'special', actionId: 'seal', trait, label: `Yểm bùa (đổ ${TRAIT_LABEL[trait]}, cần ${SEAL_TARGET}+)`,
@@ -157,6 +186,15 @@ export default {
 
   performSpecial(state, playerId, action) {
     const player = state.players[playerId];
+    if (action.actionId === 'snuff') {
+      if (!canSnuff(state, player)) throw new GameError('Không thể thổi tắt nến lúc này.');
+      state.turn.hasAttacked = true;
+      enqueueFront(state, [{
+        op: 'roll', playerId, trait: 'sanity', label: 'Thổi tắt nến', source: 'haunt-01',
+        then: { op: 'haunt01:snuff', tileKey: posKey(player.pos) },
+      }]);
+      return;
+    }
     if (action.actionId !== 'seal') throw new GameError('Hành động đặc biệt không tồn tại.');
     if (state.turn.usedSpecial) throw new GameError('Mỗi lượt chỉ được yểm bùa một lần.');
     if (!canSealHere(state, player)) throw new GameError('Không thể yểm bùa ở đây.');
