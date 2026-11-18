@@ -452,6 +452,11 @@ ${corner(20, 20, 1, 1)}${corner(W - 20, 20, -1, 1)}${corner(20, H - 20, 1, -1)}$
 `;
 }
 
+// Chỉ riêng hình minh hoạ, nền trong suốt. Giao diện tô đen nó thành hình bóng ở đầu thẻ.
+function glyphSvg(card) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">${GLYPHS[card.id]()}</svg>\n`;
+}
+
 // ---------------------------------------------------------------- ghi file
 
 mkdirSync(nodePath.join(MEDIA, 'tiles'), { recursive: true });
@@ -464,7 +469,12 @@ try {
 } catch {
   // Chưa có manifest: tạo mới.
 }
-manifest.images = { tiles: { ...manifest.images?.tiles }, cards: { ...manifest.images?.cards } };
+manifest.images = {
+  tiles: { ...manifest.images?.tiles },
+  cards: { ...manifest.images?.cards },
+  glyphs: { ...manifest.images?.glyphs },
+};
+mkdirSync(nodePath.join(MEDIA, 'glyphs'), { recursive: true });
 
 for (const tile of TILES) {
   writeFileSync(nodePath.join(MEDIA, 'tiles', `${tile.id}.svg`), tileSvg(tile));
@@ -473,6 +483,8 @@ for (const tile of TILES) {
 for (const card of CARDS) {
   writeFileSync(nodePath.join(MEDIA, 'cards', `${card.id}.svg`), cardSvg(card));
   manifest.images.cards[card.id] = `cards/${card.id}.svg`;
+  writeFileSync(nodePath.join(MEDIA, 'glyphs', `${card.id}.svg`), glyphSvg(card));
+  manifest.images.glyphs[card.id] = `glyphs/${card.id}.svg`;
 }
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 console.log(`Đã vẽ ${TILES.length} gạch và ${CARDS.length} thẻ vào ${nodePath.relative(process.cwd(), MEDIA)}`);

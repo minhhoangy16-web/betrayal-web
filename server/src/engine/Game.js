@@ -18,7 +18,7 @@ import { ACTIONS } from './actions.js';
 
 export { GameError } from './errors.js';
 export { getView } from './view.js';
-export { legalActions } from './legal.js';
+export { legalActions, currentActor, defaultAction } from './legal.js';
 export { DEFAULT_RULES } from './constants.js';
 
 /**

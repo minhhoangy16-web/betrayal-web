@@ -47,6 +47,7 @@ Khai báo file trong `manifest.json`. Đường dẫn tính từ thư mục `med
 | `sfx` | `hit` | Chỉ số của bạn bị giảm |
 | `sfx` | `haunt` | Haunt bắt đầu |
 | `sfx` | `end` | Phân định thắng thua |
+| `sfx` | `turn` | Tới lượt bạn (hoặc bạn cần đổ xúc xắc, chia sát thương…) |
 
 Nhạc nền được phát lặp lại và chuyển mượt giữa các giai đoạn. Khoá nào không khai báo, hoặc file không
 phát được, sẽ dùng âm thanh tổng hợp. Định dạng: bất kỳ thứ gì trình duyệt phát được (mp3, ogg, wav).

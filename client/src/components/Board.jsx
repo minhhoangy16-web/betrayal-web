@@ -6,6 +6,7 @@ import { DoorOpen, Flame, Ghost, Locate, Minus, Package, Plus, RotateCw } from '
 import { useGameStore } from '../store/useGameStore.js';
 import { DIRS, FLOORS, FLOOR_LABEL, TILE_SIZE, mediaUrl, posKey, rotatedDoors } from '../lib/constants.js';
 import { Art, PlayerToken, SymbolIcon } from './ui.jsx';
+import TableEffects from './TableEffects.jsx';
 
 const MIN_SCALE = 0.35;
 const MAX_SCALE = 2.2;
@@ -83,9 +84,10 @@ export default function Board() {
     });
   }, []);
 
-  // Lần đầu: đưa quân của mình vào giữa khung nhìn.
+  // Lần đầu: đưa quân của mình vào giữa khung nhìn. Màn hình hẹp (điện thoại) thì thu nhỏ sẵn.
   useLayoutEffect(() => {
-    centerOn(me?.pos ?? { x: 0, y: 0 }, 1);
+    const narrow = (containerRef.current?.clientWidth ?? 1000) < 640;
+    centerOn(me?.pos ?? { x: 0, y: 0 }, narrow ? 0.7 : 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -351,6 +353,8 @@ export default function Board() {
           </button>
         ))}
       </div>
+
+      <TableEffects />
 
       <div className="absolute right-2 bottom-2 flex flex-col gap-1 rounded-md border border-mortar bg-ink/90 p-1">
         <button type="button" className="rounded p-1.5 text-bone hover:bg-stonework" onClick={() => zoomBy(1.25)} aria-label="Phóng to">

@@ -36,7 +36,8 @@ export const useGameStore = create((set, get) => ({
   connected: false,
   catalog: null,
   catalogError: null,
-  media: { tiles: {}, cards: {} }, // ảnh tuỳ chọn cho gạch và thẻ, đọc từ public/media/manifest.json
+  media: { tiles: {}, cards: {}, glyphs: {} }, // ảnh tuỳ chọn cho gạch và thẻ, đọc từ public/media/manifest.json
+  viewCardId: null, // thẻ đang mở xem to (bấm vào thẻ trong túi đồ)
   session: loadSession(), // { code, playerId, token }
   lobby: null,
   game: null,
@@ -59,7 +60,11 @@ export const useGameStore = create((set, get) => ({
       }
     });
     socket.on('disconnect', () => set({ connected: false }));
-    socket.on('room:state', (lobby) => set({ lobby }));
+    socket.on('room:state', (lobby) => {
+      // Đổi thời gian còn lại thành mốc giờ trên máy này để đếm ngược.
+      const autoSkip = lobby.autoSkip ? { ...lobby.autoSkip, deadline: Date.now() + lobby.autoSkip.inMs } : null;
+      set({ lobby: { ...lobby, autoSkip } });
+    });
     socket.on('game:state', (game) => set({ game }));
     socket.on('room:kicked', () => {
       get().clearSession();
@@ -102,7 +107,7 @@ export const useGameStore = create((set, get) => ({
       const res = await fetch(mediaUrl('manifest.json'));
       if (!res.ok) return;
       const manifest = await res.json();
-      set({ media: { tiles: manifest.images?.tiles ?? {}, cards: manifest.images?.cards ?? {} } });
+      set({ media: { tiles: manifest.images?.tiles ?? {}, cards: manifest.images?.cards ?? {}, glyphs: manifest.images?.glyphs ?? {} } });
       audio.setManifest(manifest.audio, mediaUrl);
     } catch {
       // Bỏ qua: media là phần tuỳ chọn.
@@ -117,7 +122,7 @@ export const useGameStore = create((set, get) => ({
 
   clearSession() {
     saveSession(null);
-    set({ session: null, lobby: null, game: null, selectedMonsterId: null });
+    set({ session: null, lobby: null, game: null, selectedMonsterId: null, viewCardId: null });
   },
 
   // Tạo phòng hoặc tham gia phòng: lưu lại phiên để kết nối lại được.
@@ -144,6 +149,8 @@ export const useGameStore = create((set, get) => ({
   kick: (playerId) => get().send('room:kick', { playerId }),
   startGame: () => get().send('room:start', {}),
   act: (action) => get().send('game:action', action),
+  skipTurn: () => get().send('game:skip', {}),
+  viewCard: (cardId) => set({ viewCardId: cardId }),
 
   async leave() {
     await request('room:leave', {});

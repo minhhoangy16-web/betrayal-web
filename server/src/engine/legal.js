@@ -91,3 +91,28 @@ export function legalActions(state, playerId) {
   if (state.turn.phase === 'monsters') return monsterPhaseActions(state);
   return player.alive ? explorerPhaseActions(state, player) : [];
 }
+
+// Người đang phải hành động lúc này (người đang được hỏi, hoặc người đang tới lượt).
+export function currentActor(state) {
+  if (state.winner || !state.turn) return null;
+  return state.pending ? state.pending.playerId : state.turn.playerId;
+}
+
+// Hành động "an toàn" thay cho một người chơi không thể tự hành động (mất kết nối):
+// trả lời yêu cầu đang chờ theo cách trung lập, còn không thì kết thúc lượt.
+export function defaultAction(state, playerId) {
+  const options = legalActions(state, playerId);
+  if (!options.length) return null;
+  const p = state.pending;
+  if (p?.playerId === playerId) {
+    if (p.type === 'placeTile') return { type: 'placeTile', rotation: p.rotation };
+    if (p.type === 'allocateDamage') {
+      // Chia sao cho chỉ số còn lại thấp nhất là cao nhất (tránh tự đưa nhân vật vào chỗ chết).
+      const traits = state.players[playerId].traits;
+      const worst = (a) => Math.min(...Object.entries(a.allocation).map(([t, n]) => traits[t] - n));
+      return options.reduce((best, a) => (worst(a) > worst(best) ? a : best));
+    }
+    return options[0];
+  }
+  return options.find((a) => a.type === 'endMonsterTurn') ?? options.find((a) => a.type === 'endTurn') ?? options[0];
+}

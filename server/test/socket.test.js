@@ -55,15 +55,15 @@ class FakeIo {
   }
 }
 
-function setup(rules = {}) {
+function setup(rules = {}, autoSkip = {}) {
   const io = new FakeIo();
   const manager = new RoomManager({ rules });
-  registerSocketHandlers(io, manager, { logger: { error() {} } });
+  registerSocketHandlers(io, manager, { logger: { error() {} }, autoSkip });
   return { io, manager };
 }
 
-async function startedRoom(count = 3) {
-  const { io, manager } = setup();
+async function startedRoom(count = 3, autoSkip = {}) {
+  const { io, manager } = setup({}, autoSkip);
   const sockets = [];
   const host = io.connect();
   const created = await host.send('room:create', { name: 'Chủ phòng' });
@@ -206,4 +206,62 @@ test('dọn phòng bỏ hoang', async () => {
   host.disconnect();
   assert.equal(manager.cleanup(Date.now()), 0, 'chưa quá thời gian chờ');
   assert.equal(manager.cleanup(Date.now() + 10 * 60 * 60 * 1000), 1);
+});
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const actorOf = (game) => (game.pending ? game.pending.playerId : game.turn.playerId);
+
+test('người đang tới lượt mất kết nối: đếm ngược rồi tự bỏ lượt', async () => {
+  const { manager, sockets, code } = await startedRoom(3, { graceMs: 60, nextMs: 10 });
+  const room = manager.getRoom(code);
+  const actorId = actorOf(room.game);
+  const actor = sockets.find((s) => s.playerId === actorId);
+  const watcher = sockets.find((s) => s.playerId !== actorId);
+  const turnBefore = room.game.turn.number;
+
+  actor.socket.disconnect();
+  const lobby = watcher.socket.last('room:state');
+  assert.equal(lobby.autoSkip.playerId, actorId);
+  assert.ok(lobby.autoSkip.inMs > 0 && lobby.autoSkip.inMs <= 60);
+  assert.equal(room.game.turn.number, turnBefore, 'chưa bỏ lượt khi còn trong thời gian chờ');
+
+  await sleep(120);
+  assert.notEqual(actorOf(room.game), actorId, 'lượt đã chuyển sang người khác');
+  assert.ok(room.game.turn.number > turnBefore);
+  assert.ok(room.game.log.some((l) => l.text.includes('tự động bỏ lượt')));
+  assert.equal(watcher.socket.last('room:state').autoSkip, null);
+  assert.notEqual(watcher.socket.last('game:state').turn.playerId, actorId);
+});
+
+test('kết nối lại trước khi hết giờ thì không bị bỏ lượt', async () => {
+  const { io, manager, sockets, code } = await startedRoom(3, { graceMs: 80, nextMs: 10 });
+  const room = manager.getRoom(code);
+  const actorId = actorOf(room.game);
+  const actor = sockets.find((s) => s.playerId === actorId);
+  actor.socket.disconnect();
+  await sleep(20);
+  const back = io.connect();
+  assert.ok((await back.send('room:rejoin', { code, token: actor.token })).ok);
+  await sleep(120);
+  assert.equal(actorOf(room.game), actorId);
+  assert.equal(room.autoSkip, null);
+});
+
+test('chủ phòng bỏ qua lượt của người mất kết nối', async () => {
+  const { manager, sockets, code } = await startedRoom(4, { graceMs: 60_000, nextMs: 60_000 });
+  const room = manager.getRoom(code);
+  const [host] = sockets;
+  // Đảm bảo người đang tới lượt không phải chủ phòng.
+  while (actorOf(room.game) === host.playerId) {
+    assert.ok((await host.socket.send('game:action', { type: 'endTurn' })).ok);
+  }
+  const actorId = actorOf(room.game);
+  const actor = sockets.find((s) => s.playerId === actorId);
+  const other = sockets.find((s) => s.playerId !== actorId && s.playerId !== host.playerId);
+
+  assert.equal((await host.socket.send('game:skip', {})).code, 'PLAYER_CONNECTED');
+  actor.socket.disconnect();
+  assert.equal((await other.socket.send('game:skip', {})).code, 'NOT_HOST');
+  assert.ok((await host.socket.send('game:skip', {})).ok);
+  assert.notEqual(actorOf(room.game), actorId);
 });

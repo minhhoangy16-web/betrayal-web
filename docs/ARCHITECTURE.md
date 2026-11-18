@@ -49,7 +49,8 @@ betrayal-web/
         ├── main.jsx  App.jsx  index.css      # index.css: @theme Gothic của Tailwind
         ├── lib/        socket.js  constants.js
         ├── store/      useGameStore.js       # kết nối, phiên chơi, lobby, view game
-        └── components/ Lobby  GameScreen  Board  ActionPanel  TraitPanel  SidePanels  HauntBook  ui
+        └── components/ Lobby  GameScreen  Board  ActionPanel  TraitPanel  SidePanels  HauntBook
+                        CardFace (mặt thẻ)  TableEffects (chồng bài, rút thẻ, xúc xắc)  DisconnectBanner  ui
 ```
 
 ## 2. Nguyên tắc thiết kế
@@ -266,7 +267,14 @@ Mọi sự kiện client → server đều có ack `{ ok: true, ...data }` hoặ
 | `room:kick` | `{ playerId }` | Chủ phòng, chỉ trong lobby |
 | `room:start` | `{}` | Chủ phòng; cần 3–6 người đã chọn nhân vật |
 | `room:leave` | `{}` | |
+| `game:skip` | `{}` | Chủ phòng; chỉ khi người cần hành động đang mất kết nối |
 | `game:action` | `{ type, ... }` | Xem bảng dưới |
+
+**Người chơi mất kết nối giữa ván.** Nếu người cần hành động mất kết nối (đóng tab, rớt mạng, bấm Rời),
+server chờ 60 giây rồi chơi thay họ bằng hành động an toàn nhất (`engine/legal.js → defaultAction`: đổ
+xúc xắc, đặt gạch ở góc xoay đang chọn, chia sát thương đều nhất, rồi kết thúc lượt). Nếu họ vẫn chưa
+quay lại, các lượt sau của họ chỉ chờ 5 giây. `room:state.autoSkip = { playerId, inMs }` cho giao diện
+đếm ngược; chủ phòng có thể bỏ qua ngay bằng `game:skip`. Kết nối lại (`room:rejoin`) huỷ đếm ngược.
 
 Server → client: `room:state` (lobby, giống nhau cho cả phòng), `game:state` (riêng từng người),
 `room:kicked`, `room:replaced` (người chơi mở tab khác bằng cùng token).

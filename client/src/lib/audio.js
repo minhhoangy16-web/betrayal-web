@@ -264,7 +264,7 @@ class AudioEngine {
 
   // ---------------------------------------------------------------- hiệu ứng
 
-  // name: 'dice' | 'card' | 'door' | 'hit' | 'haunt' | 'end'
+  // name: 'dice' | 'card' | 'door' | 'hit' | 'haunt' | 'end' | 'turn'
   sfx(name, options = {}) {
     if (!this.ctx || this.settings.muted || this.ctx.state !== 'running') return;
     const file = this.manifest.sfx[name];
@@ -338,6 +338,11 @@ class AudioEngine {
           this.tone(t + 0.2, { type: 'sawtooth', from: 110 * ratio, to: 220 * ratio, duration: 3, level: 0.06, attack: 1.8 });
         }
         this.burst(t, 1.6, 240, 0.6, 0.5);
+        break;
+      case 'turn':
+        // Hai tiếng chuông ngắn, đủ rõ để nghe thấy khi đang ở tab khác.
+        this.tone(t, { from: 784, duration: 0.5, level: 0.22 });
+        this.tone(t + 0.16, { from: 1046, duration: 0.7, level: 0.2 });
         break;
       case 'end':
         [1, 1.26, 1.5, 2].forEach((ratio, i) => this.tone(t + i * 0.22, { from: 196 * ratio, duration: 2.4, level: 0.14 }));

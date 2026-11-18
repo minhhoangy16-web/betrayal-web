@@ -64,9 +64,16 @@ phân thắng thua, kiểm tra GameState theo JSON Schema trong suốt quá trì
 | Chỉ số nhân vật | `TraitPanel.jsx` | 4 thanh 8 nấc, đầu lâu ở đáy, vạch xanh là mức khởi đầu |
 | Người chơi, túi đồ, xúc xắc, nhật ký | `SidePanels.jsx` | |
 | Sách Haunt | `HauntBook.jsx` | Tự mở khi Haunt bắt đầu; chỉ hiện cuốn của phe mình |
+| Mặt thẻ | `CardFace.jsx` | Kiểu giấy cũ: hình bóng đen, tên in hoa, bảng kết quả theo điểm xúc xắc – dựng từ dữ liệu thẻ |
+| Hiệu ứng bàn cờ | `TableEffects.jsx` | Ba chồng bài; thẻ bay ra, lật mặt, hiện nội dung; xúc xắc lăn rồi dừng |
+| Mất kết nối | `DisconnectBanner.jsx` | Đếm ngược tự bỏ lượt, nút bỏ qua cho chủ phòng |
 | Kết nối và trạng thái | `store/useGameStore.js`, `lib/socket.js` | Zustand + socket.io-client |
 
 Client không tự tính luật: nó gửi `game:action` và vẽ lại theo `game:state` nhận về.
+
+Trên màn hình hẹp hơn 1024px (điện thoại), bàn cờ nằm trên và các bảng chuyển thành tab
+(Lượt, Nhân vật, Túi đồ, Nhật ký). Khi tới lượt bạn: có âm báo, điện thoại rung, và tiêu đề tab
+nhấp nháy nếu bạn đang ở tab khác.
 
 ## Hình ảnh và âm thanh
 

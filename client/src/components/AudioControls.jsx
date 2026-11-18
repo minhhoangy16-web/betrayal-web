@@ -5,7 +5,8 @@ import { Volume2, VolumeX } from 'lucide-react';
 import { audio } from '../lib/audio.js';
 import { useGameStore } from '../store/useGameStore.js';
 
-export function AudioControls({ className = '' }) {
+// compact: chỉ nút tắt/bật tiếng, không có thanh âm lượng (cho màn hình hẹp).
+export function AudioControls({ className = '', compact = false }) {
   const settings = useSyncExternalStore(audio.subscribe, audio.getSettings);
   const Icon = settings.muted ? VolumeX : Volume2;
   return (
@@ -19,7 +20,7 @@ export function AudioControls({ className = '' }) {
       >
         <Icon size={17} aria-hidden="true" />
       </button>
-      <input
+      {!compact && <input
         type="range"
         min="0"
         max="1"
@@ -28,7 +29,7 @@ export function AudioControls({ className = '' }) {
         onChange={(e) => audio.update({ music: Number(e.target.value), muted: false })}
         className="h-1 w-20 cursor-pointer accent-[#e0a43a]"
         aria-label="Âm lượng nhạc nền"
-      />
+      />}
     </div>
   );
 }
@@ -81,4 +82,41 @@ export function useGameAudio() {
   useOnChange(g ? Boolean(g.winner) : null, (now) => now && audio.sfx('end'));
   const myTotal = me ? Object.values(me.traits).reduce((a, b) => a + b, 0) : null;
   useOnChange(myTotal, (now, before) => now < before && audio.sfx('hit'));
+}
+
+// Báo cho người chơi biết tới lượt họ: âm báo, rung (điện thoại), và tiêu đề tab nhấp nháy khi họ
+// đang ở tab hoặc ứng dụng khác. Chỉ báo khi chuyển từ "đang chờ" sang "cần bạn hành động".
+export function useTurnAlert(needsMe) {
+  const prev = useRef(needsMe);
+  useEffect(() => {
+    const was = prev.current;
+    prev.current = needsMe;
+    if (needsMe && !was) {
+      audio.sfx('turn');
+      try {
+        navigator.vibrate?.([120, 80, 120]);
+      } catch {
+        // Trình duyệt không hỗ trợ rung.
+      }
+    }
+  }, [needsMe]);
+
+  useEffect(() => {
+    if (!needsMe) return undefined;
+    const original = document.title;
+    let on = false;
+    const id = setInterval(() => {
+      if (!document.hidden) {
+        if (on) document.title = original;
+        on = false;
+        return;
+      }
+      on = !on;
+      document.title = on ? '🔔 Tới lượt bạn!' : original;
+    }, 1000);
+    return () => {
+      clearInterval(id);
+      document.title = original;
+    };
+  }, [needsMe]);
 }

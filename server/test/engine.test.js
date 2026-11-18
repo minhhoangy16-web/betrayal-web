@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { applyAction, getView, legalActions, GameError } from '../src/engine/Game.js';
+import { applyAction, getView, legalActions, defaultAction, currentActor, GameError } from '../src/engine/Game.js';
 import { CHARACTERS, TILES, CARDS, TILES_BY_ID, DECK_IDS } from '../src/data/index.js';
 import { DIE_FACES, rollDice } from '../src/engine/dice.js';
 import { validRotations, hasDoor, opposite, tileAt } from '../src/engine/board.js';
@@ -333,4 +333,23 @@ test('mô phỏng: 300 ván với bot ngẫu nhiên chạy từ đầu tới khi
     `chưa xong ${unfinished}, trung bình ${Math.round(totalSteps / 300)} hành động/ván`);
   assert.equal(unfinished, 0, 'mọi ván phải kết thúc');
   assert.ok(wins.heroes > 0 && wins.traitor > 0, 'cả hai phe đều phải có khả năng thắng');
+});
+
+test('defaultAction luôn là một hành động hợp lệ và không làm kẹt ván', () => {
+  for (let seed = 1; seed <= 60; seed++) {
+    const state = newGame(3 + (seed % 4), seed, { minPlayers: 3 });
+    const rand = makeRng(seed);
+    for (let step = 0; step < 20000 && !state.winner; step++) {
+      const actor = currentActor(state);
+      const legal = legalActions(state, actor);
+      if (rand() < 0.3) {
+        const action = defaultAction(state, actor);
+        assert.ok(legal.some((a) => JSON.stringify(a) === JSON.stringify(action)), JSON.stringify(action));
+        applyAction(state, actor, action);
+      } else {
+        applyAction(state, actor, legal[Math.floor(rand() * legal.length)]);
+      }
+    }
+    assert.ok(state.winner, `seed ${seed} chưa kết thúc`);
+  }
 });

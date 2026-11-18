@@ -62,6 +62,7 @@ export class RoomManager {
       characterId: null,
       connected: true,
       socketId: null,
+      disconnectedAt: null,
     };
   }
 
@@ -72,6 +73,7 @@ export class RoomManager {
       hostId: player.id,
       status: 'lobby', // 'lobby' | 'playing' | 'finished'
       players: [player],
+      autoSkip: null, // { playerId, at } khi đang đếm ngược bỏ lượt người mất kết nối
       game: null,
       createdAt: Date.now(),
       touchedAt: Date.now(),
@@ -130,6 +132,7 @@ export class RoomManager {
     } else {
       player.connected = false;
       player.socketId = null;
+      player.disconnectedAt ??= Date.now();
     }
     return room;
   }
@@ -147,6 +150,8 @@ export class RoomManager {
   setConnection(room, player, socketId) {
     player.connected = Boolean(socketId);
     player.socketId = socketId;
+    if (socketId) player.disconnectedAt = null;
+    else if (!player.disconnectedAt) player.disconnectedAt = Date.now();
     room.touchedAt = Date.now();
   }
 
@@ -185,6 +190,10 @@ export class RoomManager {
       players: room.players.map((p) => ({
         id: p.id, name: p.name, characterId: p.characterId, connected: p.connected,
       })),
+      // Đang chờ một người mất kết nối: lượt của họ sẽ tự bỏ qua sau `inMs` mili giây.
+      autoSkip: room.autoSkip
+        ? { playerId: room.autoSkip.playerId, inMs: Math.max(0, room.autoSkip.at - Date.now()) }
+        : null,
     };
   }
 

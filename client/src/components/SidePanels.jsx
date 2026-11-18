@@ -69,6 +69,7 @@ export function Inventory() {
   const catalog = useGameStore((s) => s.catalog);
   const act = useGameStore((s) => s.act);
   const cardImages = useGameStore((s) => s.media.cards);
+  const viewCard = useGameStore((s) => s.viewCard);
   const me = game.players[game.you];
   if (!me) return null;
 
@@ -84,10 +85,14 @@ export function Inventory() {
             const gives = game.legal.filter((a) => a.type === 'giveItem' && a.cardId === cardId);
             return (
               <li key={cardId} className="flex gap-3 px-3 py-2">
-                <Art src={mediaUrl(cardImages[cardId])} className="h-14 w-14 shrink-0 rounded object-cover" />
+                <button type="button" className="shrink-0" onClick={() => viewCard(cardId)} aria-label={`Xem thẻ ${card.name}`}>
+                  <Art src={mediaUrl(cardImages[cardId])} className="h-14 w-14 rounded object-cover hover:ring-2 hover:ring-candle" />
+                </button>
                 <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-display text-sm text-parchment">{card.name}</span>
+                  <button type="button" className="text-left font-display text-sm text-parchment hover:text-candle" onClick={() => viewCard(cardId)}>
+                    {card.name}
+                  </button>
                   <span className={`shrink-0 text-[11px] tracking-wider uppercase ${TYPE_TINT[card.type]}`}>
                     {CARD_TYPE_LABEL[card.type]}
                   </span>
@@ -173,21 +178,26 @@ export function LastCard() {
   const game = useGameStore((s) => s.game);
   const catalog = useGameStore((s) => s.catalog);
   const cardImages = useGameStore((s) => s.media.cards);
+  const viewCard = useGameStore((s) => s.viewCard);
   if (!game.lastCard) return null;
   const card = catalog.cardsById[game.lastCard.cardId];
   const who = game.players[game.lastCard.playerId];
   return (
-    <section className="flex gap-3 rounded-md border border-[#6b5a3c] bg-[#2a2319] p-3" aria-label="Thẻ vừa rút">
-      <Art src={mediaUrl(cardImages[card.id])} className="h-24 w-24 shrink-0 rounded object-cover" />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-2">
-          <span className={`text-[11px] tracking-widest uppercase ${TYPE_TINT[card.type]}`}>{CARD_TYPE_LABEL[card.type]}</span>
-          <span className="truncate text-xs text-stone-500">{who?.name} vừa rút</span>
-        </div>
-        <h3 className="mt-1 font-display text-base text-parchment">{card.name}</h3>
-        <p className="mt-1 text-sm leading-snug text-bone italic">{card.text}</p>
-      </div>
-    </section>
+    <button
+      type="button"
+      onClick={() => viewCard(card.id)}
+      className="flex w-full items-center gap-3 rounded-md border border-[#6b5a3c] bg-[#2a2319] p-2 text-left hover:border-candle"
+      aria-label={`Thẻ vừa rút: ${card.name}. Bấm để xem`}
+    >
+      <Art src={mediaUrl(cardImages[card.id])} className="h-12 w-12 shrink-0 rounded object-cover" />
+      <span className="min-w-0 flex-1">
+        <span className={`block text-[11px] tracking-widest uppercase ${TYPE_TINT[card.type]}`}>
+          {CARD_TYPE_LABEL[card.type]} · {who?.name} vừa rút
+        </span>
+        <span className="block truncate font-display text-[15px] text-parchment">{card.name}</span>
+      </span>
+      <span className="shrink-0 text-xs text-bone">Xem</span>
+    </button>
   );
 }
 
