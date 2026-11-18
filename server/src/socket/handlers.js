@@ -30,7 +30,10 @@ export function registerSocketHandlers(io, manager, { logger = console, autoSkip
 
   const broadcastLobby = (room) => {
     scheduleAutoSkip(room);
-    io.to(room.code).emit('room:state', manager.lobbyView(room));
+    // Gửi riêng từng người: kịch bản đang chọn chỉ chủ phòng được thấy.
+    for (const p of room.players) {
+      if (p.socketId) io.to(p.socketId).emit('room:state', manager.lobbyView(room, p.id));
+    }
   };
 
   // Mỗi người nhận một view khác nhau nên phải gửi theo từng socket.

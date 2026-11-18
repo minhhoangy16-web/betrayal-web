@@ -193,14 +193,15 @@ export class RoomManager {
   // ------------------------------------------------------------ hiển thị & dọn dẹp
 
   // Trạng thái lobby công khai – không bao giờ chứa token hay socketId.
-  lobbyView(room) {
+  // viewerId: chỉ chủ phòng nhận được kịch bản đang chọn (người khác chỉ thấy thẻ khi ván bắt đầu).
+  lobbyView(room, viewerId = null) {
     return {
       code: room.code,
       hostId: room.hostId,
       status: room.status,
       minPlayers: this.rules.minPlayers,
       maxPlayers: this.rules.maxPlayers,
-      scenarioId: room.scenarioId ?? 'random',
+      scenarioId: viewerId && viewerId === room.hostId ? room.scenarioId ?? 'random' : null,
       players: room.players.map((p) => ({
         id: p.id, name: p.name, characterId: p.characterId, connected: p.connected,
       })),

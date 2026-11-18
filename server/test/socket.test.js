@@ -108,6 +108,13 @@ test('lobby: tạo phòng, tham gia, chọn nhân vật, điều kiện bắt đ
   assert.equal((await guest.send('room:selectCharacter', { characterId: CHARACTERS[0].id })).code, 'CHARACTER_TAKEN');
   assert.ok((await guest.send('room:selectCharacter', { characterId: CHARACTERS[1].id })).ok);
 
+  // Chỉ chủ phòng chọn và thấy kịch bản đang chọn.
+  assert.equal((await guest.send('room:scenario', { scenarioId: 'mua-lu' })).code, 'NOT_HOST');
+  assert.ok((await host.send('room:scenario', { scenarioId: 'mua-lu' })).ok);
+  assert.equal(host.last('room:state').scenarioId, 'mua-lu');
+  assert.equal(guest.last('room:state').scenarioId, null);
+  assert.equal((await host.send('room:scenario', { scenarioId: 'khong-co' })).ok, false);
+
   assert.equal((await guest.send('room:start', {})).code, 'NOT_HOST');
   assert.equal((await host.send('room:start', {})).code, 'NOT_ENOUGH_PLAYERS');
 
@@ -117,6 +124,8 @@ test('lobby: tạo phòng, tham gia, chọn nhân vật, điều kiện bắt đ
   await third.send('room:selectCharacter', { characterId: CHARACTERS[2].id });
   assert.ok((await host.send('room:start', {})).ok);
   assert.equal(host.last('room:state').status, 'playing');
+  // Khi ván bắt đầu, mọi người đều thấy thẻ kịch bản đã chọn.
+  assert.equal(guest.last('game:state').scenarioId, 'mua-lu');
 
   const late = io.connect();
   assert.equal((await late.send('room:join', { code: created.code, name: 'Dũng' })).code, 'ALREADY_STARTED');

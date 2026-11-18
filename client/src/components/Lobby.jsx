@@ -131,8 +131,8 @@ function CharacterCard({ character, owner, mine, disabled, onPick }) {
   );
 }
 
-// Chọn thẻ kịch bản: chủ phòng bấm chọn, người khác chỉ xem. 'random' = rút ngẫu nhiên khi bắt đầu.
-function ScenarioPicker({ isHost }) {
+// Chọn thẻ kịch bản (chỉ chủ phòng thấy khung này). 'random' = rút ngẫu nhiên khi bắt đầu.
+function ScenarioPicker() {
   const catalog = useGameStore((s) => s.catalog);
   const lobby = useGameStore((s) => s.lobby);
   const setScenario = useGameStore((s) => s.setScenario);
@@ -150,8 +150,8 @@ function ScenarioPicker({ isHost }) {
           const on = current === sc.id;
           return (
             <li key={sc.id} className={`flex items-start gap-2 px-3 py-2 ${on ? 'bg-candle/10' : ''}`}>
-              <button type="button" disabled={!isHost} onClick={() => setScenario(sc.id)}
-                className={`flex min-w-0 flex-1 items-start gap-2 text-left ${isHost ? 'hover:text-parchment' : 'cursor-default'}`}
+              <button type="button" onClick={() => setScenario(sc.id)}
+                className="flex min-w-0 flex-1 items-start gap-2 text-left hover:text-parchment"
                 aria-pressed={on}>
                 <Icon size={16} className={`mt-0.5 shrink-0 ${on ? 'text-candle' : 'text-stone-500'}`} aria-hidden="true" />
                 <span className="min-w-0">
@@ -168,13 +168,12 @@ function ScenarioPicker({ isHost }) {
           );
         })}
       </ul>
-      {!isHost && <p className="px-3 pb-2 text-xs text-stone-500">Chủ phòng chọn kịch bản.</p>}
       {preview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3" onClick={(e) => e.target === e.currentTarget && setPreview(null)}>
           <div role="dialog" aria-modal="true" aria-label={preview.title} className="thin-scroll max-h-full w-full max-w-xl overflow-y-auto">
             <ScenarioFace scenario={preview} />
             <div className="mt-3 flex justify-center gap-2">
-              {isHost && <Button variant="primary" onClick={() => { setScenario(preview.id); setPreview(null); }}>Chọn kịch bản này</Button>}
+              <Button variant="primary" onClick={() => { setScenario(preview.id); setPreview(null); }}>Chọn kịch bản này</Button>
               <Button onClick={() => setPreview(null)}>Đóng</Button>
             </div>
           </div>
@@ -270,7 +269,13 @@ export function LobbyRoom() {
             </ul>
           </Panel>
 
-          <ScenarioPicker isHost={isHost} />
+          {isHost ? (
+            <ScenarioPicker />
+          ) : (
+            <p className="rounded border border-mortar bg-stonework/60 px-3 py-2 text-sm text-bone">
+              Chủ phòng đang chọn thẻ kịch bản. Thẻ sẽ hiện ra khi ván bắt đầu.
+            </p>
+          )}
 
           <div>
             {isHost && (
