@@ -470,6 +470,7 @@ try {
   // Chưa có manifest: tạo mới.
 }
 manifest.images = {
+  ...manifest.images,
   tiles: { ...manifest.images?.tiles },
   cards: { ...manifest.images?.cards },
   glyphs: { ...manifest.images?.glyphs },

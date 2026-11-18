@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { Check, Copy, Crown, DoorOpen, LogOut, Play, UserX, Users, WifiOff } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
-import { TRAITS, TRAIT_LABEL } from '../lib/constants.js';
-import { Button, Panel, TraitIcon } from './ui.jsx';
+import { Art, Button, Panel, TraitIcon } from './ui.jsx';
+import { TRAITS, TRAIT_LABEL, mediaUrl } from '../lib/constants.js';
 
 const inputClass =
   'w-full rounded border border-mortar bg-ink px-3 py-2 text-parchment placeholder:text-stone-600 ' +
@@ -84,21 +84,26 @@ export function Home() {
 }
 
 function CharacterCard({ character, owner, mine, disabled, onPick }) {
+  const portrait = useGameStore((s) => s.media.portraits?.[character.id]);
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={onPick}
       aria-pressed={mine}
-      className={`rounded-md border p-3 text-left transition-colors
+      className={`overflow-hidden rounded-md border p-3 text-left transition-colors
         ${mine ? 'border-candle bg-stonework' : 'border-mortar bg-crypt hover:border-bone'}
         disabled:opacity-45 disabled:hover:border-mortar`}
     >
-      <div className="flex items-center gap-3">
-        <span className="h-9 w-9 shrink-0 rounded-full border-2 border-black/70" style={{ backgroundColor: character.color }} />
-        <div className="min-w-0">
-          <div className="truncate font-display text-[15px] text-parchment">{character.name}</div>
-          <div className="text-xs text-stone-500">{character.age} tuổi</div>
+      <div
+        className="relative -mx-3 -mt-3 mb-1 aspect-[5/4] overflow-hidden rounded-t-md"
+        style={{ backgroundColor: character.color, borderBottom: `3px solid ${character.color}` }}
+      >
+        <Art src={mediaUrl(portrait)} className="absolute inset-0 h-full w-full object-cover object-[50%_20%]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+        <div className="absolute inset-x-0 bottom-1.5 px-2 text-center">
+          <div className="truncate font-display text-base font-bold text-white uppercase [text-shadow:0_2px_5px_#000]">{character.name}</div>
+          <div className="text-xs text-bone">{character.age} tuổi</div>
         </div>
       </div>
       <p className="mt-2 min-h-10 text-sm leading-snug text-bone italic">{character.bio}</p>

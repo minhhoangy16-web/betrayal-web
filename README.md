@@ -61,7 +61,7 @@ phân thắng thua, kiểm tra GameState theo JSON Schema trong suốt quá trì
 | Trang chủ, phòng chờ | `client/src/components/Lobby.jsx` | Tạo/vào phòng, chọn nhân vật, chủ phòng bắt đầu |
 | Bàn cờ | `Board.jsx` | Lưới theo tầng; kéo để di chuyển, lăn chuột để zoom; bấm ô sáng để đi / mở cửa |
 | Bảng hành động | `ActionPanel.jsx` | Sinh nút từ `view.legal` của server: đi, xoay/đặt gạch, đổ xúc xắc, chia sát thương, tấn công, quái vật |
-| Chỉ số nhân vật | `TraitPanel.jsx` | 4 thanh 8 nấc, đầu lâu ở đáy, vạch xanh là mức khởi đầu |
+| Bảng nhân vật | `TraitPanel.jsx` | Chân dung có tên, số thẻ đang giữ; nhóm Thể chất / Trí óc; nấc nguy kịch đỏ, khởi đầu xanh, hiện tại có khung đỏ |
 | Người chơi, túi đồ, xúc xắc, nhật ký | `SidePanels.jsx` | |
 | Sách Haunt | `HauntBook.jsx` | Tự mở khi Haunt bắt đầu; chỉ hiện cuốn của phe mình |
 | Mặt thẻ | `CardFace.jsx` | Kiểu giấy cũ: hình bóng đen, tên in hoa, bảng kết quả theo điểm xúc xắc – dựng từ dữ liệu thẻ |

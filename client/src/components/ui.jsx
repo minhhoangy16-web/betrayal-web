@@ -1,6 +1,8 @@
 // Các mảnh giao diện dùng chung.
 
 import { useState } from 'react';
+import { useGameStore } from '../store/useGameStore.js';
+import { mediaUrl } from '../lib/constants.js';
 import { Zap, Dumbbell, Flame, Brain, Eye, Sparkles, Package, Skull } from 'lucide-react';
 
 const TRAIT_ICONS = { speed: Zap, might: Dumbbell, sanity: Flame, knowledge: Brain };
@@ -59,23 +61,40 @@ export function Art({ src, className = '', style }) {
   return <img src={src} alt="" draggable={false} className={className} style={style} onError={() => setFailed(src)} />;
 }
 
-// Quân cờ tròn của người chơi: màu nhân vật + chữ cái đầu của tên.
+// Quân cờ tròn của người chơi: ảnh khuôn mặt nhân vật trong viền màu nhân vật
+// (không có ảnh thì dùng chữ cái đầu của tên). Đã chết: ảnh xám kèm đầu lâu.
 export function PlayerToken({ player, character, size = 28, active = false, title }) {
+  const face = useGameStore((s) => s.media.faces?.[player.characterId]);
+  const [broken, setBroken] = useState(false);
+  const showFace = face && !broken;
   const style = {
     width: size,
     height: size,
     backgroundColor: player.alive ? character?.color ?? '#57534e' : '#292524',
+    borderColor: active ? undefined : character?.color ?? '#000',
     fontSize: size * 0.48,
   };
   return (
     <span
       title={title ?? player.name}
       style={style}
-      className={`inline-flex shrink-0 items-center justify-center rounded-full border-2 font-display font-bold text-white
-        ${active ? 'border-candle shadow-[0_0_10px_rgba(224,164,58,0.8)]' : 'border-black/70'}
-        ${player.alive ? '' : 'opacity-60'}`}
+      className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border-2 font-display font-bold text-white
+        ${active ? 'border-candle shadow-[0_0_10px_rgba(224,164,58,0.8)]' : ''}`}
     >
-      {player.alive ? player.name.trim().charAt(0).toUpperCase() : <Skull size={size * 0.55} aria-hidden="true" />}
+      {showFace && (
+        <img
+          src={mediaUrl(face)}
+          alt=""
+          draggable={false}
+          onError={() => setBroken(true)}
+          className={`absolute inset-0 h-full w-full object-cover ${player.alive ? '' : 'opacity-60 grayscale'}`}
+        />
+      )}
+      {!player.alive ? (
+        <Skull size={size * 0.55} className="relative drop-shadow" aria-hidden="true" />
+      ) : (
+        !showFace && player.name.trim().charAt(0).toUpperCase()
+      )}
     </span>
   );
 }

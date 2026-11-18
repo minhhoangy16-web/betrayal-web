@@ -102,6 +102,22 @@
       "ev-bite": "glyphs/ev-bite.svg",
       "ev-hidden-drawer": "glyphs/ev-hidden-drawer.svg",
       "ev-waking-nightmare": "glyphs/ev-waking-nightmare.svg"
+    },
+    "portraits": {
+      "lam-khai": "portraits/lam-khai.webp",
+      "to-uyen": "portraits/to-uyen.webp",
+      "dinh-manh": "portraits/dinh-manh.webp",
+      "ba-tu": "portraits/ba-tu.webp",
+      "be-nam": "portraits/be-nam.webp",
+      "vu-thach": "portraits/vu-thach.webp"
+    },
+    "faces": {
+      "lam-khai": "portraits/lam-khai-face.webp",
+      "to-uyen": "portraits/to-uyen-face.webp",
+      "dinh-manh": "portraits/dinh-manh-face.webp",
+      "ba-tu": "portraits/ba-tu-face.webp",
+      "be-nam": "portraits/be-nam-face.webp",
+      "vu-thach": "portraits/vu-thach-face.webp"
     }
   },
   "audio": {

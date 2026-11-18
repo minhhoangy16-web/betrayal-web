@@ -36,7 +36,7 @@ export const useGameStore = create((set, get) => ({
   connected: false,
   catalog: null,
   catalogError: null,
-  media: { tiles: {}, cards: {}, glyphs: {} }, // ảnh tuỳ chọn cho gạch và thẻ, đọc từ public/media/manifest.json
+  media: { tiles: {}, cards: {}, glyphs: {}, portraits: {}, faces: {} }, // ảnh tuỳ chọn cho gạch và thẻ, đọc từ public/media/manifest.json
   viewCardId: null, // thẻ đang mở xem to (bấm vào thẻ trong túi đồ)
   session: loadSession(), // { code, playerId, token }
   lobby: null,
@@ -107,7 +107,16 @@ export const useGameStore = create((set, get) => ({
       const res = await fetch(mediaUrl('manifest.json'));
       if (!res.ok) return;
       const manifest = await res.json();
-      set({ media: { tiles: manifest.images?.tiles ?? {}, cards: manifest.images?.cards ?? {}, glyphs: manifest.images?.glyphs ?? {} } });
+      const img = manifest.images ?? {};
+      set({
+        media: {
+          tiles: img.tiles ?? {},
+          cards: img.cards ?? {},
+          glyphs: img.glyphs ?? {},
+          portraits: img.portraits ?? {}, // chân dung nhân vật (bảng chỉ số, màn chọn nhân vật)
+          faces: img.faces ?? {}, // ảnh khuôn mặt vuông nhỏ (quân cờ, danh sách người chơi)
+        },
+      });
       audio.setManifest(manifest.audio, mediaUrl);
     } catch {
       // Bỏ qua: media là phần tuỳ chọn.

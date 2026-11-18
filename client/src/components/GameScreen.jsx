@@ -7,9 +7,9 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Backpack, BookOpen, Eye, Layers, LogOut, ScrollText, Skull, Swords, Trophy, UserRound } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
 import { SIDE_LABEL } from '../lib/constants.js';
-import { Button, Panel } from './ui.jsx';
+import { Button } from './ui.jsx';
 import Board from './Board.jsx';
-import TraitPanel from './TraitPanel.jsx';
+import CharacterSheet from './TraitPanel.jsx';
 import ActionPanel from './ActionPanel.jsx';
 import HauntBook from './HauntBook.jsx';
 import DisconnectBanner from './DisconnectBanner.jsx';
@@ -113,15 +113,7 @@ function WinnerBanner() {
 }
 
 function CharacterPanel({ inspected, character, isMe }) {
-  return (
-    <Panel
-      title={isMe ? 'Nhân vật của bạn' : inspected.name}
-      icon={UserRound}
-      action={<span className="truncate text-xs text-stone-500">{character.name}</span>}
-    >
-      <TraitPanel player={inspected} character={character} />
-    </Panel>
-  );
+  return <CharacterSheet player={inspected} character={character} isMe={isMe} />;
 }
 
 const TABS = [
@@ -181,7 +173,7 @@ export default function GameScreen() {
       <DisconnectBanner />
       {wide ? (
         <div className="grid min-h-0 flex-1 grid-cols-[310px_minmax(0,1fr)_340px] gap-3 p-3">
-          <aside className="thin-scroll flex min-h-0 flex-col gap-3 overflow-y-auto">
+          <aside className="thin-scroll flex min-h-0 flex-col gap-3 overflow-y-auto [&>*]:shrink-0">
             <PlayerList inspectedId={inspected.id} onInspect={setInspectedId} />
             <CharacterPanel inspected={inspected} character={inspectedCharacter} isMe={inspected.id === game.you} />
             <Inventory />

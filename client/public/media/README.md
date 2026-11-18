@@ -33,6 +33,15 @@ Khai báo file trong `manifest.json`. Đường dẫn tính từ thư mục `med
   nằm trong ảnh.
 - Gạch hoặc thẻ không có trong manifest (hoặc file bị thiếu) sẽ dùng giao diện vẽ sẵn.
 
+## Chân dung nhân vật
+
+- `portraits/<id>.webp`: chân dung (khoảng 640×460) cho bảng nhân vật và màn chọn nhân vật; nên để mặt
+  ở khoảng 1/5 phía trên ảnh vì giao diện cắt theo chiều ngang.
+- `portraits/<id>-face.webp`: ảnh vuông nhỏ (160×160) quanh khuôn mặt, dùng làm quân cờ và trong danh
+  sách người chơi.
+- Khai báo trong `manifest.json` ở nhóm `images.portraits` và `images.faces`, khoá là `id` nhân vật.
+  Muốn đổi ảnh thì chỉ cần ghi đè file cùng tên.
+
 ## Âm thanh
 
 | Nhóm | Khoá | Khi nào phát |
