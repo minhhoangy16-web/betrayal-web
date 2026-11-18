@@ -24,7 +24,11 @@ body,
 
 body {
   margin: 0;
-  background: radial-gradient(ellipse at top, #241c19 0%, #0c0a09 60%) fixed;
+  /* Mặt bàn gỗ (texture tự sinh bằng tools/make-wood-texture.py), phủ tối dần ra mép như ánh nến. */
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(12, 8, 6, 0.25) 0%, rgba(8, 6, 5, 0.78) 75%) fixed,
+    url('/media/wood.jpg') center / 1152px auto repeat fixed,
+    #1a110b;
   color: var(--color-parchment);
   font-family: var(--font-body);
   font-size: 17px;
@@ -44,13 +48,13 @@ button:disabled {
   scrollbar-color: var(--color-mortar) transparent;
 }
 
-/* Nền bàn cờ: lưới mờ như sàn đá. */
+/* Nền bàn cờ: mặt bàn gỗ sáng hơn phần xung quanh, viền tối như có đèn rọi giữa bàn. */
 .board-surface {
-  background-color: #0e0c0b;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 44px 44px;
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.55) 100%),
+    url('/media/wood.jpg') center / 1152px auto repeat,
+    #2a1a10;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7);
   touch-action: none;
 }
 

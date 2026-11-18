@@ -95,6 +95,15 @@ export function makeKit(ctx, out, noise) {
         osc(t + i * gap, { f: 90, to: 55, dur: 0.1, level: level * 0.4 });
       }
     },
+    // Bước chân trên sàn gỗ: tiếng gót trầm + tiếng ván kẽo kẹt rất nhẹ; echo: thêm tiếng vọng (tầng hầm).
+    footstep: (t, level = 0.4, echo = false) => {
+      const pitch = rand(0.85, 1.15);
+      hiss(t, { dur: 0.09, from: 220 * pitch, q: 1.2, level });
+      osc(t, { f: 110 * pitch, to: 60, dur: 0.11, level: level * 0.5 });
+      hiss(t + 0.03, { dur: 0.06, from: 1800 * pitch, q: 2, level: level * 0.12 });
+      if (Math.random() < 0.25) osc(t + 0.05, { type: 'sawtooth', f: 160 * pitch, to: 190 * pitch, dur: 0.12, level: level * 0.05, filter: { f: 800 }, q: 3 });
+      if (echo) hiss(t + 0.18, { dur: 0.12, from: 200 * pitch, q: 1.2, level: level * 0.25 });
+    },
     whisper: (t, dur = 1.6, level = 0.12) => {
       for (let x = 0; x < dur; x += rand(0.08, 0.22)) {
         hiss(t + x, { dur: rand(0.08, 0.25), from: rand(2200, 5200), q: rand(3, 8), level, attack: 0.03 });

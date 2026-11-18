@@ -123,6 +123,29 @@ export function useGameAudio() {
   useEffect(() => {
     seenTiles.current = new Set(tileKeys ?? []);
   });
+  // Tiếng bước chân khi ai đó đi sang phòng khác (đổi tầng qua cầu thang thì nhiều bước hơn).
+  const positions = g
+    ? Object.values(g.players).map((p) => `${p.id}@${p.pos ? `${p.pos.floor}:${p.pos.x}:${p.pos.y}` : '-'}`).sort().join('|')
+    : null;
+  const lastPositions = useRef(null);
+  useEffect(() => {
+    if (!g) {
+      lastPositions.current = null;
+      return;
+    }
+    const now = Object.fromEntries(Object.values(g.players).map((p) => [p.id, p.pos]));
+    const before = lastPositions.current;
+    lastPositions.current = now;
+    if (!before) return;
+    const moved = Object.values(g.players).filter((p) => p.alive && p.pos && before[p.id]
+      && (p.pos.floor !== before[p.id].floor || p.pos.x !== before[p.id].x || p.pos.y !== before[p.id].y));
+    if (!moved.length) return;
+    const mover = moved.find((p) => p.id === g.you) ?? moved[0];
+    const stairs = mover.pos.floor !== before[mover.id].floor;
+    audio.footsteps({ steps: stairs ? 4 : 2, mine: mover.id === g.you, echo: mover.pos.floor === 'basement' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positions]);
+
   // Quái vật mới xuất hiện, hoặc quái vật tham gia một trận đánh.
   const monsterIds = g ? Object.keys(g.monsters).sort().join(',') : null;
   const knownMonsters = useRef(null);

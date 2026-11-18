@@ -304,6 +304,15 @@ class AudioEngine {
     recipe(this.kit, this.ctx.currentTime + 0.02 + delay);
   }
 
+  // Tiếng bước chân khi một nhân vật đi sang phòng khác. steps: số bước; mine: to hơn nếu là mình đi.
+  footsteps({ steps = 2, mine = false, echo = false } = {}) {
+    if (!this.ctx || this.settings.muted || this.ctx.state !== 'running') return;
+    this.kit ??= makeKit(this.ctx, this.sfxBus, this.noise);
+    const t = this.ctx.currentTime + 0.02;
+    const gap = rand(0.26, 0.32);
+    for (let i = 0; i < steps; i++) this.kit.footstep(t + i * gap + rand(0, 0.03), (mine ? 0.45 : 0.22) * (i % 2 ? 0.85 : 1), echo);
+  }
+
   burst(t, duration, frequency, q, level) {
     const ctx = this.ctx;
     const src = ctx.createBufferSource();
