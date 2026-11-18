@@ -38,6 +38,7 @@ export const useGameStore = create((set, get) => ({
   catalogError: null,
   media: { tiles: {}, cards: {}, glyphs: {}, portraits: {}, faces: {} }, // ảnh tuỳ chọn cho gạch và thẻ, đọc từ public/media/manifest.json
   viewCardId: null, // thẻ đang mở xem to (bấm vào thẻ trong túi đồ)
+  bagPlayerId: null, // đang xem túi đồ của người chơi nào (bấm vào avatar)
   session: loadSession(), // { code, playerId, token }
   lobby: null,
   game: null,
@@ -63,7 +64,12 @@ export const useGameStore = create((set, get) => ({
     socket.on('room:state', (lobby) => {
       // Đổi thời gian còn lại thành mốc giờ trên máy này để đếm ngược.
       const autoSkip = lobby.autoSkip ? { ...lobby.autoSkip, deadline: Date.now() + lobby.autoSkip.inMs } : null;
-      set({ lobby: { ...lobby, autoSkip } });
+      // Cả phòng vừa quay về phòng chờ: bỏ góc nhìn của ván cũ.
+      const backToLobby = lobby.status === 'lobby';
+      set((s) => ({
+        lobby: { ...lobby, autoSkip },
+        ...(backToLobby && s.game ? { game: null, bagPlayerId: null, viewCardId: null, selectedMonsterId: null } : {}),
+      }));
     });
     socket.on('game:state', (game) => set({ game }));
     socket.on('room:kicked', () => {
@@ -131,7 +137,7 @@ export const useGameStore = create((set, get) => ({
 
   clearSession() {
     saveSession(null);
-    set({ session: null, lobby: null, game: null, selectedMonsterId: null, viewCardId: null });
+    set({ session: null, lobby: null, game: null, selectedMonsterId: null, viewCardId: null, bagPlayerId: null });
   },
 
   // Tạo phòng hoặc tham gia phòng: lưu lại phiên để kết nối lại được.
@@ -161,6 +167,9 @@ export const useGameStore = create((set, get) => ({
   act: (action) => get().send('game:action', action),
   skipTurn: () => get().send('game:skip', {}),
   viewCard: (cardId) => set({ viewCardId: cardId }),
+  viewBag: (playerId) => set({ bagPlayerId: playerId }),
+  // Ván đã kết thúc: đưa cả phòng về phòng chờ (giữ mã phòng và nhân vật).
+  backToLobby: () => get().send('room:backToLobby', {}),
 
   async leave() {
     await request('room:leave', {});

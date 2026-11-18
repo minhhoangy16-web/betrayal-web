@@ -110,13 +110,12 @@ function decideExplorer(state, actor, options, rand) {
   if (attacks.length) return attacks[0];
   if (moves.length) {
     let targets;
-    if (me.side === 'traitor' && state.haunt?.id === 'haunt-truc-vong' && !state.haunt.data.revealed) {
-      targets = [state.board.index[state.haunt.data.altar]].filter((k) => k !== posKey(me.pos));
+    if (state.haunt?.id === 'haunt-truc-vong' && !(me.side === 'traitor' && state.haunt.data.revealed)) {
+      targets = trucVongTargets(state, me);
     } else if (me.side === 'traitor') {
       targets = Object.values(state.players).filter((p) => inPlay(p) && p.id !== me.id).map((p) => posKey(p.pos));
     } else {
       targets = goalRooms(state, me).filter((k) => k !== posKey(me.pos));
-      if (state.haunt?.id === 'haunt-truc-vong') targets = [state.board.index[state.haunt.data.altar]].filter((k) => k !== posKey(me.pos));
       const coffin = state.haunt?.data?.coffin;
       if (coffin && specials.some((a) => a.actionId === 'giveToken') === false && Object.values(state.haunt.data.tokens ?? {}).some((t) => t.holder === me.id)) {
         targets = [coffin];
@@ -129,6 +128,16 @@ function decideExplorer(state, actor, options, rand) {
     if (rand() < 0.5) return pick(moves, rand);
   }
   return end;
+}
+
+// Trục vong: chưa có ai cầm nhang thì đi lục tìm nhang; có nhang rồi thì kéo nhau về Bàn thờ.
+function trucVongTargets(state, me) {
+  const d = state.haunt.data;
+  const altar = state.board.index[d.altar];
+  const holders = Object.values(d.tokens ?? {}).filter((t) => t.kind === 'incense' && t.holder);
+  const iHold = holders.some((t) => t.holder === me.id);
+  if (iHold || holders.length) return [altar].filter((k) => k !== posKey(me.pos));
+  return goalRooms(state, me).filter((k) => k !== posKey(me.pos) && k !== altar);
 }
 
 export function smartAction(state, actor, rand) {

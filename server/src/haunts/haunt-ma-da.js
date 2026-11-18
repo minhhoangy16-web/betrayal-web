@@ -97,26 +97,52 @@ export default {
     'Một người trong các bạn ướt sũng từ đầu đến chân, dù không hề xuống hầm.',
 
   traitorTome: {
-    title: "Traitor's Tome – Ma da",
+    title: 'Sách Kẻ phản bội – Ma da',
     story: 'Bạn đã chết đuối dưới cái giếng này từ lâu. Đủ người chết thay thì bạn mới được đi.',
-    objective: 'Bạn thắng khi số người sống sót bị chết nhiều hơn một nửa.',
+    objective: 'Bạn thắng khi có quá nhiều người sống sót chết, tới mức số còn lại không đủ để thoát (bảng tình hình ghi đúng số người chết cần có).',
+    lose: [
+      'Ít nhất một nửa số người sống sót (làm tròn lên) thoát ra ngoài. Ví dụ: 3 người thì cần 2 người thoát, 4 người cần 2, 5 người cần 3.',
+    ],
+    setup: [
+      'Bạn là người có Tốc độ thấp nhất lúc Haunt bắt đầu.',
+      'Cả tầng hầm ngập nước. Ma da trồi lên ở Chiếu nghỉ tầng hầm: 2 con nếu người sống sót có 2–4 người, 3 con nếu có từ 5 người.',
+    ],
     rules: [
-      `Đầu mỗi lượt của bạn, nước dâng: chọn ${FLOODS_PER_TURN} phòng ở tầng trệt để ngập. Phòng đó phải thông cửa với một phòng đã ngập (Cầu thang lớn thông xuống tầng hầm). Tầng trên không bao giờ ngập.`,
-      'Bạn điều khiển các Ma da (Tốc độ 4, Sức mạnh 4) trong lượt quái vật. Chúng chỉ đi được trong phòng ngập và tấn công bằng Sức mạnh.',
-      'Bản thân bạn đi lại trong nước không tốn thêm bước.',
+      `Đầu mỗi lượt của bạn, nước dâng: bạn chọn ${FLOODS_PER_TURN} phòng ở tầng trệt cho ngập. Phòng được chọn phải thông cửa với một phòng đã ngập (Cầu thang lớn thông xuống tầng hầm). Tầng trên không bao giờ ngập.`,
+      'Nếu Sảnh vào bị ngập, cửa chính mất tác dụng: người sống sót chỉ còn đường leo xuống từ Tháp canh hoặc Gác mái.',
+      'Sau phần đi của bạn là lượt quái vật: bạn điều khiển các Ma da (Tốc độ 4, Sức mạnh 4). Chúng chỉ đi trong phòng ngập và tấn công bằng Sức mạnh.',
+      'Ma da thua trận thì bị choáng một lượt quái vật.',
+      'Bạn đi trong nước không tốn thêm bước, và không bị kéo chân.',
+    ],
+    tips: [
+      'Ưu tiên cho ngập Sảnh vào và các phòng dẫn lên cầu thang để cắt đường thoát.',
+      'Ai cầm chìa khoá thì dồn Ma da về phía người đó.',
     ],
   },
 
   survivalSecrets: {
-    title: 'Secrets of Survival – Ma da',
+    title: 'Sách Người sống sót – Ma da',
     story: 'Nước sẽ không dừng lại. Ở lại là chết đuối, nên phải ra khỏi ngôi nhà này.',
-    objective: 'Các bạn thắng khi ít nhất một nửa số người sống sót (làm tròn lên) thoát ra ngoài.',
+    objective: 'Các bạn thắng khi ít nhất một nửa số người sống sót (làm tròn lên) thoát ra ngoài: 3 người cần 2 người thoát, 4 người cần 2, 5 người cần 3.',
+    lose: [
+      'Số người chết nhiều tới mức người còn lại không đủ để thoát. Bảng tình hình ghi rõ: «Thoát đủ X người là thắng; chết Y người là thua».',
+    ],
+    setup: [
+      'Kẻ phản bội là người có Tốc độ thấp nhất lúc Haunt bắt đầu.',
+      'Cả tầng hầm đã ngập. Ma da xuất hiện ở Chiếu nghỉ tầng hầm.',
+    ],
     rules: [
-      `Vào phòng ngập tốn 2 bước. Kết thúc lượt trong phòng ngập thì đổ Sức mạnh, dưới ${DRAG_TARGET} là bị kéo chân: chịu 2 sát thương thể chất.`,
-      `Lối ra 1, cửa chính: «Tìm chìa khoá» ở phòng có biểu tượng Vật phẩm, đổ Tri thức ${KEY_TARGET}+ (chỉ có một chìa). Người cầm chìa đứng ở Sảnh vào thì mở cửa; từ đó ai đứng ở Sảnh vào cũng thoát ra được. Sảnh vào bị ngập thì cửa này mất.`,
-      `Lối ra 2: đứng ở Tháp canh hoặc Gác mái, đổ Sức mạnh ${CLIMB_TARGET}+ để leo xuống. Mỗi người tự leo.`,
-      'Người đã thoát ra ngoài rời bàn cờ và an toàn. Chìa khoá trao cho nhau được.',
-      'Ma da bị đánh bằng Sức mạnh như thường, thua thì choáng.',
+      `Vào phòng ngập tốn 2 bước thay vì 1. Kết thúc lượt trong phòng ngập thì đổ Sức mạnh: dưới ${DRAG_TARGET} là bị kéo chân, chịu 2 sát thương thể chất.`,
+      `Lối ra 1, cửa chính: «Tìm chìa khoá» (mỗi lượt một lần) ở phòng có biểu tượng Vật phẩm, đổ Tri thức ${KEY_TARGET}+. Cả nhà chỉ có một chìa.`,
+      'Người cầm chìa đứng ở Sảnh vào (chưa ngập) thì «Mở cửa chính». Từ đó ai đứng ở Sảnh vào cũng «Thoát ra qua cửa chính» được (mỗi người tự làm trong lượt của mình). Sảnh vào bị ngập thì cửa này mất.',
+      `Lối ra 2: đứng ở Tháp canh hoặc Gác mái, «Leo xuống» bằng cách đổ Sức mạnh ${CLIMB_TARGET}+. Mỗi người tự leo; trượt thì thử lại lượt sau.`,
+      'Người đã thoát rời khỏi bàn cờ, không bị tấn công nữa và được tính là thoát.',
+      'Chìa khoá trao cho nhau được khi cùng phòng. Người cầm chìa chết thì chìa rơi tại chỗ, nhặt lại được.',
+      'Ma da chỉ đi trong phòng ngập. Đánh chúng bằng Sức mạnh như thường, thắng thì nó choáng một lượt.',
+    ],
+    tips: [
+      'Tầng trên không bao giờ ngập. Nếu cửa chính khó giữ, cả nhóm nên lên Tháp canh hoặc Gác mái mà leo xuống.',
+      'Tránh dừng lượt trong nước.',
     ],
   },
 
@@ -129,7 +155,7 @@ export default {
       keyFound: false,
       doorOpen: false,
     };
-    const count = heroes.length >= 4 ? 3 : 2;
+    const count = heroes.length >= 5 ? 3 : 2;
     for (let i = 1; i <= count; i++) spawnMonster(state, { ...WATER_GHOST, id: `ma-da-${i}`, name: `Ma da ${i}` }, 'basement-landing');
     addLog(state, `Tầng hầm chìm trong nước. ${count} Ma da trồi lên ở Chiếu nghỉ tầng hầm.`, 'haunt');
   },

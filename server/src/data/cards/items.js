@@ -43,4 +43,15 @@ export const ITEMS = [
       { min: 1, text: 'Không có gì xảy ra.', effects: [] },
       { min: 0, text: 'Xương đòi nợ.', effects: [{ op: 'damage', type: 'general', amount: 1 }] },
     ] }] } },
+
+  // ---- Vật phẩm bị nguyền (bản mở rộng): có lợi nhưng kèm cái giá ----
+  { id: 'it-hell-coin', type: 'item', name: 'Đồng tiền âm phủ',
+    text: 'Khi nhận: -1 Tinh thần. Dùng rồi bỏ: +1 Tri thức và +1 Sức mạnh.',
+    onGain: [{ op: 'lose', trait: 'sanity', amount: 1 }],
+    use: { consume: true, effects: [{ op: 'gain', trait: 'knowledge', amount: 1 }, { op: 'gain', trait: 'might', amount: 1 }] } },
+  { id: 'it-rusty-machete', type: 'item', name: 'Mã tấu han gỉ',
+    text: 'Vũ khí. +2 xúc xắc khi tấn công bằng Sức mạnh. Khi nhận: -1 Tốc độ (nặng tay).',
+    weapon: { trait: 'might', bonusDice: 2 },
+    onGain: [{ op: 'lose', trait: 'speed', amount: 1 }],
+    onLose: [{ op: 'gain', trait: 'speed', amount: 1 }] },
 ];

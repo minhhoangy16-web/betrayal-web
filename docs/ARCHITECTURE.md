@@ -231,7 +231,7 @@ Omen và Item dùng `onGain` / `onLose` / `weapon {trait, bonusDice}` / `use {ef
   },
   "lastRoll": { "seq": 41, "kind": "haunt", "dice": [2, 1, 2, 0], "total": 5, "threshold": 5, "triggered": true },
   "lastCard": { "seq": 12, "cardId": "om-ritual-knife", "playerId": "<playerId>" },
-  "log": [{ "seq": 301, "kind": "haunt", "text": "…", "turn": 19 }],
+  "log": [{ "seq": 301, "kind": "haunt", "text": "…", "turn": 19, "round": 7, "actor": "p2" }],
   "logSeq": 301, "rollSeq": 41, "cardSeq": 12,
   "winner": null
 }
@@ -252,7 +252,7 @@ Toạ độ: mỗi tầng là một lưới riêng, `x` tăng về Đông, `y` t
 | `haunt.publicIntro`, `haunt.data` | Phần công khai của kịch bản |
 | `haunt.book` | **Chỉ một** cuốn: `traitorTome` cho Traitor, `survivalSecrets` cho người sống sót |
 | `legal` | Mọi hành động hợp lệ của người nhận ngay lúc này (để bật/tắt nút) |
-| `log` | 120 dòng nhật ký gần nhất |
+| `log` | Toàn bộ nhật ký còn giữ (tối đa 600 dòng), mỗi dòng có `round` và `actor` để lọc |
 
 ## 5. Giao thức Socket.io
 
@@ -267,6 +267,7 @@ Mọi sự kiện client → server đều có ack `{ ok: true, ...data }` hoặ
 | `room:kick` | `{ playerId }` | Chủ phòng, chỉ trong lobby |
 | `room:start` | `{}` | Chủ phòng; cần 3–6 người đã chọn nhân vật |
 | `room:leave` | `{}` | |
+| `room:backToLobby` | `{}` | Ván đã kết thúc: cả phòng về phòng chờ, giữ mã phòng và nhân vật |
 | `game:skip` | `{}` | Chủ phòng; chỉ khi người cần hành động đang mất kết nối |
 | `game:action` | `{ type, ... }` | Xem bảng dưới |
 

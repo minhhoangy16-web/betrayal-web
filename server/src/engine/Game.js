@@ -42,13 +42,16 @@ export function createGame({ code, players, seed, rules = {}, scenarioId = null 
     taken.add(p.characterId);
   }
 
+  const initialSeed = (seed ?? Math.floor(Math.random() * 0xffffffff)) | 0;
   const state = {
     version: 1,
     code,
+    // Mã riêng của ván (một phòng có thể chơi nhiều ván liên tiếp).
+    gameId: `${code}-${(initialSeed >>> 0).toString(36)}`,
     phase: 'explore',
     round: 1,
     rules: merged,
-    rngState: (seed ?? Math.floor(Math.random() * 0xffffffff)) | 0,
+    rngState: initialSeed,
     players: {},
     turnOrder: [],
     turn: null,

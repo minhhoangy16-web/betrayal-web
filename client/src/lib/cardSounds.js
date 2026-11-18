@@ -250,6 +250,10 @@ export const SOUNDS = {
   'om-silver-necklace': (k, t) => { k.chime(t, [N.E5, N.G5, N.B4 * 2], 0.12, 0.08); k.rustle(t + 0.4, 0.4, 0.08); },
   'om-girl-in-mirror': (k, t) => { k.glass(t, 0.06); k.musicBox(t + 0.5, [N.E5, N.D5, N.C5, N.D5, N.E5, N.E5]); k.laugh(t + 2.2, 900, 3); },
 
+  'om-black-cat': (k, t) => { k.osc(t, { type: 'sawtooth', f: 700, to: 450, dur: 0.9, level: 0.06, vib: 8, filter: { f: 2000 } }); k.steps(t + 0.9, 3, 0.2, 0.08); },
+  'om-funeral-portrait': (k, t) => { k.bell(t, N.A3, 3, 0.1); k.whisper(t + 0.8, 1.4, 0.1); },
+  'om-dead-hairpin': (k, t) => { k.chime(t, [N.E5 * 2, N.C6], 0.15, 0.08); k.wail(t + 0.5, 500, 1.6, 0.07); },
+
   // Vật phẩm
   'it-fire-axe': (k, t) => k.chop(t),
   'it-old-revolver': (k, t) => { k.knock(t, 1); k.tick(t + 0.2, 2, 0.15); k.gunshot(t + 0.7); },
@@ -275,6 +279,21 @@ export const SOUNDS = {
   'ev-bite': (k, t) => { k.growl(t, 0.5, 90, 0.2); k.crunch(t + 0.4, 3); k.scream(t + 0.6, 0.06); },
   'ev-hidden-drawer': (k, t) => { k.hiss(t, { dur: 0.6, from: 400, to: 900, q: 1, level: 0.25, attack: 0.1 }); k.knock(t + 0.6, 1); k.shimmer(t + 0.8, 1400, 4); },
   'ev-waking-nightmare': (k, t) => { k.drone(t, 41, 2.5, 0.25); k.stinger(t + 0.2, 0.06); k.scream(t + 1.3, 0.08); },
+
+  'ev-chandelier': (k, t) => { k.creak(t, 0.6, 6); k.chime(t + 0.6, [N.C6, N.A5 * 1.5, N.E5 * 2], 0.06, 0.1); k.slam(t + 0.8); },
+  'ev-ghost-wedding': (k, t) => { k.bell(t, N.A4, 2, 0.06); k.steps(t + 0.3, 6, 0.3, 0.12); k.whisper(t + 1.5, 1.2, 0.1); },
+  'ev-paper-effigy': (k, t) => { k.rustle(t, 0.9, 0.14); k.creak(t + 0.9, 0.8, 4); k.stinger(t + 1.4, 0.05); },
+  'ev-rats': (k, t) => { for (let i = 0; i < 14; i++) k.hiss(t + i * 0.08 + rand(0, 0.04), { dur: 0.05, from: rand(3000, 5000), q: 8, level: 0.25 }); k.rustle(t, 1.4, 0.15); },
+  'ev-mold': (k, t) => { k.breath(t, 1.2, 0.18); k.cough(t + 1.2); },
+  'ev-weeping': (k, t) => { k.wail(t, 520, 2.2, 0.09); k.knock(t + 1.6, 2, 0.25); },
+  'ev-slide-down': (k, t) => { k.creak(t, 0.6, 10); k.swoosh(t + 0.4, false, 0.5); k.slam(t + 1.2); },
+  'ev-cold-breath': (k, t) => { k.breath(t, 1.4, 0.22); k.heartbeat(t + 1.2, 3, 0.6, 0.4); },
+  'ev-broken-mirror': (k, t) => { k.glass(t, 0.12); k.laugh(t + 0.8, 650, 3); },
+  'ev-overturned-bowl': (k, t) => { k.knock(t, 1, 0.3); k.whisper(t + 0.4, 1.4, 0.1); },
+  'ev-sleep-paralysis': (k, t) => { k.drone(t, 45, 2.4, 0.22); k.heartbeat(t + 0.4, 5, 0.45, 0.5); },
+  'ev-possessed-doll': (k, t) => { k.tick(t, 6, 0.3); k.laugh(t + 1.8, 1000, 4); },
+  'it-hell-coin': (k, t) => { k.coin(t); k.whisper(t + 0.4, 1, 0.1); },
+  'it-rusty-machete': (k, t) => { k.metal(t); k.chop(t + 0.3); },
 
   // Quái vật (theo loại)
   wraith: (k, t) => { k.wail(t, 400, 2.4, 0.14); k.wind(t, 2.2, 0.15); },

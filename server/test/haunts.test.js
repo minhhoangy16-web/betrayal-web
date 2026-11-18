@@ -5,6 +5,7 @@ import { HAUNTS } from '../src/haunts/index.js';
 import { makeRng, newGame } from '../test-support/bot.js';
 import { smartAction } from '../test-support/smartBot.js';
 import { loadSchema, validate } from '../test-support/miniSchema.js';
+import { posOf } from '../src/haunts/helpers.js';
 
 const schema = loadSchema('gameState');
 
@@ -132,4 +133,31 @@ test('Thẻ kịch bản: bảng Haunt đầy đủ, hợp lệ, và kịch bả
   const s = newGame(3, 5, { minPlayers: 3 });
   assert.ok(SCENARIOS.some((sc) => sc.id === s.scenarioId));
   assert.equal(getView(s, s.turnOrder[0]).scenarioId, s.scenarioId);
+});
+
+test('Trục vong: phải có nhang mới làm lễ được; trao nhang không làm lộ Kẻ bị nhập', () => {
+  const s = newGame(4, 11, { minPlayers: 3, hauntRollThreshold: 99, forcedHauntId: 'haunt-truc-vong' });
+  const rand = makeRng(11);
+  for (let n = 0; n < 20000 && !(s.haunt && !s.pending && s.turn.phase !== 'monsters'); n++) {
+    if (s.phase === 'explore' && s.round >= 2 && !s.pending) s.rules.hauntRollThreshold = 0;
+    const a = currentActor(s);
+    applyAction(s, a, smartAction(s, a, rand));
+  }
+  assert.ok(s.haunt && !s.winner);
+  const d = s.haunt.data;
+  const altar = posOf(s, s.board.index[d.altar]);
+  for (const p of Object.values(s.players)) p.pos = { ...altar };
+  const me = s.turn.playerId;
+  s.turn.usedSpecial = false;
+  d.riteRound = null;
+  const legal = () => getView(s, me).legal.filter((a) => a.type === 'special');
+  assert.ok(!legal().some((a) => a.actionId === 'rite'), 'không có nhang thì không được làm lễ');
+
+  d.tokens = { 'nhang-test': { id: 'nhang-test', kind: 'incense', label: 'Bó nhang', holder: me, at: null } };
+  assert.ok(legal().some((a) => a.actionId === 'rite'), 'có nhang thì làm lễ được');
+  // Trao được cho mọi người cùng phòng, kể cả Kẻ bị nhập (không lộ ai là ai).
+  const gives = legal().filter((a) => a.actionId === 'giveIncense').map((a) => a.toPlayerId).sort();
+  assert.deepEqual(gives, s.turnOrder.filter((id) => id !== me).sort());
+  // Không tìm nhang ở Bàn thờ.
+  assert.ok(!legal().some((a) => a.actionId === 'search'));
 });

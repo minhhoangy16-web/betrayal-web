@@ -18,6 +18,9 @@ const table = (rows) => ({
   'om-cracked-skull': rows[6],
   'om-silver-necklace': rows[7],
   'om-girl-in-mirror': rows[8],
+  'om-black-cat': rows[9],
+  'om-funeral-portrait': rows[10],
+  'om-dead-hairpin': rows[11],
 });
 
 export const SCENARIOS = [
@@ -34,6 +37,7 @@ export const SCENARIOS = [
     table: table([
       [H.loban, H.trung], [H.trucvong, H.malai], [H.vong, H.trung], [H.giucua, H.trucvong], [H.cohon, H.vong],
       [H.loban, H.mada], [H.malai, H.giucua], [H.giucua, H.cohon], [H.trucvong, H.mada],
+      [H.malai, H.cohon], [H.mada, H.loban], [H.trung, H.vong],
     ]),
   },
   {
@@ -49,6 +53,7 @@ export const SCENARIOS = [
     table: table([
       [H.trucvong, H.vong], [H.trucvong, H.malai], [H.vong, H.cohon], [H.giucua, H.trucvong], [H.cohon, H.vong],
       [H.loban, H.cohon], [H.malai, H.trung], [H.mada, H.cohon], [H.trucvong, H.mada],
+      [H.cohon, H.trucvong], [H.vong, H.giucua], [H.loban, H.malai],
     ]),
   },
   {
@@ -64,6 +69,7 @@ export const SCENARIOS = [
     table: table([
       [H.loban, H.mada], [H.malai, H.trucvong], [H.vong, H.mada], [H.giucua, H.trucvong], [H.cohon, H.malai],
       [H.mada, H.loban], [H.malai, H.trung], [H.mada, H.cohon], [H.trucvong, H.mada],
+      [H.trucvong, H.trung], [H.giucua, H.mada], [H.malai, H.vong],
     ]),
   },
   {
@@ -79,6 +85,7 @@ export const SCENARIOS = [
     table: table([
       [H.trung, H.malai], [H.trucvong, H.malai], [H.vong, H.trung], [H.trucvong, H.giucua], [H.vong, H.cohon],
       [H.loban, H.mada], [H.malai, H.vong], [H.cohon, H.mada], [H.trucvong, H.malai],
+      [H.trung, H.cohon], [H.loban, H.trucvong], [H.mada, H.giucua],
     ]),
   },
   {
@@ -94,6 +101,7 @@ export const SCENARIOS = [
     table: table([
       [H.loban, H.trung], [H.trucvong, H.trung], [H.trung, H.vong], [H.loban, H.giucua], [H.cohon, H.malai],
       [H.loban, H.mada], [H.malai, H.cohon], [H.cohon, H.trung], [H.trucvong, H.mada],
+      [H.vong, H.malai], [H.cohon, H.loban], [H.trucvong, H.mada],
     ]),
   },
   {
@@ -109,6 +117,7 @@ export const SCENARIOS = [
     table: table([
       [H.loban, H.trung], [H.trucvong, H.malai], [H.vong, H.trung], [H.giucua, H.trucvong], [H.cohon, H.vong],
       [H.loban, H.mada], [H.malai, H.giucua], [H.mada, H.cohon], [H.trucvong, H.mada],
+      [H.giucua, H.trung], [H.trucvong, H.vong], [H.mada, H.cohon],
     ]),
   },
 ];

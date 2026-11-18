@@ -82,6 +82,7 @@ export default function Board() {
   const act = useGameStore((s) => s.act);
   const selectedMonsterId = useGameStore((s) => s.selectedMonsterId);
   const selectMonster = useGameStore((s) => s.selectMonster);
+  const viewBag = useGameStore((s) => s.viewBag);
 
   const me = game.players[game.you] ?? null;
   const pending = game.pending;
@@ -249,7 +250,9 @@ export default function Board() {
   const controllable = new Set(game.legal.filter((a) => a.type.startsWith('monster')).map((a) => a.monsterId));
   const actorId = pending ? pending.playerId : game.turn.playerId;
 
-  const countOnFloor = (f) => players.filter((p) => p.alive && p.pos.floor === f).length;
+  const countOnFloor = (f) => players.filter((p) => p.alive && p.pos?.floor === f).length;
+  // Số phòng đã đặt ở mỗi tầng (để hiện «Đã đặt X/Y»).
+  const placedOn = (f) => Object.values(game.board.tiles).filter((t) => t.floor === f).length;
 
   return (
     <div className="relative h-full min-h-0 overflow-hidden rounded-md border border-mortar">
@@ -280,13 +283,21 @@ export default function Board() {
                 <TileFace def={def} rotation={tile.rotation}>
                   <div className="absolute inset-x-1.5 bottom-1.5 flex flex-wrap items-end gap-1">
                     {here.map((p) => (
-                      <PlayerToken
+                      <button
                         key={p.id}
-                        player={p}
-                        character={catalog.charactersById[p.characterId]}
-                        size={26}
-                        active={p.id === actorId}
-                      />
+                        type="button"
+                        className="rounded-full"
+                        onClick={guarded(() => viewBag(p.id))}
+                        aria-label={`Xem túi đồ của ${p.name}`}
+                      >
+                        <PlayerToken
+                          player={p}
+                          character={catalog.charactersById[p.characterId]}
+                          size={26}
+                          active={p.id === actorId}
+                          title={`${p.name} – bấm để xem túi đồ`}
+                        />
+                      </button>
                     ))}
                     {monstersHere.map((m) => {
                       const mine = controllable.has(m.id);
@@ -389,7 +400,15 @@ export default function Board() {
             className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-display text-xs tracking-wider uppercase
               ${f === floor ? 'bg-blood text-parchment' : 'text-bone hover:bg-stonework'}`}
           >
-            {FLOOR_LABEL[f]}
+            <span className="flex flex-col items-start leading-tight">
+              {FLOOR_LABEL[f]}
+              <span
+                className="font-sans text-[10px] tracking-normal normal-case opacity-80"
+                title={`Đã đặt ${placedOn(f)} phòng ở ${FLOOR_LABEL[f]}. Chồng gạch còn ${game.stacks.tilesByFloor?.[f] ?? 0} gạch đặt được ở tầng này (một số gạch đặt được ở nhiều tầng).`}
+              >
+                Đã đặt {placedOn(f)}/{placedOn(f) + (game.stacks.tilesByFloor?.[f] ?? 0)}
+              </span>
+            </span>
             {countOnFloor(f) > 0 && (
               <span className="rounded-full bg-black/50 px-1.5 text-[10px] text-parchment">{countOnFloor(f)}</span>
             )}

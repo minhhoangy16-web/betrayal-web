@@ -40,6 +40,10 @@
       "type": "string",
       "description": "Mã phòng."
     },
+    "gameId": {
+      "type": "string",
+      "description": "Mã riêng của ván (một phòng có thể chơi nhiều ván liên tiếp)."
+    },
     "phase": {
       "enum": [
         "explore",
@@ -323,6 +327,14 @@
           },
           "turn": {
             "type": "integer"
+          },
+          "round": {
+            "type": "integer",
+            "description": "Vòng chơi lúc ghi dòng nhật ký."
+          },
+          "actor": {
+            "type": "string",
+            "description": "Người đang đi lượt lúc ghi dòng nhật ký."
           },
           "to": {
             "type": "string",

@@ -9,7 +9,7 @@ import { traitValue } from './traits.js';
 import { hook } from './hooks.js';
 import { getHaunt } from '../haunts/index.js';
 
-const LOG_TAIL = 120;
+const LOG_TAIL = 600; // gửi toàn bộ nhật ký còn giữ để người chơi tra cứu lại
 
 // Kẻ phản bội giấu mặt và chưa bị lật: chỉ chính họ biết.
 export function traitorHiddenFrom(state, viewerId) {
@@ -31,6 +31,8 @@ function hauntView(state, viewer) {
     mode: haunt.mode ?? 'traitor', // 'traitor' | 'hidden' | 'coop' | 'solo'
     revealerId: state.haunt.revealerId,
     traitorId: hidden ? null : state.haunt.traitorId,
+    // Kẻ phản bội vẫn đang giấu mặt (công khai: ai cũng biết là đã có người lộ mặt hay chưa).
+    secretTraitor: Boolean(haunt.hiddenTraitor && !state.haunt.data?.revealed),
     publicIntro: haunt.publicIntro,
     data: haunt.publicData ? haunt.publicData(state, viewer?.id ?? null) : {},
     book,
@@ -71,6 +73,7 @@ export function getView(state, viewerId) {
 
   const view = {
     code: state.code,
+    gameId: state.gameId ?? state.code,
     you: viewer ? viewer.id : null,
     phase: state.phase,
     round: state.round,

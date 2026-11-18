@@ -38,4 +38,22 @@ export const OMENS = [
   { id: 'om-girl-in-mirror', type: 'omen', name: 'Cô bé trong gương',
     text: 'Khi nhận: tăng 1 nấc cho một chỉ số tinh thần (Tinh thần hoặc Tri thức) tuỳ chọn.',
     onGain: [{ op: 'gain', choice: 'mental', amount: 1 }] },
+
+  // ---- Điềm báo bất lợi (bản mở rộng) ----
+  { id: 'om-black-cat', type: 'omen', name: 'Con mèo đen',
+    text: 'Khi nhận: +1 Tốc độ nhưng -1 Tinh thần. Mất thẻ: -1 Tốc độ.',
+    onGain: [{ op: 'gain', trait: 'speed', amount: 1 }, { op: 'lose', trait: 'sanity', amount: 1 }],
+    onLose: [{ op: 'lose', trait: 'speed', amount: 1 }] },
+  { id: 'om-funeral-portrait', type: 'omen', name: 'Di ảnh không tên',
+    text: 'Khi nhận: chịu 1 sát thương tinh thần. Mỗi lượt một lần: đổ Tri thức. 4+: +1 Tri thức. 0-1: chịu 1 sát thương tinh thần.',
+    onGain: [{ op: 'damage', type: 'mental', amount: 1 }],
+    use: { consume: false, effects: [{ op: 'roll', trait: 'knowledge', label: 'Di ảnh không tên', outcomes: [
+      { min: 4, text: 'Bạn nhận ra khuôn mặt trong ảnh.', effects: [{ op: 'gain', trait: 'knowledge', amount: 1 }] },
+      { min: 2, text: 'Tấm ảnh mờ dần.', effects: [] },
+      { min: 0, text: 'Khuôn mặt trong ảnh giờ là của bạn.', effects: [{ op: 'damage', type: 'mental', amount: 1 }] },
+    ] }] } },
+  { id: 'om-dead-hairpin', type: 'omen', name: 'Trâm cài của người chết',
+    text: 'Vũ khí. Cho phép tấn công bằng Tinh thần, +1 xúc xắc. Khi nhận: -1 Sức mạnh.',
+    weapon: { trait: 'sanity', bonusDice: 1 },
+    onGain: [{ op: 'lose', trait: 'might', amount: 1 }] },
 ];

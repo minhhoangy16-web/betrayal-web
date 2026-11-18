@@ -1,7 +1,7 @@
 // Các bảng phụ: danh sách người chơi, túi đồ, khay xúc xắc, thẻ vừa rút, nhật ký.
 
-import { useEffect, useRef } from 'react';
-import { Backpack, Dices, ScrollText, Skull, Users, WifiOff } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowDown, Backpack, Dices, Maximize2, ScrollText, Search, Skull, Users, WifiOff, X } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
 import { CARD_TYPE_LABEL, SIDE_LABEL, TRAITS, TRAIT_LABEL, mediaUrl } from '../lib/constants.js';
 import { Art, Button, Die, Panel, PlayerToken, TraitIcon } from './ui.jsx';
@@ -13,6 +13,7 @@ export function PlayerList({ inspectedId, onInspect }) {
   const actorId = game.pending ? game.pending.playerId : game.turn.playerId;
   const online = Object.fromEntries((lobby?.players ?? []).map((p) => [p.id, p.connected]));
   const carried = game.haunt?.data?.carried ?? {};
+  const viewBag = useGameStore((s) => s.viewBag);
 
   return (
     <Panel title="Người chơi" icon={Users}>
@@ -21,15 +22,26 @@ export function PlayerList({ inspectedId, onInspect }) {
           const p = game.players[id];
           const character = catalog.charactersById[p.characterId];
           return (
-            <li key={id}>
+            <li key={id} className={`flex items-center hover:bg-stonework/70 ${id === inspectedId ? 'bg-stonework' : ''}`}>
+              {/* Bấm vào avatar: xem túi đồ của người này. */}
+              <button
+                type="button"
+                onClick={() => viewBag(id)}
+                className="relative shrink-0 rounded-full py-2 pl-3"
+                title={`Xem túi đồ của ${p.name}`}
+                aria-label={`Xem túi đồ của ${p.name} (${p.cards.length} thẻ)`}
+              >
+                <PlayerToken player={p} character={character} active={id === actorId} title={`${p.name} – bấm để xem túi đồ`} />
+                <span className="absolute -right-1 bottom-1 flex items-center gap-0.5 rounded-full bg-ink/90 px-1 text-[10px] leading-4 text-candle ring-1 ring-mortar">
+                  <Backpack size={9} aria-hidden="true" />{p.cards.length + (carried[id]?.length ?? 0)}
+                </span>
+              </button>
               <button
                 type="button"
                 onClick={() => onInspect(id)}
                 aria-pressed={id === inspectedId}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-stonework/70
-                  ${id === inspectedId ? 'bg-stonework' : ''}`}
+                className="flex min-w-0 flex-1 items-center gap-2 py-2 pr-3 pl-2 text-left"
               >
-                <PlayerToken player={p} character={character} active={id === actorId} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     <span className={`truncate ${p.alive ? '' : 'text-stone-500 line-through'}`}>{p.name}</span>
@@ -213,26 +225,205 @@ const LOG_TINT = {
   roll: 'text-amber-200', system: 'text-stone-500', move: 'text-bone', info: 'text-bone',
 };
 
+// Bộ lọc nhật ký theo loại dòng.
+const LOG_FILTERS = [
+  { id: 'all', label: 'Tất cả' },
+  { id: 'haunt', label: 'Haunt', kinds: ['haunt'] },
+  { id: 'fight', label: 'Đánh nhau', kinds: ['combat', 'damage'] },
+  { id: 'card', label: 'Thẻ', kinds: ['card'] },
+  { id: 'roll', label: 'Xúc xắc', kinds: ['roll'] },
+  { id: 'move', label: 'Di chuyển', kinds: ['move', 'info'] },
+  { id: 'secret', label: 'Riêng tôi' },
+];
+
 const NO_LOG = [];
+
+// Bỏ dấu tiếng Việt để tìm kiếm không phân biệt dấu.
+const fold = (text) => text.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+
+function useFilteredLog(log, players, { query, filter, who }) {
+  const q = fold(query.trim());
+  const f = LOG_FILTERS.find((x) => x.id === filter);
+  const whoName = who !== 'all' ? fold(players[who]?.name ?? '') : '';
+  return log.filter((e) => {
+    if (f?.kinds && !f.kinds.includes(e.kind)) return false;
+    if (filter === 'secret' && !e.to) return false;
+    if (who !== 'all' && e.actor !== who && !fold(e.text).includes(whoName)) return false;
+    if (q && !fold(e.text).includes(q)) return false;
+    return true;
+  });
+}
+
+function LogControls({ query, setQuery, filter, setFilter, who, setWho, players, turnOrder }) {
+  return (
+    <div className="space-y-1.5 border-b border-mortar/60 px-3 py-2">
+      <div className="flex gap-1.5">
+        <label className="relative min-w-0 flex-1">
+          <Search size={13} className="absolute top-1/2 left-2 -translate-y-1/2 text-stone-500" aria-hidden="true" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Tìm trong nhật ký…"
+            aria-label="Tìm trong nhật ký"
+            className="w-full rounded border border-mortar bg-ink/70 py-1 pr-2 pl-7 text-sm text-parchment placeholder:text-stone-500 focus:border-candle focus:outline-none"
+          />
+        </label>
+        <select
+          value={who}
+          onChange={(e) => setWho(e.target.value)}
+          aria-label="Lọc theo người chơi"
+          className="max-w-[45%] rounded border border-mortar bg-ink/70 px-1 text-sm text-parchment"
+        >
+          <option value="all">Mọi người</option>
+          {turnOrder.map((id) => <option key={id} value={id}>{players[id]?.name}</option>)}
+        </select>
+      </div>
+      <div className="flex flex-wrap gap-1" role="group" aria-label="Lọc theo loại">
+        {LOG_FILTERS.map((x) => (
+          <button
+            key={x.id}
+            type="button"
+            onClick={() => setFilter(x.id)}
+            aria-pressed={filter === x.id}
+            className={`rounded-full border px-2 py-0.5 text-[11px] ${filter === x.id ? 'border-candle bg-candle/20 text-candle' : 'border-mortar text-bone hover:bg-stonework'}`}
+          >
+            {x.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LogList({ entries, big, players, filtered }) {
+  const boxRef = useRef(null);
+  const atBottom = useRef(true);
+  const [showJump, setShowJump] = useState(false);
+  const lastSeq = entries.at(-1)?.seq;
+
+  // Tự cuộn xuống dòng mới nhất, trừ khi người chơi đang kéo lên đọc lại.
+  useEffect(() => {
+    const el = boxRef.current;
+    if (el && atBottom.current) el.scrollTop = el.scrollHeight;
+  }, [lastSeq]);
+
+  const onScroll = () => {
+    const el = boxRef.current;
+    const bottom = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+    atBottom.current = bottom;
+    setShowJump(!bottom);
+  };
+
+  const rows = [];
+  let round = null;
+  for (const e of entries) {
+    if (e.round !== undefined && e.round !== round) {
+      round = e.round;
+      rows.push(
+        <li key={`r${e.seq}`} className="sticky top-0 z-[1] -mx-3 border-y border-mortar/60 bg-crypt/95 px-3 py-0.5 font-display text-[11px] tracking-widest text-candle uppercase">
+          Vòng {round}
+        </li>,
+      );
+    }
+    const actor = e.actor ? players[e.actor]?.name : null;
+    rows.push(
+      <li key={e.seq} className={`${LOG_TINT[e.kind] ?? 'text-bone'} ${e.to ? 'border-l-2 border-violet-400 pl-1.5' : ''}`}>
+        {big && actor && e.kind !== 'system' && <span className="mr-1.5 text-[11px] text-stone-500">[{actor}]</span>}
+        {e.text}
+        {e.to && <span className="ml-1 text-[10px] text-violet-300">(chỉ bạn thấy)</span>}
+      </li>,
+    );
+  }
+
+  return (
+    <div className="relative flex min-h-0 flex-1 flex-col">
+      <ol
+        ref={boxRef}
+        onScroll={onScroll}
+        className={`thin-scroll min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-2 leading-snug ${big ? 'text-[15px]' : 'text-sm'}`}
+        aria-live="polite"
+      >
+        {rows.length ? rows : (
+          <li className="text-stone-500 italic">{filtered ? 'Không có dòng nào khớp bộ lọc.' : 'Chưa có gì.'}</li>
+        )}
+      </ol>
+      {showJump && (
+        <button
+          type="button"
+          onClick={() => {
+            const el = boxRef.current;
+            el.scrollTop = el.scrollHeight;
+          }}
+          className="absolute right-3 bottom-2 flex items-center gap-1 rounded-full border border-candle bg-ink/95 px-2 py-0.5 text-xs text-candle shadow"
+        >
+          <ArrowDown size={12} aria-hidden="true" /> Mới nhất
+        </button>
+      )}
+    </div>
+  );
+}
 
 export function LogPanel() {
   const log = useGameStore((s) => s.game?.log) ?? NO_LOG;
-  const boxRef = useRef(null);
-  const lastSeq = log.at(-1)?.seq;
+  const players = useGameStore((s) => s.game?.players);
+  const turnOrder = useGameStore((s) => s.game?.turnOrder) ?? NO_LOG;
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [who, setWho] = useState('all');
+  const [big, setBig] = useState(false);
+  const entries = useFilteredLog(log, players ?? {}, { query, filter, who });
+  const filtered = Boolean(query.trim()) || filter !== 'all' || who !== 'all';
+  const controls = (
+    <LogControls {...{ query, setQuery, filter, setFilter, who, setWho, players: players ?? {}, turnOrder }} />
+  );
 
-  // Luôn cuộn xuống dòng mới nhất.
   useEffect(() => {
-    const el = boxRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [lastSeq]);
+    if (!big) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setBig(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [big]);
 
   return (
-    <Panel title="Nhật ký" icon={ScrollText} className="flex min-h-0 flex-1 flex-col">
-      <ol ref={boxRef} className="thin-scroll min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-2 text-sm leading-snug" aria-live="polite">
-        {log.map((entry) => (
-          <li key={entry.seq} className={LOG_TINT[entry.kind] ?? 'text-bone'}>{entry.text}</li>
-        ))}
-      </ol>
-    </Panel>
+    <>
+      <Panel
+        title={filtered ? `Nhật ký (${entries.length}/${log.length})` : 'Nhật ký'}
+        icon={ScrollText}
+        className="flex min-h-0 flex-1 flex-col"
+        action={(
+          <button type="button" onClick={() => setBig(true)} className="rounded p-1 text-bone hover:bg-stonework" title="Mở nhật ký cỡ lớn" aria-label="Mở nhật ký cỡ lớn">
+            <Maximize2 size={14} aria-hidden="true" />
+          </button>
+        )}
+      >
+        {controls}
+        {!big && <LogList entries={entries} players={players ?? {}} filtered={filtered} />}
+      </Panel>
+      {big && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 p-3 sm:p-6"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setBig(false);
+          }}
+        >
+          <section role="dialog" aria-modal="true" aria-label="Nhật ký ván chơi" className="flex h-full max-h-[90dvh] w-full max-w-3xl flex-col rounded-md border-2 border-[#6b5a3c] bg-crypt shadow-2xl">
+            <header className="flex items-center justify-between border-b border-mortar px-4 py-2">
+              <h2 className="flex items-center gap-2 font-display tracking-widest text-parchment uppercase">
+                <ScrollText size={16} aria-hidden="true" /> Nhật ký ván chơi
+                <span className="text-xs text-stone-500 normal-case">({entries.length} dòng)</span>
+              </h2>
+              <button type="button" onClick={() => setBig(false)} className="rounded p-1 text-bone hover:bg-black/40" aria-label="Đóng">
+                <X size={18} aria-hidden="true" />
+              </button>
+            </header>
+            {controls}
+            <LogList entries={entries} big players={players ?? {}} filtered={filtered} />
+          </section>
+        </div>
+      )}
+    </>
   );
 }

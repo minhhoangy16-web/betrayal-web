@@ -107,28 +107,56 @@ export default {
     'lơ lửng hiện ra, mắt sáng xanh, lủng lẳng phía dưới là một mớ ruột gan.',
 
   traitorTome: {
-    title: "Traitor's Tome – Ma lai",
+    title: 'Sách Kẻ phản bội – Ma lai',
     story: 'Cơn đói đêm nay không chịu đợi được nữa. Bạn đã giấu thân xác thật kỹ; hãy ăn cho no rồi quay về trước khi gà gáy.',
-    objective: 'Lúc trời sáng, Đầu ma lai đang ở cùng phòng với Thân xác và đã có ít nhất một nửa số người sống sót chết (làm tròn xuống, tối thiểu 1). Hoặc mọi người sống sót chết trước đó.',
+    objective: `Bạn thắng khi trời sáng (sau ${ROUNDS_TO_DAWN} vòng) mà Đầu ma lai đang ở cùng phòng với Thân xác và đã có đủ số người chết (một nửa số người sống sót lúc đầu, làm tròn xuống, ít nhất 1 người). Hoặc khi mọi người sống sót chết trước lúc đó.`,
+    lose: [
+      'Người sống sót úp ngược được Thân xác: bạn thua ngay.',
+      'Trời sáng mà Đầu ma lai chưa về tới phòng có Thân xác: cái đầu tan thành khói.',
+      'Trời sáng, đầu đã về nhưng chưa đủ số người chết.',
+    ],
+    setup: [
+      'Bạn là người vừa lật Haunt.',
+      `Bạn bí mật chọn phòng giấu Thân xác, cách mọi người sống sót ít nhất ${MIN_BODY_DISTANCE} phòng (nếu không có phòng nào xa vậy thì chọn trong các phòng xa nhất). Không được giấu ở Sảnh vào, Tiền sảnh và các phòng cầu thang / chiếu nghỉ.`,
+      'Đầu ma lai (Tốc độ 6, Sức mạnh 4, Tinh thần 5) xuất hiện ở chỗ bạn vừa đứng.',
+    ],
     rules: [
-      `Khi Haunt bắt đầu, bạn bí mật chọn phòng giấu Thân xác: cách mọi người sống sót ít nhất ${MIN_BODY_DISTANCE} phòng. Trời sáng sau ${ROUNDS_TO_DAWN} vòng.`,
-      'Bạn không tự đi lại nữa. Bạn điều khiển Đầu ma lai (Tốc độ 6, Sức mạnh 4, Tinh thần 5) trong lượt quái vật.',
-      'Đầu ma lai bay được sang phòng kề cạnh cùng tầng dù không có cửa, và đi cầu thang như thường. Nó không vào được phòng đã rắc tro.',
-      `Mỗi lần Đầu ma lai thắng một trận, Sức mạnh của nó tăng 1 (tối đa ${MAX_MIGHT}). Bị choáng thì đứng yên một lượt quái vật.`,
-      'Chỉ bạn thấy Thân xác trên bàn cờ, cho tới khi có người tìm ra nó. Bay về canh xác sớm là tự chỉ đường cho cả bàn.',
+      'Quân cờ của bạn chính là Thân xác: bạn không tự đi lại, không tấn công và không bị tấn công. Lượt của bạn chỉ còn lượt quái vật để điều khiển Đầu ma lai.',
+      'Đầu ma lai đổ Tốc độ để biết số bước. Nó bay được sang phòng kề cạnh cùng tầng dù không có cửa, và đi cầu thang như thường.',
+      'Đầu ma lai không bao giờ vào được phòng đã rắc tro.',
+      `Mỗi lần Đầu ma lai thắng một trận, Sức mạnh của nó tăng 1 (tối đa ${MAX_MIGHT}). Thua trận thì nó bị choáng, đứng yên một lượt quái vật.`,
+      'Chỉ bạn thấy Thân xác trên bàn cờ, cho tới khi có người sống sót bước vào đúng phòng đó. Từ lúc ấy cả bàn đều thấy.',
+      'Người sống sót có thể «Lần theo vệt máu» để biết Thân xác có cùng tầng không và còn cách bao nhiêu phòng.',
+    ],
+    tips: [
+      'Bay về canh xác quá sớm là tự chỉ đường cho cả bàn. Hãy để ý số vòng còn lại trên bảng tình hình rồi mới quay về.',
+      'Ưu tiên giết người đang đi về phía Thân xác.',
     ],
   },
 
   survivalSecrets: {
-    title: 'Secrets of Survival – Ma lai',
+    title: 'Sách Người sống sót – Ma lai',
     story: 'Một người bạn đã thành ma lai. Thân xác của nó nằm đâu đó trong nhà, trống rỗng và đang chờ cái đầu quay về. Vệt máu kéo dài trên sàn sẽ dẫn bạn tới nó.',
-    objective: 'Úp ngược Thân xác; hoặc cầm cự tới lúc trời sáng mà Đầu ma lai chưa về, hay chưa đủ số người chết.',
+    objective: `Các bạn thắng khi úp ngược được Thân xác (thắng ngay). Hoặc cầm cự tới lúc trời sáng (sau ${ROUNDS_TO_DAWN} vòng) mà Đầu ma lai chưa về tới Thân xác, hay chưa đủ số người chết.`,
+    lose: [
+      'Lúc trời sáng, Đầu ma lai đang ở cùng phòng với Thân xác VÀ đã có ít nhất một nửa số người sống sót chết (làm tròn xuống, ít nhất 1 người).',
+      'Mọi người sống sót đều chết trước khi trời sáng.',
+    ],
+    setup: [
+      'Kẻ phản bội là người vừa lật Haunt. Người đó biến mất: quân cờ của họ (chính là Thân xác) bị giấu khỏi bàn cờ.',
+      `Thân xác nằm cách mọi người ít nhất ${MIN_BODY_DISTANCE} phòng, không ở Sảnh vào, Tiền sảnh hay các phòng cầu thang / chiếu nghỉ.`,
+    ],
     rules: [
-      `«Lần theo vệt máu» (mỗi lượt một lần, thay cho tấn công): đổ Tri thức ${TRACK_TARGET}+. Game cho biết Thân xác có ở cùng tầng với bạn không, và nếu có thì còn cách bao nhiêu phòng theo đường đi.`,
-      'Bước vào đúng phòng có Thân xác thì tự phát hiện, không cần đổ. Từ đó Thân xác hiện trên bàn cờ cho mọi người.',
-      `«Úp ngược thân xác» (mỗi lượt một lần): ở phòng có Thân xác, đổ Sức mạnh ${FLIP_TARGET}+, cộng 1 xúc xắc cho mỗi người sống sót khác cùng phòng. Thành công là thắng ngay.`,
-      `«Nhặt tro bếp» ở Nhà bếp hoặc Phòng lò (cả ván có ${ASH_BAGS} túi). «Rắc tro» tại phòng đang đứng: Đầu ma lai không bao giờ vào được phòng đó nữa.`,
-      'Đánh Đầu ma lai bằng Sức mạnh, thắng thì nó choáng. Thân xác không bị tấn công.',
+      `«Lần theo vệt máu» (mỗi lượt một lần, thay cho việc tấn công): đổ Tri thức ${TRACK_TARGET}+. Game cho biết Thân xác có ở cùng tầng với bạn không; nếu có thì còn cách bao nhiêu phòng theo đường đi.`,
+      'Bước vào đúng phòng có Thân xác là tự phát hiện, không cần đổ. Từ đó Thân xác hiện trên bàn cờ cho mọi người.',
+      `«Úp ngược thân xác» (mỗi lượt một lần): đứng ở phòng có Thân xác đã bị phát hiện, đổ Sức mạnh, cộng 1 xúc xắc cho mỗi người sống sót khác cùng phòng. Đạt ${FLIP_TARGET}+ là thắng ngay.`,
+      `«Nhặt tro bếp» ở Nhà bếp hoặc Phòng lò (cả ván chỉ có ${ASH_BAGS} túi). «Rắc tro» ở phòng đang đứng: Đầu ma lai không bao giờ vào được phòng đó nữa. Túi tro trao cho nhau được.`,
+      'Đầu ma lai bay xuyên tường sang phòng kề cạnh cùng tầng. Đánh nó bằng Sức mạnh, thắng thì nó choáng một lượt quái vật. Mỗi lần nó thắng, nó mạnh thêm.',
+      'Thân xác không bị tấn công.',
+    ],
+    tips: [
+      'Chia nhau dò từng tầng bằng «Lần theo vệt máu», rồi dồn người tới phòng có Thân xác để cộng xúc xắc khi úp.',
+      'Rắc tro ở phòng có Thân xác để cái đầu không về được.',
     ],
   },
 

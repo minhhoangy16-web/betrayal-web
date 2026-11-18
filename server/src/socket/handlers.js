@@ -9,6 +9,7 @@
 //   room:kick            { playerId }            (chủ phòng)
 //   room:start           {}                      (chủ phòng)
 //   room:leave           {}
+//   room:backToLobby     {}                      ván đã kết thúc: cả phòng quay về phòng chờ
 //   game:action          { type, ...payload }    (xem engine/actions.js)
 //   game:skip            {}                      (chủ phòng) bỏ qua lượt của người đang mất kết nối
 //
@@ -204,6 +205,13 @@ export function registerSocketHandlers(io, manager, { logger = console, autoSkip
       const { room, player } = session();
       manager.startGame(room.code, player.id);
       broadcast(room);
+    });
+
+    on('room:backToLobby', () => {
+      const { room, player } = session();
+      manager.backToLobby(room.code, player.id);
+      clearAutoSkip(room);
+      broadcastLobby(room);
     });
 
     on('room:leave', () => {

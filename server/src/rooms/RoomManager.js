@@ -190,6 +190,23 @@ export class RoomManager {
     return room;
   }
 
+  // Ván đã kết thúc: đưa cả phòng về phòng chờ để chơi ván mới, giữ nguyên mã phòng, người chơi
+  // và nhân vật đã chọn. Ai trong phòng cũng bấm được. Người đã rời hẳn (mất kết nối) được bỏ ra
+  // khỏi danh sách để ván mới không phải chờ họ.
+  backToLobby(code, playerId) {
+    const room = this.getRoom(code);
+    this.getPlayer(room, playerId);
+    if (room.status === 'lobby') return room;
+    if (room.status !== 'finished') throw new GameError('Ván chơi chưa kết thúc.', 'NOT_FINISHED');
+    room.players = room.players.filter((p) => p.connected || p.id === playerId);
+    if (!room.players.some((p) => p.id === room.hostId)) room.hostId = room.players[0].id;
+    room.status = 'lobby';
+    room.game = null;
+    room.autoSkip = null;
+    room.touchedAt = Date.now();
+    return room;
+  }
+
   // ------------------------------------------------------------ hiển thị & dọn dẹp
 
   // Trạng thái lobby công khai – không bao giờ chứa token hay socketId.

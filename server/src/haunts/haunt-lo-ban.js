@@ -106,27 +106,53 @@ export default {
     'những vết khắc các bạn chưa thấy bao giờ.',
 
   traitorTome: {
-    title: "Traitor's Tome – Bùa Lỗ Ban",
+    title: 'Sách Kẻ phản bội – Bùa Lỗ Ban',
     story: 'Ông cố bạn là thợ cả dựng ngôi nhà này, và ông chưa bao giờ được trả đủ công. Những lá bùa ông để lại vẫn còn linh.',
-    objective: `Bạn thắng khi đồng hồ nhà sập chạm ${END}, hoặc mọi người sống sót đều chết.`,
+    objective: `Bạn thắng khi Đồng hồ nhà sập chạm ${END}, hoặc khi mọi người sống sót đều chết.`,
+    lose: [
+      'Người sống sót tìm và đốt hết mọi lá bùa.',
+      'Nếu bạn chết, Đồng hồ nhà sập ngừng chạy (nó chỉ tăng vào lượt của bạn). Khi đó bạn chỉ còn trông vào việc họ không tìm ra bùa.',
+    ],
+    setup: [
+      'Bạn là người có Tri thức cao nhất lúc Haunt bắt đầu.',
+      'Bạn bí mật chọn (số người sống sót + 1) phòng để giấu bùa, mỗi phòng một lá. Không được giấu ở Sảnh vào, Tiền sảnh và các phòng cầu thang / chiếu nghỉ. Chỉ bạn thấy bùa trên bàn cờ.',
+    ],
     rules: [
-      'Khi Haunt bắt đầu, bạn bí mật chọn (số người sống sót + 1) phòng để giấu bùa. Không được chọn Sảnh vào, Tiền sảnh và các phòng cầu thang.',
-      'Đầu mỗi lượt của bạn, đồng hồ nhà sập tăng bằng số bùa còn lại.',
-      `«Kèo sập» (thay cho tấn công): chọn một phòng có bùa; mọi người sống sót ở đó đổ Tốc độ, dưới ${DODGE_TARGET} thì chịu 2 sát thương thể chất. Phòng đó lộ cho cả bàn biết là có bùa.`,
-      '«Dời bùa» (thay cho tấn công): chuyển một bùa chưa lộ sang phòng thông cửa với nó, chưa dò sạch và chưa có bùa. Người khác chỉ biết bạn vừa dùng phép, không biết dời bùa nào.',
-      'Bùa đã lộ thì không dời được nữa. Bạn vẫn tấn công được như thường nếu không dùng phép.',
+      `Đầu mỗi lượt của bạn, Đồng hồ nhà sập tăng bằng số bùa còn lại trong nhà (ví dụ còn 4 lá thì +4). Chạm ${END} là bạn thắng.`,
+      `Phép «Kèo sập» (thay cho tấn công trong lượt đó): chọn một phòng có bùa. Mọi người sống sót trong phòng đó đổ Tốc độ, dưới ${DODGE_TARGET} thì chịu 2 sát thương thể chất. Đổi lại, cả bàn biết phòng đó có bùa.`,
+      '«Dời bùa» (thay cho tấn công trong lượt đó): chuyển một lá bùa chưa lộ sang một phòng thông cửa với nó, chưa bị dò sạch và chưa có bùa. Người khác chỉ thấy là bạn vừa dùng phép, không biết dời lá nào đi đâu.',
+      'Bùa đã lộ (do Kèo sập) thì không dời được nữa.',
+      'Không dùng phép thì bạn tấn công được như thường. Không có quái vật trong kịch bản này.',
+    ],
+    tips: [
+      'Bùa càng nhiều thì đồng hồ càng nhanh. Hãy dời bùa ra khỏi phòng mà người sống sót sắp tới dò (lưu ý: không dời được vào phòng đã dò sạch).',
+      'Kèo sập gây sát thương nhưng làm lộ bùa: chỉ dùng khi đáng.',
     ],
   },
 
   survivalSecrets: {
-    title: 'Secrets of Survival – Bùa Lỗ Ban',
+    title: 'Sách Người sống sót – Bùa Lỗ Ban',
     story: 'Bùa giấu trong kèo cột của một số căn phòng. Còn bùa thì ngôi nhà còn sập dần.',
-    objective: 'Các bạn thắng khi tìm và đốt hết bùa.',
+    objective: 'Các bạn thắng khi tìm và đốt hết mọi lá bùa trong nhà (có số người sống sót + 1 lá).',
+    lose: [
+      `Đồng hồ nhà sập chạm ${END}. Đầu mỗi lượt của Kẻ phản bội, đồng hồ tăng bằng số bùa còn lại, nên đốt bùa sớm sẽ làm đồng hồ chậm lại.`,
+      'Mọi người sống sót đều chết.',
+    ],
+    setup: [
+      'Kẻ phản bội là người có Tri thức cao nhất lúc Haunt bắt đầu.',
+      'Kẻ phản bội bí mật giấu bùa, không bao giờ ở Sảnh vào, Tiền sảnh hay các phòng cầu thang / chiếu nghỉ.',
+    ],
     rules: [
-      `«Dò bùa» (mỗi lượt một lần): đổ Tri thức tại phòng đang đứng. Đạt ${SEARCH_TARGET}+ mà phòng có bùa thì bùa bị đốt. Đạt ${SEARCH_TARGET}+ mà không có bùa thì phòng được đánh dấu sạch, và game cho biết có bao nhiêu phòng thông cửa với nó đang giấu bùa.`,
-      'Dò trượt thì không biết gì và chịu 1 sát thương tinh thần.',
-      'Phòng bị Kèo sập được đánh dấu cho cả bàn; bùa đã lộ thì không bị dời đi nữa.',
-      'Con số ghi trên phòng đã dò là số bùa lúc dò; Kẻ phản bội có thể dời bùa sau đó.',
+      `«Dò bùa» (mỗi lượt một lần): đổ Tri thức tại phòng đang đứng. Đạt ${SEARCH_TARGET}+ mà phòng có bùa thì bùa bị đốt ngay.`,
+      `Đạt ${SEARCH_TARGET}+ mà phòng không có bùa: phòng được đánh dấu «đã dò sạch», kèm con số cho biết lúc đó có bao nhiêu lá bùa ở các phòng thông cửa với nó.`,
+      'Dò trượt thì không biết gì và chịu 1 sát thương tinh thần. Phòng đã dò sạch thì không dò lại được (Kẻ phản bội cũng không dời bùa vào đó được).',
+      'Khi Kẻ phản bội dùng «Kèo sập», phòng đó lộ là có bùa. Bùa đã lộ thì không bị dời đi nữa: tới đó dò là chắc chắn có.',
+      'Nhật ký ghi «Kẻ phản bội vừa dùng một phép Lỗ Ban» nghĩa là một lá bùa chưa lộ vừa bị dời sang phòng bên cạnh. Con số trên các phòng đã dò có thể không còn đúng.',
+      'Giết Kẻ phản bội thì đồng hồ ngừng tăng: các bạn có thêm thời gian để tìm nốt.',
+    ],
+    tips: [
+      'Dò theo cụm: một con số 0 nghĩa là các phòng quanh đó đang sạch.',
+      'Người có Tri thức cao lo dò bùa, người khỏe đi đánh Kẻ phản bội.',
     ],
   },
 

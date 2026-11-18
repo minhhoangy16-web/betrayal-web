@@ -145,14 +145,30 @@ export default {
   survivalSecrets: {
     title: 'Sách chung – Ma giữ của',
     story: 'Chủ cũ của ngôi nhà chôn vàng dưới nền và yểm một linh hồn trẻ con canh giữ. Đêm nay mạnh ai nấy đào.',
-    objective: `Người đầu tiên đứng ở Sảnh vào với ${JARS_TO_LEAVE} hũ vàng và «Rời khỏi nhà» thắng một mình. Gà gáy sau ${ROUNDS} vòng: người còn sống giữ nhiều hũ nhất thắng (bằng nhau thì cùng thắng).`,
+    objective: `Mỗi người chơi cho riêng mình. Bạn thắng một mình nếu là người đầu tiên đứng ở Sảnh vào với ít nhất ${JARS_TO_LEAVE} hũ vàng và chọn «Rời khỏi nhà». Nếu chưa ai rời được, lúc gà gáy (sau ${ROUNDS} vòng) người còn sống giữ nhiều hũ nhất thắng (bằng nhau thì cùng thắng).`,
+    lose: [
+      'Có người khác ra khỏi nhà với vàng trước bạn.',
+      'Gà gáy mà bạn đã chết hoặc giữ ít hũ hơn người khác.',
+      'Gà gáy mà không ai còn sống giữ được hũ nào, hoặc tất cả đều chết: ngôi nhà thắng, không ai thắng.',
+    ],
+    setup: [
+      'Không có Kẻ phản bội và không có phe: ai cũng có thể đánh ai.',
+      `Có (số người chơi + 3) hũ vàng chôn trong nhà, phần lớn ở tầng hầm. Không có hũ ở Sảnh vào, Tiền sảnh và các phòng cầu thang / chiếu nghỉ.`,
+      'Người lật Haunt được biết riêng chỗ chôn của một hũ (đánh dấu trên bàn cờ, chỉ người đó thấy).',
+      'Ma giữ của (game điều khiển: Tốc độ 4, Sức mạnh 5) thức dậy ở Chiếu nghỉ tầng hầm.',
+    ],
     rules: [
-      'Không có phe: ai cũng có thể đánh ai. Thắng trận với người chơi khác thì chọn gây sát thương như thường hoặc cướp 1 hũ của họ.',
-      `«Đào của» (mỗi lượt một lần): đổ Sức mạnh ${DIG_TARGET}+ ở phòng đang đứng. Có hũ thì lấy được; không có thì phòng bị đánh dấu đã đào. Bảng tình hình cho biết mỗi tầng còn bao nhiêu hũ chưa đào.`,
-      'Của nặng: cứ 2 hũ đang mang thì bớt 1 bước di chuyển mỗi lượt.',
-      `Ma giữ của (game điều khiển) đi ${STEPS} bước cuối mỗi vòng về phía người giữ nhiều hũ nhất rồi tấn công bằng Sức mạnh. Thắng thì lấy lại 1 hũ và chôn vào một phòng ngẫu nhiên. Đánh thắng nó thì nó choáng một vòng.`,
-      '«Trả của» ở Nhà nguyện hoặc Phòng tế lễ: bỏ 1 hũ vĩnh viễn để Ma giữ của tha bạn trong 2 vòng.',
-      'Người chết làm rơi hũ tại chỗ; ai đến đó cũng nhặt được.',
+      `«Đào của» (mỗi lượt một lần): đổ Sức mạnh ${DIG_TARGET}+ ở phòng đang đứng. Có hũ thì lấy được; không có thì phòng bị đánh dấu «đã đào». Trượt thì không có gì, phòng chưa bị đánh dấu nên đào lại được.`,
+      'Bảng tình hình cho biết mỗi tầng còn bao nhiêu hũ chưa đào, và ai đang giữ bao nhiêu hũ.',
+      'Của nặng: cứ 2 hũ đang mang thì bớt 1 bước di chuyển mỗi lượt (ít nhất vẫn đi được 1 bước).',
+      'Thắng trận với người chơi khác: bạn chọn gây sát thương như thường hoặc cướp 1 hũ của họ. Hũ vàng không trao tặng được.',
+      `Cuối mỗi vòng, Ma giữ của đi ${STEPS} bước về phía người đang giữ nhiều hũ nhất rồi tấn công bằng Sức mạnh. Nó thắng thì giật lại 1 hũ và chôn vào một phòng ngẫu nhiên (phòng đó có thể đào lại). Đánh thắng nó thì nó choáng, bỏ một vòng.`,
+      '«Trả của» ở Nhà nguyện hoặc Phòng tế lễ: bỏ vĩnh viễn 1 hũ để Ma giữ của tha bạn trong 2 vòng.',
+      'Người chết làm rơi hết hũ tại chỗ; ai đến đó cũng nhặt được.',
+    ],
+    tips: [
+      'Đừng ôm quá nhiều hũ đi chậm: Ma giữ của và người khác đều nhắm vào người giàu nhất.',
+      'Khi đủ 3 hũ, chạy thẳng về Sảnh vào.',
     ],
   },
 

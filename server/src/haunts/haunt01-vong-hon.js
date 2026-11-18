@@ -58,38 +58,62 @@ export default {
     'Nền nhà rung lên. Từ dưới tầng hầm, những bóng trắng trồi qua sàn gỗ – và một người trong ' +
     'số các bạn đang mỉm cười chào đón chúng.',
 
-  // Chỉ Traitor thấy.
+  // Sách Kẻ phản bội (chỉ người đó thấy) và sách Người sống sót. Các mục: objective (thắng khi),
+  // lose (thua khi), setup (khi Haunt bắt đầu), rules (luật riêng), tips (mẹo).
   traitorTome: {
-    title: "Traitor's Tome – Vong hồn dưới hầm",
+    title: 'Sách Kẻ phản bội – Vong hồn dưới hầm',
     story:
       'Bạn đã nghe chúng gọi từ lúc bước qua cửa. Dòng họ chủ nhà hứa trả lại cho bạn những gì đã mất, ' +
       'miễn là không ai còn sống để rời khỏi đây.',
-    objective: 'Bạn thắng khi mọi người sống sót đều đã chết.',
+    objective: 'Bạn thắng khi mọi người sống sót đều đã chết (người chết là khi một chỉ số bất kỳ tụt xuống đầu lâu).',
+    lose: [
+      'Người sống sót yểm bùa xong đủ số phòng Điềm báo: 3 phòng nếu họ có 2–3 người, 4 phòng nếu có từ 4 người.',
+      'Bạn chết không làm bạn thua: các Vong hồn vẫn tiếp tục săn người trong lượt của bạn.',
+    ],
+    setup: [
+      'Bạn là người vừa lật Haunt.',
+      'Vong hồn xuất hiện ở Chiếu nghỉ tầng hầm: 2 con nếu người sống sót có 2–3 người, 3 con nếu có từ 4 người.',
+    ],
     rules: [
-      'Các Vong hồn xuất hiện ở Chiếu nghỉ tầng hầm và do bạn điều khiển trong lượt quái vật, ngay sau lượt của bạn.',
-      'Vong hồn: Tốc độ 2, Sức mạnh 4, Tinh thần 3. Đầu lượt quái vật, mỗi Vong hồn đổ Tốc độ để biết số bước (tối thiểu 1).',
-      'Mỗi Vong hồn được tấn công một lần mỗi lượt bằng Sức mạnh, gây sát thương thể chất.',
-      'Vong hồn không vào được phòng đã bị yểm bùa. Vong hồn bị choáng sẽ bỏ một lượt quái vật.',
-      'Nếu bạn chết, các Vong hồn vẫn tiếp tục hành động trong lượt của bạn.',
-      'Người sống sót đang tìm cách làm gì đó tại các phòng có biểu tượng Điềm báo. Đừng để họ đứng yên ở đó.',
+      'Mỗi lượt của bạn gồm hai phần: bạn đi và hành động như thường, sau đó là lượt quái vật để bạn điều khiển các Vong hồn.',
+      'Vong hồn: Tốc độ 2, Sức mạnh 4, Tinh thần 3. Đầu lượt quái vật, mỗi con đổ Tốc độ để biết được đi mấy bước (ít nhất 1 bước).',
+      'Mỗi Vong hồn được tấn công một lần mỗi lượt, bằng Sức mạnh. Thua thì người sống sót chịu sát thương thể chất bằng phần chênh lệch.',
+      'Vong hồn không vào được phòng đã yểm bùa. Vong hồn đang đứng trong phòng lúc phòng đó được yểm thì bị choáng.',
+      'Vong hồn bị choáng (do yểm bùa hoặc thua trận) bỏ qua một lượt quái vật rồi tỉnh lại.',
+      'Bạn vẫn là người: tự tấn công bằng Sức mạnh như thường, và người sống sót cũng đánh được bạn.',
+    ],
+    tips: [
+      'Người sống sót cần đứng ở phòng có biểu tượng Điềm báo mới yểm được. Hãy chặn các phòng đó và đừng để họ đứng yên.',
+      'Dồn Vong hồn vào người có Sức mạnh thấp.',
     ],
   },
 
-  // Chỉ người sống sót thấy.
   survivalSecrets: {
-    title: 'Secrets of Survival – Vong hồn dưới hầm',
+    title: 'Sách Người sống sót – Vong hồn dưới hầm',
     story:
       'Trong cuốn gia phả có một trang bị xé: nghi thức yểm bùa bằng nến tại những nơi điềm gở từng xuất hiện. ' +
       'Đủ số ngọn nến thì ngôi nhà sẽ ngủ yên trở lại.',
-    objective: 'Các bạn thắng khi yểm bùa đủ số phòng yêu cầu (3 phòng nếu có 2–3 người sống sót, 4 phòng nếu có 4–5 người).',
+    objective: 'Các bạn thắng khi yểm bùa đủ số phòng: 3 phòng nếu lúc Haunt bắt đầu có 2–3 người sống sót, 4 phòng nếu có từ 4 người.',
+    lose: [
+      'Mọi người sống sót đều chết (một chỉ số bất kỳ tụt xuống đầu lâu là chết).',
+      'Giết Kẻ phản bội KHÔNG làm các bạn thắng: Vong hồn vẫn hoạt động.',
+    ],
+    setup: [
+      'Kẻ phản bội là người vừa lật Haunt.',
+      'Vong hồn xuất hiện ở Chiếu nghỉ tầng hầm (2 con nếu có 2–3 người sống sót, 3 con nếu có từ 4 người).',
+    ],
     rules: [
-      `Hành động đặc biệt «Yểm bùa» (mỗi lượt một lần): khi đứng trong phòng có biểu tượng Điềm báo chưa được yểm, ` +
-        `đổ Tri thức hoặc Tinh thần. ${SEAL_TARGET}+ là thành công; thất bại thì chịu 1 sát thương tinh thần.`,
-      'Vong hồn không vào được phòng đã yểm bùa; Vong hồn đang ở trong phòng lúc yểm sẽ bị choáng.',
-      'Vong hồn không thể bị đánh bằng Sức mạnh. Bạn tấn công chúng bằng Tinh thần: thắng thì Vong hồn bị choáng, ' +
-        'thua thì bạn chịu sát thương tinh thần bằng phần chênh.',
-      'Mỗi Vong hồn (chưa choáng) hoặc Kẻ phản bội đứng cùng phòng khiến bạn tốn thêm 1 bước khi rời phòng.',
-      'Kẻ phản bội vẫn là người: tấn công hắn bằng Sức mạnh như bình thường. Giết hắn không dừng được Vong hồn.',
+      `«Yểm bùa» (mỗi lượt một lần): đứng trong phòng có biểu tượng Điềm báo chưa được yểm, đổ Tri thức hoặc Tinh thần (tự chọn). Đạt ${SEAL_TARGET}+ là thành công. Trượt thì chịu 1 sát thương tinh thần.`,
+      'Phòng đã yểm được đánh dấu trên bàn cờ. Vong hồn không vào được phòng đó, nên đó là chỗ trú an toàn.',
+      'Vong hồn đang đứng trong phòng lúc yểm bùa sẽ bị choáng, bỏ một lượt quái vật.',
+      'Không đánh Vong hồn bằng Sức mạnh được. Bạn tấn công chúng bằng Tinh thần: thắng thì Vong hồn bị choáng, thua thì bạn chịu sát thương tinh thần bằng phần chênh lệch.',
+      'Khi Vong hồn tấn công bạn, hai bên đổ Sức mạnh. Thua thì chịu sát thương thể chất bằng phần chênh lệch.',
+      'Rời một phòng có Vong hồn (chưa choáng) hoặc Kẻ phản bội tốn thêm 1 bước cho mỗi kẻ địch ở đó.',
+      'Kẻ phản bội đánh được bằng Sức mạnh như người thường.',
+    ],
+    tips: [
+      'Người có Tri thức hoặc Tinh thần cao nên lo yểm bùa, người khỏe đi chặn Kẻ phản bội.',
+      'Đứng trong phòng đã yểm để nghỉ khi bị thương nặng.',
     ],
   },
 

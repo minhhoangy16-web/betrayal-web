@@ -13,6 +13,7 @@ import {
 
 const END = 10;
 const STEPS = 3;
+const START_GHOSTS = 3;
 const SEEK_TARGET = 4;
 const BURN_TARGET = 4;
 const ALTAR = 'entrance-hall';
@@ -155,21 +156,35 @@ export default {
   survivalSecrets: {
     title: 'Sách chung – Cô hồn tháng Bảy',
     story: 'Rằm tháng Bảy, cửa ngục mở. Những vong hồn không ai thờ cúng đang kéo về đòi ăn. Cúng cho đủ rồi đốt vàng mã tiễn họ đi.',
-    objective: `Dâng đủ lễ (số người chơi + 3) lên Mâm cúng ở Sảnh vào, rồi đốt vàng mã thành công trước khi Âm khí chạm ${END}. Không có Kẻ phản bội: cả bàn cùng thắng hoặc cùng thua.`,
+    objective: `Cả bàn thắng khi dâng đủ lễ lên Mâm cúng ở Sảnh vào (số lễ = số người chơi + 3), rồi đốt vàng mã thành công, trước khi Âm khí chạm ${END}.`,
+    lose: [
+      `Âm khí chạm ${END}: ngôi nhà thắng, cả bàn cùng thua.`,
+      'Không còn ai sống: ngôi nhà thắng.',
+      'Không có Kẻ phản bội: cả bàn cùng thắng hoặc cùng thua.',
+    ],
+    setup: [
+      'Không ai là Kẻ phản bội. Mọi người cùng một phe.',
+      `Mâm cúng được bày ở Sảnh vào. ${START_GHOSTS} Cô hồn trồi lên ở Chiếu nghỉ tầng hầm.`,
+    ],
     rules: [
-      `«Tìm lễ cúng» (mỗi lượt một lần): ở phòng biểu tượng Vật phẩm đổ Tri thức ${SEEK_TARGET}+ lấy Gạo muối; ở phòng Sự kiện đổ Tinh thần ${SEEK_TARGET}+ lấy Tiền vàng mã; ở Nhà bếp hoặc Phòng thực phẩm lấy Nồi cháo, không cần đổ. Mỗi phòng chỉ cho lễ một lần.`,
-      '«Dâng lễ» ở Sảnh vào: đặt một lễ lên Mâm cúng. Âm khí giảm 1, và Cô hồn gần Mâm cúng nhất no bụng rời đi.',
-      `«Đốt vàng mã» khi Mâm cúng đã đủ lễ: đứng ở Sảnh vào đổ Tinh thần ${BURN_TARGET}+, cộng 1 xúc xắc cho mỗi người khác cùng phòng. Thành công là cả bàn thắng.`,
-      'Đánh Cô hồn bằng Tinh thần; thắng thì nó tan biến, thua thì chịu sát thương tinh thần. Cô hồn thắng một người đang cầm lễ thì giật mất một lễ.',
-      `Lượt của ngôi nhà (cuối mỗi vòng): Âm khí tăng 1, cộng 1 cho mỗi 2 Cô hồn; thêm Cô hồn ở một phòng Điềm báo; mỗi Cô hồn đi ${STEPS} bước về phía người gần nhất (người cầm lễ hút chúng hơn) rồi tấn công.`,
+      `«Tìm lễ cúng» (mỗi lượt một lần): phòng có biểu tượng Vật phẩm cho Gạo muối (đổ Tri thức ${SEEK_TARGET}+); phòng có biểu tượng Sự kiện cho Tiền vàng mã (đổ Tinh thần ${SEEK_TARGET}+); Nhà bếp hoặc Phòng thực phẩm cho Nồi cháo (lấy luôn, không cần đổ).`,
+      'Mỗi phòng chỉ cho tìm một lần, dù thành hay trượt. Phòng còn lễ được đánh dấu trên bàn cờ.',
+      '«Dâng lễ» ở Sảnh vào (dâng bao nhiêu lễ cũng được, không tính là hành động đặc biệt): mỗi lễ dâng lên làm Âm khí giảm 1, và Cô hồn gần Mâm cúng nhất no bụng rời đi.',
+      `«Đốt vàng mã» (mỗi lượt một lần) khi Mâm cúng đã đủ lễ: đứng ở Sảnh vào đổ Tinh thần, cộng 1 xúc xắc cho mỗi người khác cùng phòng. Đạt ${BURN_TARGET}+ là cả bàn thắng; trượt thì thử lại lượt sau.`,
+      'Lễ trao cho nhau được khi cùng phòng. Người chết làm rơi lễ tại chỗ, nhặt lại được.',
+      'Cô hồn đánh bằng Tinh thần. Bạn đánh chúng bằng Tinh thần: thắng thì Cô hồn tan biến, thua thì bạn chịu sát thương tinh thần. Cô hồn thắng một người đang cầm lễ thì giật mất (phá huỷ) một lễ.',
+      `Lượt của ngôi nhà (cuối mỗi vòng): Âm khí tăng 1, cộng thêm 1 cho mỗi 2 Cô hồn đang có. Thêm 1 Cô hồn (2 con nếu bàn có từ 5 người) ở một phòng Điềm báo ngẫu nhiên. Rồi mỗi Cô hồn đi ${STEPS} bước về phía người gần nhất (người cầm lễ hút chúng hơn) và tấn công nếu đứng cùng phòng.`,
+    ],
+    tips: [
+      'Dâng lễ ngay khi về tới Sảnh vào: vừa giảm Âm khí vừa đuổi bớt Cô hồn.',
+      'Diệt Cô hồn sớm, vì cứ 2 con là Âm khí tăng thêm 1 mỗi vòng.',
     ],
   },
 
   setup(state) {
     state.haunt.data = { am: 0, altar: 0, need: state.turnOrder.length + 3, used: [], found: 0, spawned: 0, burned: false };
-    spawnGhost(state, 'basement-landing');
-    spawnGhost(state, 'basement-landing');
-    addLog(state, 'Mâm cúng được bày ra giữa Sảnh vào. Hai bóng đen trồi lên ở Chiếu nghỉ tầng hầm.', 'haunt');
+    for (let i = 0; i < START_GHOSTS; i++) spawnGhost(state, 'basement-landing');
+    addLog(state, `Mâm cúng được bày ra giữa Sảnh vào. ${START_GHOSTS} bóng đen trồi lên ở Chiếu nghỉ tầng hầm.`, 'haunt');
   },
 
   attackTraits(state, attacker, target) {

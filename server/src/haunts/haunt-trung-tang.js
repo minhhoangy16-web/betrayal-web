@@ -113,27 +113,54 @@ export default {
     'Một người trong các bạn không còn thở nữa mà vẫn đứng dậy được.',
 
   traitorTome: {
-    title: "Traitor's Tome – Trùng tang",
+    title: 'Sách Kẻ phản bội – Trùng tang',
     story: 'Thần Trùng đã chọn bạn làm người dẫn đường. Chỉ cần trì hoãn đủ lâu, cả nhà sẽ đi theo bạn.',
-    objective: `Bạn thắng khi đồng hồ trùng chạm ${END}, hoặc mọi người sống sót đều chết.`,
+    objective: `Bạn thắng khi Đồng hồ trùng chạm ${END}, hoặc khi mọi người sống sót đều chết.`,
+    lose: [
+      'Người sống sót mang đủ ba lễ vật (Gạo muối, Bùa gỗ đào, Hình nhân) vào phòng có Quan tài và làm lễ giải trùng thành công.',
+      'Bạn chết KHÔNG làm bạn thua: Đồng hồ trùng vẫn chạy và Quỷ nhập tràng vẫn đi săn trong lượt của bạn.',
+    ],
+    setup: [
+      'Bạn là người có Tinh thần thấp nhất lúc Haunt bắt đầu.',
+      'Quan tài xuất hiện ở đúng phòng bạn đang đứng. Quỷ nhập tràng bật dậy từ trong đó.',
+    ],
     rules: [
-      `Đầu mỗi lượt của bạn, đồng hồ trùng tăng 1. Ở các mốc ${TAKE_AT.join(', ')}, Thần Trùng bắt người: người sống sót có Tinh thần thấp nhất chịu 2 sát thương tinh thần (hoà thì bạn chọn).`,
-      'Bạn điều khiển Quỷ nhập tràng (Tốc độ 3, Sức mạnh 5, Tinh thần 2) trong lượt quái vật. Nó không chết, chỉ bị đánh choáng.',
-      '«Gọi hồn» (mỗi lượt một lần, thay cho tấn công): chọn một người sống sót cùng tầng; họ đổ Tinh thần, dưới 3 thì mất 1 Tinh thần.',
-      'Người sống sót chết sẽ làm rơi lễ vật họ đang cầm tại chỗ.',
+      `Đầu mỗi lượt của bạn (trừ lượt đầu tiên), Đồng hồ trùng tăng 1. Khi đồng hồ chạm ${TAKE_AT.join(', ')}, Thần Trùng bắt người: người sống sót có Tinh thần thấp nhất chịu 2 sát thương tinh thần. Nếu nhiều người bằng nhau thì bạn chọn ai.`,
+      'Người đang cầm Hình nhân được Thần Trùng bỏ qua khi bắt người.',
+      'Sau phần đi của bạn là lượt quái vật: bạn điều khiển Quỷ nhập tràng (Tốc độ 3, Sức mạnh 5, Tinh thần 2). Nó đổ Tốc độ để biết số bước và tấn công bằng Sức mạnh.',
+      'Quỷ nhập tràng không chết. Thua trận thì nó bị choáng, bỏ một lượt quái vật.',
+      '«Gọi hồn» (mỗi lượt một lần, thay cho việc tấn công): chọn một người sống sót cùng tầng với bạn. Họ đổ Tinh thần, dưới 3 thì mất 1 Tinh thần.',
+      'Người sống sót chết làm rơi lễ vật họ đang cầm tại chỗ, ai đến cũng nhặt được.',
+    ],
+    tips: [
+      'Canh phòng có Quan tài: lễ chỉ làm được ở đó.',
+      'Ai đang cầm lễ vật thì ưu tiên đánh người đó.',
     ],
   },
 
   survivalSecrets: {
-    title: 'Secrets of Survival – Trùng tang',
+    title: 'Sách Người sống sót – Trùng tang',
     story: 'Theo lệ xưa, muốn giải trùng phải có gạo muối, bùa gỗ đào và một hình nhân để Thần Trùng bắt thay người sống.',
-    objective: `Các bạn thắng khi đưa đủ ba lễ vật vào phòng có Quan tài và làm lễ thành công trước khi đồng hồ trùng chạm ${END}.`,
+    objective: `Các bạn thắng khi đưa đủ ba lễ vật vào phòng có Quan tài và làm lễ giải trùng thành công trước khi Đồng hồ trùng chạm ${END}.`,
+    lose: [
+      `Đồng hồ trùng chạm ${END}. Đồng hồ tăng 1 vào đầu mỗi lượt của Kẻ phản bội, và vẫn chạy kể cả khi Kẻ phản bội đã chết.`,
+      'Mọi người sống sót đều chết.',
+    ],
+    setup: [
+      'Kẻ phản bội là người có Tinh thần thấp nhất lúc Haunt bắt đầu.',
+      'Quan tài nằm ở phòng Kẻ phản bội đang đứng. Bảng tình hình ghi tên phòng đó.',
+    ],
     rules: [
-      `«Tìm lễ vật» (mỗi lượt một lần): Gạo muối ở phòng có biểu tượng Vật phẩm (đổ Tri thức), Bùa gỗ đào ở phòng Sự kiện (đổ Tinh thần), Hình nhân ở phòng Điềm báo (đổ Sức mạnh). Cần ${SEARCH_TARGET}+. Mỗi lễ vật chỉ có một.`,
-      'Lễ vật trao cho nhau được khi đứng cùng phòng, và nhặt lại được nếu bị rơi.',
-      `«Làm lễ giải trùng»: khi cả ba lễ vật ở trong phòng có Quan tài, đổ Tri thức ${RITE_TARGET}+, cộng 1 xúc xắc cho mỗi người sống sót khác cùng phòng.`,
-      `Ai cầm Hình nhân thì Thần Trùng không bắt ở các mốc ${TAKE_AT.join(', ')}.`,
-      'Quỷ nhập tràng bị đánh bằng Sức mạnh; ai cầm Gạo muối được +2 xúc xắc khi đánh nó.',
+      `«Tìm lễ vật» (mỗi lượt một lần, cần ${SEARCH_TARGET}+): Gạo muối ở phòng có biểu tượng Vật phẩm (đổ Tri thức); Bùa gỗ đào ở phòng có biểu tượng Sự kiện (đổ Tinh thần); Hình nhân ở phòng có biểu tượng Điềm báo (đổ Sức mạnh). Mỗi loại chỉ có một. Trượt thì thử lại ở lượt sau, kể cả ở phòng khác cùng biểu tượng.`,
+      'Lễ vật trao cho nhau được khi đứng cùng phòng. Lễ vật rơi xuống sàn (do người cầm chết) thì nhặt lại được.',
+      `«Làm lễ giải trùng» (mỗi lượt một lần): đứng ở phòng có Quan tài, cả ba lễ vật phải ở trong phòng đó (trong tay người sống sót đứng đó hoặc nằm trên sàn). Đổ Tri thức, cộng 1 xúc xắc cho mỗi người sống sót khác cùng phòng. Đạt ${RITE_TARGET}+ là thắng ngay; trượt thì thử lại lượt sau.`,
+      `Ở các mốc ${TAKE_AT.join(', ')} của Đồng hồ trùng, người có Tinh thần thấp nhất chịu 2 sát thương tinh thần. Người cầm Hình nhân được bỏ qua.`,
+      'Quỷ nhập tràng (Sức mạnh 5) đánh bằng Sức mạnh. Bạn thắng thì nó bị choáng một lượt. Ai cầm Gạo muối được +2 xúc xắc khi đánh nó.',
+      'Kẻ phản bội có thể «Gọi hồn» một người cùng tầng: người đó đổ Tinh thần, dưới 3 thì mất 1 Tinh thần.',
+    ],
+    tips: [
+      'Chia nhau đi tìm ba lễ vật cùng lúc, rồi hẹn nhau về phòng có Quan tài. Càng nhiều người cùng phòng thì lễ càng dễ thành.',
+      'Đưa Hình nhân cho người có Tinh thần thấp nhất.',
     ],
   },
 

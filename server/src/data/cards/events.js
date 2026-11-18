@@ -89,4 +89,96 @@ export const EVENTS = [
       { min: 0, text: 'Nó mỉm cười với bạn.', effects: [{ op: 'damage', type: 'mental', amount: 2 }] },
     ] }],
   },
+
+  // ---- Sự kiện bất lợi (bản mở rộng) ----
+  {
+    id: 'ev-chandelier', type: 'event', name: 'Đèn chùm rơi',
+    text: 'Sợi xích rỉ sét đứt phựt trên đầu bạn. Đổ Tốc độ.',
+    effects: [{ op: 'roll', trait: 'speed', label: 'Đèn chùm rơi', outcomes: [
+      { min: 5, text: 'Bạn lăn người tránh kịp.', effects: [] },
+      { min: 2, text: 'Mảnh pha lê cứa vào vai.', effects: [{ op: 'damage', type: 'physical', amount: 1 }] },
+      { min: 0, text: 'Cả chùm đèn đổ ập lên người bạn.', effects: [{ op: 'damage', type: 'physical', amount: 3 }] },
+    ] }],
+  },
+  {
+    id: 'ev-ghost-wedding', type: 'event', name: 'Đám cưới ma',
+    text: 'Một đoàn rước dâu không có mặt đi ngang qua, kèn trống im phăng phắc. Đổ Tinh thần.',
+    effects: [{ op: 'roll', trait: 'sanity', label: 'Đám cưới ma', outcomes: [
+      { min: 4, text: 'Bạn cúi đầu nhường đường. Họ đi qua.', effects: [] },
+      { min: 0, text: 'Cô dâu quay lại nhìn bạn.', effects: [{ op: 'damage', type: 'mental', amount: 2 }] },
+    ] }],
+  },
+  {
+    id: 'ev-paper-effigy', type: 'event', name: 'Hình nhân quay đầu',
+    text: 'Hình nhân giấy trong góc phòng từ từ quay mặt về phía bạn. Mất 1 Tinh thần.',
+    effects: [{ op: 'lose', trait: 'sanity', amount: 1 }],
+  },
+  {
+    id: 'ev-rats', type: 'event', name: 'Đàn chuột',
+    text: 'Hàng trăm con chuột tràn ra từ khe tường. Đổ Sức mạnh.',
+    effects: [{ op: 'roll', trait: 'might', label: 'Đàn chuột', outcomes: [
+      { min: 4, text: 'Bạn đá văng chúng và chạy thoát.', effects: [] },
+      { min: 0, text: 'Chúng cắn khắp chân bạn.', effects: [{ op: 'damage', type: 'physical', amount: 2 }] },
+    ] }],
+  },
+  {
+    id: 'ev-mold', type: 'event', name: 'Tường mốc',
+    text: 'Bức tường phủ mốc đen thở ra một làn hơi ngọt lợm. Đổ Sức mạnh.',
+    effects: [{ op: 'roll', trait: 'might', label: 'Tường mốc', outcomes: [
+      { min: 3, text: 'Bạn nín thở bước qua.', effects: [] },
+      { min: 0, text: 'Bạn ho sặc sụa, người rã rời.', effects: [{ op: 'lose', trait: 'might', amount: 1 }] },
+    ] }],
+  },
+  {
+    id: 'ev-weeping', type: 'event', name: 'Tiếng khóc trong tủ',
+    text: 'Có tiếng một người đàn bà khóc trong chiếc tủ khoá kín. Đổ Tinh thần.',
+    effects: [{ op: 'roll', trait: 'sanity', label: 'Tiếng khóc trong tủ', outcomes: [
+      { min: 5, text: 'Bạn nói lời an ủi. Tiếng khóc dịu đi, để lại một bí mật.', effects: [{ op: 'gain', trait: 'knowledge', amount: 1 }] },
+      { min: 2, text: 'Bạn bỏ chạy, tiếng khóc đuổi theo.', effects: [{ op: 'damage', type: 'mental', amount: 1 }] },
+      { min: 0, text: 'Cánh tủ hé mở.', effects: [{ op: 'damage', type: 'mental', amount: 2 }] },
+    ] }],
+  },
+  {
+    id: 'ev-slide-down', type: 'event', name: 'Sàn nghiêng',
+    text: 'Sàn nhà nghiêng hẳn đi. Đổ Tốc độ.',
+    effects: [{ op: 'roll', trait: 'speed', label: 'Sàn nghiêng', outcomes: [
+      { min: 4, text: 'Bạn bám kịp vào khung cửa.', effects: [] },
+      { min: 0, text: 'Bạn trượt xuống tận Chiếu nghỉ tầng hầm, va đập khắp người.', effects: [
+        { op: 'teleport', tileId: 'basement-landing' }, { op: 'damage', type: 'physical', amount: 1 }] },
+    ] }],
+  },
+  {
+    id: 'ev-cold-breath', type: 'event', name: 'Hơi thở sau gáy',
+    text: 'Có ai đó thở rất khẽ ngay sau gáy bạn. Bạn cứng người lại. Mất 1 Tốc độ.',
+    effects: [{ op: 'lose', trait: 'speed', amount: 1 }],
+  },
+  {
+    id: 'ev-broken-mirror', type: 'event', name: 'Gương vỡ',
+    text: 'Chiếc gương nổ tung, mảnh vỡ găm khắp nơi. Chịu 1 sát thương tổng hợp. Đổ Tinh thần.',
+    effects: [{ op: 'damage', type: 'general', amount: 1 }, { op: 'roll', trait: 'sanity', label: 'Gương vỡ', outcomes: [
+      { min: 3, text: 'Chỉ là gương vỡ thôi.', effects: [] },
+      { min: 0, text: 'Trong mỗi mảnh gương là một khuôn mặt khác.', effects: [{ op: 'damage', type: 'mental', amount: 1 }] },
+    ] }],
+  },
+  {
+    id: 'ev-overturned-bowl', type: 'event', name: 'Bát cơm úp',
+    text: 'Trên bàn có bát cơm cắm đôi đũa, bị ai đó úp ngược. Bạn quên mất mình định làm gì. Mất 1 Tri thức.',
+    effects: [{ op: 'lose', trait: 'knowledge', amount: 1 }],
+  },
+  {
+    id: 'ev-sleep-paralysis', type: 'event', name: 'Bóng đè',
+    text: 'Bạn chợp mắt một giây và không cử động được nữa. Đổ Sức mạnh.',
+    effects: [{ op: 'roll', trait: 'might', label: 'Bóng đè', outcomes: [
+      { min: 4, text: 'Bạn vùng dậy được.', effects: [] },
+      { min: 0, text: 'Thứ gì đó ngồi trên ngực bạn rất lâu.', effects: [{ op: 'lose', trait: 'speed', amount: 1 }, { op: 'damage', type: 'mental', amount: 1 }] },
+    ] }],
+  },
+  {
+    id: 'ev-possessed-doll', type: 'event', name: 'Búp bê biết đi',
+    text: 'Một con búp bê sứ lạch cạch đi theo bạn. Đổ Tri thức.',
+    effects: [{ op: 'roll', trait: 'knowledge', label: 'Búp bê biết đi', outcomes: [
+      { min: 4, text: 'Bạn nhớ ra cách: úp mặt nó xuống. Nó nằm im.', effects: [] },
+      { min: 0, text: 'Nó cười khúc khích suốt quãng đường còn lại.', effects: [{ op: 'damage', type: 'mental', amount: 2 }] },
+    ] }],
+  },
 ];

@@ -4,7 +4,7 @@
 //    tự chuyển về tab Lượt khi tới lượt bạn.
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { Backpack, BookOpen, Eye, Layers, LogOut, ScrollText, Skull, Swords, Trophy, UserRound } from 'lucide-react';
+import { Backpack, BookOpen, DoorOpen, Eye, Layers, LogOut, ScrollText, Skull, Swords, Trophy, UserRound } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
 import { SIDE_LABEL } from '../lib/constants.js';
 import { Button } from './ui.jsx';
@@ -16,6 +16,7 @@ import HauntBook from './HauntBook.jsx';
 import ScenarioCard, { useScenarioIntro } from './ScenarioCard.jsx';
 import DisconnectBanner from './DisconnectBanner.jsx';
 import { CardViewer } from './TableEffects.jsx';
+import PlayerBag from './PlayerBag.jsx';
 import { AudioControls, useTurnAlert } from './AudioControls.jsx';
 import { DiceTray, Inventory, LastCard, LogPanel, PlayerList } from './SidePanels.jsx';
 
@@ -60,6 +61,7 @@ function TopBar({ onOpenBook, onOpenScenario, wide }) {
       {me && game.phase !== 'explore' && (
         <span className={`text-sm font-semibold ${me.side === 'traitor' ? 'text-red-400' : 'text-emerald-300'}`}>
           {wide && me.side !== 'solo' ? `Bạn là ${SIDE_LABEL[me.side]}` : SIDE_LABEL[me.side]}
+          {me.side === 'traitor' && game.haunt?.secretTraitor && ' (bí mật)'}
         </span>
       )}
       <span className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-2">
@@ -85,6 +87,7 @@ function TopBar({ onOpenBook, onOpenScenario, wide }) {
 function WinnerBanner() {
   const game = useGameStore((s) => s.game);
   const leave = useGameStore((s) => s.leave);
+  const backToLobby = useGameStore((s) => s.backToLobby);
   const [hidden, setHidden] = useState(false);
   const me = game.players[game.you];
   const { side, playerIds = [] } = game.winner;
@@ -105,10 +108,15 @@ function WinnerBanner() {
   // Thu gọn để xem lại bàn cờ sau khi ván kết thúc.
   if (hidden) {
     return (
-      <div className="absolute inset-x-0 bottom-3 z-[60] flex justify-center">
+      <div className="absolute inset-x-0 bottom-3 z-[60] flex flex-wrap justify-center gap-2">
         <Button variant="candle" onClick={() => setHidden(false)}>
           <Icon size={16} aria-hidden="true" /> {title}
         </Button>
+        {me && (
+          <Button onClick={backToLobby}>
+            <DoorOpen size={16} aria-hidden="true" /> Về phòng chờ
+          </Button>
+        )}
       </div>
     );
   }
@@ -120,10 +128,16 @@ function WinnerBanner() {
         <h2 className="mt-2 font-display text-2xl text-parchment">{title}</h2>
         <p className="mt-1 text-bone italic">{game.winner.reason}</p>
         {me && <p className="mt-2 font-semibold">{iWon ? 'Bạn đã thắng.' : 'Bạn đã thua.'}</p>}
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           <Button onClick={() => setHidden(true)}>Xem bàn cờ</Button>
+          {me && (
+            <Button variant="candle" onClick={backToLobby} title="Cả phòng quay về phòng chờ để chơi ván mới, giữ nguyên mã phòng">
+              <DoorOpen size={16} aria-hidden="true" /> Về phòng chờ, chơi ván mới
+            </Button>
+          )}
           <Button variant="primary" onClick={leave}>Về trang chủ</Button>
         </div>
+        {me && <p className="mt-2 text-xs text-stone-500">«Về phòng chờ» đưa cả phòng về lại phòng chờ: giữ mã phòng và nhân vật, không cần tạo phòng mới.</p>}
       </div>
     </div>
   );
@@ -145,7 +159,7 @@ export default function GameScreen() {
   const catalog = useGameStore((s) => s.catalog);
   const wide = useIsWide();
   const [bookOpen, setBookOpen] = useState(false);
-  const [scenarioOpen, setScenarioOpen] = useScenarioIntro(game.code, game.scenarioId);
+  const [scenarioOpen, setScenarioOpen] = useScenarioIntro(game.gameId ?? game.code, game.scenarioId);
   const [inspectedId, setInspectedId] = useState(game.you ?? game.turnOrder[0]);
   const [tab, setTab] = useState('turn');
 
@@ -162,7 +176,7 @@ export default function GameScreen() {
   const hauntId = game.haunt?.id;
   useEffect(() => {
     if (!hauntId) return;
-    const key = `betrayal.bookSeen.${game.code}`;
+    const key = `betrayal.bookSeen.${game.gameId ?? game.code}`;
     try {
       if (sessionStorage.getItem(key)) return;
       sessionStorage.setItem(key, '1');
@@ -254,6 +268,7 @@ export default function GameScreen() {
       )}
       {bookOpen && game.haunt && <HauntBook onClose={() => setBookOpen(false)} />}
       {scenarioOpen && <ScenarioCard onClose={() => setScenarioOpen(false)} />}
+      <PlayerBag />
       <CardViewer />
     </div>
   );
