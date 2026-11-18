@@ -5,6 +5,7 @@ import { Home, LobbyRoom } from './components/Lobby.jsx';
 import GameScreen from './components/GameScreen.jsx';
 import { Button } from './components/ui.jsx';
 import { AudioControls, useGameAudio } from './components/AudioControls.jsx';
+import { YouTubeDock } from './components/YouTubeMusic.jsx';
 
 function Toasts() {
   const toasts = useGameStore((s) => s.toasts);
@@ -75,7 +76,8 @@ export default function App() {
       )}
       {screen}
       {/* Trong ván, nút âm thanh nằm trên thanh trạng thái. */}
-      {!inGame && <AudioControls className="fixed bottom-3 left-3 z-40" />}
+      {!inGame && <AudioControls up className="fixed bottom-3 left-3 z-40" />}
+      <YouTubeDock />
       <Toasts />
     </>
   );

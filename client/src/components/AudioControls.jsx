@@ -1,16 +1,22 @@
 // Nút tắt/bật tiếng và thanh âm lượng nhạc nền + hook nối trạng thái game với âm thanh.
 
-import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { AudioLines, Music, Volume2, VolumeX } from 'lucide-react';
 import { audio } from '../lib/audio.js';
 import { useGameStore } from '../store/useGameStore.js';
+import Soundboard from './Soundboard.jsx';
+import { MusicMenu } from './YouTubeMusic.jsx';
+
+const CARD_KIND = { 'om-': 'omen', 'it-': 'item', 'ev-': 'event' };
 
 // compact: chỉ nút tắt/bật tiếng, không có thanh âm lượng (cho màn hình hẹp).
-export function AudioControls({ className = '', compact = false }) {
+export function AudioControls({ className = '', compact = false, up = false }) {
   const settings = useSyncExternalStore(audio.subscribe, audio.getSettings);
   const Icon = settings.muted ? VolumeX : Volume2;
+  const [panel, setPanel] = useState(null); // 'board' | 'music' | null
+  const toggle = (name) => setPanel((p) => (p === name ? null : name));
   return (
-    <div className={`flex items-center gap-2 rounded border border-mortar bg-stonework px-2 py-1.5 ${className}`}>
+    <div className={`relative flex items-center gap-2 rounded border border-mortar bg-stonework px-2 py-1.5 ${className}`}>
       <button
         type="button"
         className="text-bone hover:text-parchment"
@@ -20,7 +26,7 @@ export function AudioControls({ className = '', compact = false }) {
       >
         <Icon size={17} aria-hidden="true" />
       </button>
-      {!compact && <input
+      {!compact && settings.musicSource !== 'youtube' && <input
         type="range"
         min="0"
         max="1"
@@ -30,6 +36,27 @@ export function AudioControls({ className = '', compact = false }) {
         className="h-1 w-20 cursor-pointer accent-[#e0a43a]"
         aria-label="Âm lượng nhạc nền"
       />}
+      <button
+        type="button"
+        className={`hover:text-parchment ${settings.musicSource === 'youtube' ? 'text-candle' : 'text-bone'}`}
+        onClick={() => toggle('music')}
+        aria-label="Chọn nhạc nền"
+        aria-expanded={panel === 'music'}
+        title="Chọn nhạc nền"
+      >
+        <Music size={17} aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        className="text-bone hover:text-parchment"
+        onClick={() => toggle('board')}
+        aria-label="Bảng âm thanh"
+        title="Bảng âm thanh"
+      >
+        <AudioLines size={17} aria-hidden="true" />
+      </button>
+      {panel === 'music' && <MusicMenu up={up} onClose={() => setPanel(null)} />}
+      {panel === 'board' && <Soundboard onClose={() => setPanel(null)} />}
     </div>
   );
 }
@@ -75,9 +102,42 @@ export function useGameAudio() {
   useOnChange(g ? g.lastRoll?.seq ?? 0 : null, () => {
     const roll = g.lastRoll;
     audio.sfx('dice', { count: roll.dice?.length ?? roll.attacker?.dice.length ?? 3 });
+    const beast = [roll.attacker, roll.defender].find((r) => r?.kind === 'monster');
+    const type = beast && (g.monsters[beast.id]?.type ?? null);
+    if (type) audio.play(type, 'monster', { delay: 0.6 });
   });
-  useOnChange(g ? g.lastCard?.seq ?? 0 : null, () => audio.sfx('card'));
-  useOnChange(g ? Object.keys(g.board.tiles).length : null, () => audio.sfx('door'));
+  useOnChange(g ? g.lastCard?.seq ?? 0 : null, () => {
+    audio.sfx('card');
+    const id = g.lastCard?.cardId;
+    if (id) audio.play(id, CARD_KIND[id.slice(0, 3)], { delay: 0.45 });
+  });
+  // Phòng mới được đặt: tiếng cửa rồi âm thanh riêng của phòng.
+  const tileKeys = g ? Object.keys(g.board.tiles) : null;
+  useOnChange(tileKeys ? tileKeys.length : null, () => {
+    audio.sfx('door');
+    const seen = seenTiles.current;
+    const fresh = tileKeys.find((key) => !seen.has(key));
+    if (fresh) audio.play(g.board.tiles[fresh].tileId, 'room', { delay: 1.1 });
+  });
+  const seenTiles = useRef(new Set());
+  useEffect(() => {
+    seenTiles.current = new Set(tileKeys ?? []);
+  });
+  // Quái vật mới xuất hiện, hoặc quái vật tham gia một trận đánh.
+  const monsterIds = g ? Object.keys(g.monsters).sort().join(',') : null;
+  const knownMonsters = useRef(null);
+  useEffect(() => {
+    if (!g) {
+      knownMonsters.current = null;
+      return;
+    }
+    const before = knownMonsters.current;
+    knownMonsters.current = new Set(Object.keys(g.monsters));
+    if (!before) return;
+    const fresh = Object.values(g.monsters).find((m) => !before.has(m.id));
+    if (fresh) audio.play(fresh.type, 'monster', { delay: 0.3 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monsterIds]);
   useOnChange(g ? g.haunt?.id ?? '' : null, (now) => now && audio.sfx('haunt'));
   useOnChange(g ? Boolean(g.winner) : null, (now) => now && audio.sfx('end'));
   const myTotal = me ? Object.values(me.traits).reduce((a, b) => a + b, 0) : null;

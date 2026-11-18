@@ -5,8 +5,11 @@
 // Muốn dùng file nhạc của riêng bạn: khai báo trong public/media/manifest.json – file có trong
 // manifest sẽ thay cho phần tổng hợp tương ứng (xem public/media/README.md).
 
+import { FALLBACK, SOUNDS, makeKit } from './cardSounds.js';
+
 const STORE_KEY = 'betrayal.audio';
-const DEFAULTS = { music: 0.6, sfx: 0.7, muted: false };
+// musicSource: 'synth' = nhạc nền tổng hợp | 'youtube' = danh sách phát YouTube (trình phát nhúng riêng).
+const DEFAULTS = { music: 0.6, sfx: 0.7, muted: false, musicSource: 'synth', youtubeStart: 0 };
 
 // Thông số nhạc nền tổng hợp cho từng giai đoạn.
 //   root: tần số gốc (Hz) | intervals: tỉ lệ các nốt của hợp âm nền | cutoff: độ "tối" của âm
@@ -31,7 +34,7 @@ function loadSettings() {
 
 class AudioEngine {
   settings = loadSettings();
-  manifest = { music: {}, sfx: {} };
+  manifest = { music: {}, sfx: {}, sounds: {} };
   listeners = new Set();
   ctx = null;
   mood = null;
@@ -55,6 +58,8 @@ class AudioEngine {
       // Không lưu được cũng không sao.
     }
     this.applyVolumes();
+    // Đổi nguồn nhạc: bật YouTube thì tắt nhạc tổng hợp, và ngược lại.
+    if ('musicSource' in patch && this.ctx) this.startMood();
     this.listeners.forEach((fn) => fn());
   }
 
@@ -67,7 +72,7 @@ class AudioEngine {
   }
 
   setManifest(audio, resolveUrl) {
-    this.manifest = { music: audio?.music ?? {}, sfx: audio?.sfx ?? {} };
+    this.manifest = { music: audio?.music ?? {}, sfx: audio?.sfx ?? {}, sounds: audio?.sounds ?? {} };
     if (resolveUrl) this.resolveUrl = resolveUrl;
     // Nếu nhạc nền đang chạy là bản tổng hợp mà manifest có file cho nó thì chuyển sang file.
     if (this.ctx && this.mood && this.manifest.music[this.mood]) this.startMood();
@@ -91,7 +96,7 @@ class AudioEngine {
       this.applyVolumes();
     }
     if (this.ctx.state === 'suspended') this.ctx.resume();
-    if (this.mood && !this.track) this.startMood();
+    if (this.mood && !this.track && this.settings.musicSource !== 'youtube') this.startMood();
   }
 
   makeNoise() {
@@ -112,6 +117,10 @@ class AudioEngine {
 
   startMood() {
     this.track?.stop(2.5);
+    if (this.settings.musicSource === 'youtube') {
+      this.track = null;
+      return;
+    }
     const file = this.manifest.music[this.mood];
     this.track = file ? this.playFile(file, this.mood) : this.playGenerated(MOODS[this.mood]);
   }
@@ -275,6 +284,24 @@ class AudioEngine {
       return;
     }
     this.synth(name, options);
+  }
+
+  // Âm thanh riêng của một lá bài / phòng / quái vật (xem cardSounds.js). force: phát cả khi chưa có
+  // thao tác nào trước đó (dùng cho bảng âm thanh, nơi người dùng vừa bấm nút).
+  play(id, category, { delay = 0, force = false } = {}) {
+    if (force) this.unlock();
+    if (!this.ctx || this.settings.muted || (this.ctx.state !== 'running' && !force)) return;
+    const file = this.manifest.sounds[id];
+    if (file) {
+      const el = new Audio(this.resolveUrl(file));
+      el.volume = this.settings.sfx;
+      setTimeout(() => el.play().catch(() => {}), delay * 1000);
+      return;
+    }
+    const recipe = SOUNDS[id] ?? FALLBACK[category];
+    if (!recipe) return;
+    this.kit ??= makeKit(this.ctx, this.sfxBus, this.noise);
+    recipe(this.kit, this.ctx.currentTime + 0.02 + delay);
   }
 
   burst(t, duration, frequency, q, level) {
