@@ -6,8 +6,10 @@ import trungTang from './haunt-trung-tang.js';
 import maDa from './haunt-ma-da.js';
 import loBan from './haunt-lo-ban.js';
 import maLai from './haunt-ma-lai.js';
+import coHon from './haunt-co-hon.js';
+import maGiuCua from './haunt-ma-giu-cua.js';
 
-const HAUNT_LIST = [haunt01, trungTang, maDa, loBan, maLai];
+const HAUNT_LIST = [haunt01, trungTang, maDa, loBan, maLai, coHon, maGiuCua];
 
 export const HAUNTS = Object.fromEntries(HAUNT_LIST.map((h) => [h.id, h]));
 

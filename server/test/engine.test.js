@@ -1,3 +1,4 @@
+import { SCENARIO_TABLE } from '../src/haunts/index.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
@@ -137,8 +138,9 @@ test('Haunt Roll: số xúc xắc = số Omen đã lật, đạt ngưỡng thì 
   playUntil(always, makeRng(21), (s) => s.omensRevealed > 0);
   assert.equal(always.omensRevealed, 1);
   assert.notEqual(always.phase, 'explore');
-  assert.equal(always.haunt.id, 'haunt-01');
-  assert.equal(always.haunt.traitorId, always.haunt.revealerId);
+  // Kịch bản được tra theo bảng: Điềm báo vừa rút + tầng của người lật.
+  const row = SCENARIO_TABLE[always.lastCard.cardId];
+  assert.ok(row.includes(always.haunt.id), `${always.haunt.id} phải thuộc hàng ${always.lastCard.cardId}`);
 
   // Ngưỡng không thể đạt: không bao giờ có Haunt, và mỗi lần rút Omen đổ đúng số xúc xắc.
   const never = newGame(4, 22, { hauntRollThreshold: 99 });

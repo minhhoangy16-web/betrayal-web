@@ -58,7 +58,7 @@ function TopBar({ onOpenBook, wide }) {
       </span>
       {me && game.phase !== 'explore' && (
         <span className={`text-sm font-semibold ${me.side === 'traitor' ? 'text-red-400' : 'text-emerald-300'}`}>
-          {wide ? `Bạn là ${SIDE_LABEL[me.side]}` : SIDE_LABEL[me.side]}
+          {wide && me.side !== 'solo' ? `Bạn là ${SIDE_LABEL[me.side]}` : SIDE_LABEL[me.side]}
         </span>
       )}
       <span className="ml-auto flex shrink-0 items-center gap-1.5 lg:gap-2">

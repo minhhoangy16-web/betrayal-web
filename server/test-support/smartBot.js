@@ -95,7 +95,12 @@ function decideExplorer(state, actor, options, rand) {
   if (real.length) return pick(real, rand);
   const pickUp = specials.find((a) => a.actionId === 'pickToken');
   if (pickUp) return pickUp;
-  const attacks = options.filter((o) => o.type === 'attack');
+  let attacks = options.filter((o) => o.type === 'attack');
+  // Mạnh ai nấy chơi: chỉ đánh người đang giữ vật của Haunt (để cướp), không đánh bừa.
+  if (me.side === 'solo') {
+    const held = (id) => Object.values(state.haunt.data.tokens ?? {}).some((t) => t.holder === id);
+    attacks = attacks.filter((a) => a.targetType === 'player' && held(a.targetId));
+  }
   if (attacks.length) return attacks[0];
   if (moves.length) {
     let targets;

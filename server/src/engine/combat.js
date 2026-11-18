@@ -100,8 +100,8 @@ export function resolveCombat(state, attackerRef, defenderRef, trait, bonusDice 
   const dr = rollDice(state, unitTraitValue(state, defenderRef, trait));
   setLastRoll(state, {
     kind: 'combat', trait, label: `${a.name} tấn công ${d.name}`,
-    attacker: { ...attackerRef, dice: ar.dice, total: ar.total },
-    defender: { ...defenderRef, dice: dr.dice, total: dr.total },
+    attacker: { ...attackerRef, name: a.name, dice: ar.dice, total: ar.total },
+    defender: { ...defenderRef, name: d.name, dice: dr.dice, total: dr.total },
   });
   addLog(
     state,

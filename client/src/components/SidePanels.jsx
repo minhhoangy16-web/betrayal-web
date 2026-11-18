@@ -141,7 +141,7 @@ function DiceRow({ dice, tone }) {
 export function DiceTray() {
   const game = useGameStore((s) => s.game);
   const roll = game.lastRoll;
-  const nameOf = (ref) => (ref.kind === 'monster' ? game.monsters[ref.id]?.name : game.players[ref.id]?.name) ?? '?';
+  const nameOf = (ref) => ref.name ?? (ref.kind === 'monster' ? game.monsters[ref.id]?.name : game.players[ref.id]?.name) ?? '?';
 
   let body = <p className="text-sm text-stone-500 italic">Chưa có lần đổ nào.</p>;
   if (roll?.kind === 'combat') {
