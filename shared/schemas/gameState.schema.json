@@ -5,114 +5,288 @@
   "description": "Toàn bộ trạng thái một ván chơi trên server. JSON thuần (serialize được sang Redis). Client KHÔNG nhận object này mà nhận bản đã lọc từ engine/view.js.",
   "type": "object",
   "required": [
-    "version", "code", "phase", "round", "rules", "rngState", "players", "turnOrder", "turn", "board",
-    "tileStack", "decks", "discards", "omensRevealed", "pending", "queue", "haunt", "monsters",
-    "lastRoll", "lastCard", "log", "logSeq", "rollSeq", "cardSeq", "winner"
+    "version",
+    "code",
+    "phase",
+    "round",
+    "rules",
+    "rngState",
+    "players",
+    "turnOrder",
+    "turn",
+    "board",
+    "tileStack",
+    "decks",
+    "discards",
+    "omensRevealed",
+    "pending",
+    "queue",
+    "haunt",
+    "monsters",
+    "lastRoll",
+    "lastCard",
+    "log",
+    "logSeq",
+    "rollSeq",
+    "cardSeq",
+    "winner"
   ],
   "additionalProperties": false,
   "properties": {
-    "version": { "type": "integer" },
-    "code": { "type": "string", "description": "Mã phòng." },
-    "phase": { "enum": ["explore", "haunt", "ended"] },
-    "round": { "type": "integer", "minimum": 1 },
+    "version": {
+      "type": "integer"
+    },
+    "code": {
+      "type": "string",
+      "description": "Mã phòng."
+    },
+    "phase": {
+      "enum": [
+        "explore",
+        "haunt",
+        "ended"
+      ]
+    },
+    "round": {
+      "type": "integer",
+      "minimum": 1
+    },
     "rules": {
       "type": "object",
-      "required": ["hauntRollThreshold", "maxDice", "minPlayers", "maxPlayers"],
+      "required": [
+        "hauntRollThreshold",
+        "maxDice",
+        "minPlayers",
+        "maxPlayers"
+      ],
       "properties": {
-        "hauntRollThreshold": { "type": "integer" },
-        "maxDice": { "type": "integer" },
-        "minPlayers": { "type": "integer" },
-        "maxPlayers": { "type": "integer" },
-        "forcedHauntId": { "type": "string" }
+        "hauntRollThreshold": {
+          "type": "integer"
+        },
+        "maxDice": {
+          "type": "integer"
+        },
+        "minPlayers": {
+          "type": "integer"
+        },
+        "maxPlayers": {
+          "type": "integer"
+        },
+        "forcedHauntId": {
+          "type": "string"
+        }
       }
     },
-    "rngState": { "type": "integer", "description": "Trạng thái RNG có seed. BÍ MẬT." },
+    "rngState": {
+      "type": "integer",
+      "description": "Trạng thái RNG có seed. BÍ MẬT."
+    },
     "players": {
       "type": "object",
       "description": "Map playerId -> PlayerState.",
-      "additionalProperties": { "$ref": "#/$defs/player" }
+      "additionalProperties": {
+        "$ref": "#/$defs/player"
+      }
     },
-    "turnOrder": { "type": "array", "items": { "type": "string" }, "description": "Thứ tự chỗ ngồi." },
-    "turn": { "$ref": "#/$defs/turn" },
+    "turnOrder": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Thứ tự chỗ ngồi."
+    },
+    "turn": {
+      "$ref": "#/$defs/turn"
+    },
     "board": {
       "type": "object",
-      "required": ["tiles", "index"],
+      "required": [
+        "tiles",
+        "index"
+      ],
       "additionalProperties": false,
       "properties": {
         "tiles": {
           "type": "object",
           "description": "Map \"floor:x:y\" -> gạch đã đặt.",
-          "additionalProperties": { "$ref": "#/$defs/placedTile" }
+          "additionalProperties": {
+            "$ref": "#/$defs/placedTile"
+          }
         },
         "index": {
           "type": "object",
           "description": "Map tileId -> \"floor:x:y\" để tra nhanh.",
-          "additionalProperties": { "type": "string" }
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
-    "tileStack": { "type": "array", "items": { "type": "string" }, "description": "Chồng gạch chưa lật (tileId). BÍ MẬT." },
-    "decks": { "$ref": "#/$defs/cardPiles", "description": "Chồng bài úp. BÍ MẬT (client chỉ nhận số lượng)." },
-    "discards": { "$ref": "#/$defs/cardPiles" },
-    "omensRevealed": { "type": "integer", "minimum": 0, "description": "Tổng số Omen đã lật – số xúc xắc của Haunt Roll." },
+    "tileStack": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Chồng gạch chưa lật (tileId). BÍ MẬT."
+    },
+    "decks": {
+      "$ref": "#/$defs/cardPiles",
+      "description": "Chồng bài úp. BÍ MẬT (client chỉ nhận số lượng)."
+    },
+    "discards": {
+      "$ref": "#/$defs/cardPiles"
+    },
+    "omensRevealed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Tổng số Omen đã lật – số xúc xắc của Haunt Roll."
+    },
     "pending": {
-      "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/pending" }],
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/pending"
+        }
+      ],
       "description": "Quyết định đang chờ một người chơi. Khi khác null, mọi hành động khác bị khoá."
     },
     "queue": {
       "type": "array",
       "description": "Hàng đợi op chưa chạy (tiếp tục sau khi pending được trả lời). BÍ MẬT.",
-      "items": { "type": "object", "required": ["op"], "properties": { "op": { "type": "string" } } }
+      "items": {
+        "type": "object",
+        "required": [
+          "op"
+        ],
+        "properties": {
+          "op": {
+            "type": "string"
+          }
+        }
+      }
     },
     "haunt": {
       "anyOf": [
-        { "type": "null" },
+        {
+          "type": "null"
+        },
         {
           "type": "object",
-          "required": ["id", "name", "revealerId", "traitorId", "startedOnTurn", "pendingFirstTurn", "data"],
+          "required": [
+            "id",
+            "name",
+            "revealerId",
+            "traitorId",
+            "startedOnTurn",
+            "pendingFirstTurn",
+            "data"
+          ],
           "additionalProperties": false,
           "properties": {
-            "id": { "type": "string" },
-            "name": { "type": "string" },
-            "revealerId": { "type": "string" },
-            "traitorId": { "type": "string" },
-            "startedOnTurn": { "type": "integer" },
-            "pendingFirstTurn": { "type": "boolean" },
-            "data": { "type": "object", "description": "Trạng thái riêng của kịch bản Haunt." }
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "revealerId": {
+              "type": "string"
+            },
+            "traitorId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "null khi kịch bản không có Kẻ phản bội."
+            },
+            "startedOnTurn": {
+              "type": "integer"
+            },
+            "pendingFirstTurn": {
+              "type": "boolean"
+            },
+            "data": {
+              "type": "object",
+              "description": "Trạng thái riêng của kịch bản Haunt."
+            },
+            "startedOnRound": {
+              "type": "integer"
+            }
           }
         }
       ]
     },
     "monsters": {
       "type": "object",
-      "additionalProperties": { "$ref": "#/$defs/monster" }
+      "additionalProperties": {
+        "$ref": "#/$defs/monster"
+      }
     },
     "lastRoll": {
       "anyOf": [
-        { "type": "null" },
+        {
+          "type": "null"
+        },
         {
           "type": "object",
-          "required": ["seq", "kind"],
+          "required": [
+            "seq",
+            "kind"
+          ],
           "properties": {
-            "seq": { "type": "integer" },
-            "kind": { "enum": ["trait", "dice", "damage", "haunt", "combat", "monsterMove"] },
-            "dice": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 2 } },
-            "total": { "type": "integer" }
+            "seq": {
+              "type": "integer"
+            },
+            "kind": {
+              "enum": [
+                "trait",
+                "dice",
+                "damage",
+                "haunt",
+                "combat",
+                "monsterMove"
+              ]
+            },
+            "dice": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2
+              }
+            },
+            "total": {
+              "type": "integer"
+            }
           }
         }
       ]
     },
     "lastCard": {
       "anyOf": [
-        { "type": "null" },
+        {
+          "type": "null"
+        },
         {
           "type": "object",
-          "required": ["seq", "cardId", "playerId"],
+          "required": [
+            "seq",
+            "cardId",
+            "playerId"
+          ],
           "additionalProperties": false,
           "properties": {
-            "seq": { "type": "integer" },
-            "cardId": { "type": "string" },
-            "playerId": { "type": "string" }
+            "seq": {
+              "type": "integer"
+            },
+            "cardId": {
+              "type": "string"
+            },
+            "playerId": {
+              "type": "string"
+            }
           }
         }
       ]
@@ -121,45 +295,121 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["seq", "kind", "text", "turn"],
+        "required": [
+          "seq",
+          "kind",
+          "text",
+          "turn"
+        ],
         "additionalProperties": false,
         "properties": {
-          "seq": { "type": "integer" },
-          "kind": { "enum": ["info", "move", "card", "roll", "damage", "combat", "haunt", "system"] },
-          "text": { "type": "string" },
-          "turn": { "type": "integer" }
+          "seq": {
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "info",
+              "move",
+              "card",
+              "roll",
+              "damage",
+              "combat",
+              "haunt",
+              "system"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "turn": {
+            "type": "integer"
+          },
+          "to": {
+            "type": "string",
+            "description": "Chỉ người chơi này thấy dòng nhật ký."
+          }
         }
       }
     },
-    "logSeq": { "type": "integer" },
-    "rollSeq": { "type": "integer" },
-    "cardSeq": { "type": "integer" },
+    "logSeq": {
+      "type": "integer"
+    },
+    "rollSeq": {
+      "type": "integer"
+    },
+    "cardSeq": {
+      "type": "integer"
+    },
     "winner": {
       "anyOf": [
-        { "type": "null" },
+        {
+          "type": "null"
+        },
         {
           "type": "object",
-          "required": ["side", "reason"],
+          "required": [
+            "side",
+            "reason"
+          ],
           "additionalProperties": false,
           "properties": {
-            "side": { "enum": ["heroes", "traitor"] },
-            "reason": { "type": "string" }
+            "side": {
+              "enum": [
+                "heroes",
+                "traitor",
+                "players",
+                "house"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            },
+            "playerIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Người thắng khi side = players."
+            }
           }
         }
       ]
     }
   },
   "$defs": {
-    "trait": { "enum": ["speed", "might", "sanity", "knowledge"] },
-    "floor": { "enum": ["basement", "ground", "upper"] },
+    "trait": {
+      "enum": [
+        "speed",
+        "might",
+        "sanity",
+        "knowledge"
+      ]
+    },
+    "floor": {
+      "enum": [
+        "basement",
+        "ground",
+        "upper"
+      ]
+    },
     "pos": {
       "type": "object",
-      "required": ["floor", "x", "y"],
+      "required": [
+        "floor",
+        "x",
+        "y"
+      ],
       "additionalProperties": false,
       "properties": {
-        "floor": { "$ref": "#/$defs/floor" },
-        "x": { "type": "integer" },
-        "y": { "type": "integer" }
+        "floor": {
+          "$ref": "#/$defs/floor"
+        },
+        "x": {
+          "type": "integer"
+        },
+        "y": {
+          "type": "integer"
+        }
       }
     },
     "traitIndex": {
@@ -170,51 +420,140 @@
     },
     "player": {
       "type": "object",
-      "required": ["id", "name", "characterId", "traits", "pos", "alive", "side", "cards"],
+      "required": [
+        "id",
+        "name",
+        "characterId",
+        "traits",
+        "pos",
+        "alive",
+        "side",
+        "cards"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "characterId": { "type": "string" },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "characterId": {
+          "type": "string"
+        },
         "traits": {
           "type": "object",
-          "required": ["speed", "might", "sanity", "knowledge"],
+          "required": [
+            "speed",
+            "might",
+            "sanity",
+            "knowledge"
+          ],
           "additionalProperties": false,
           "properties": {
-            "speed": { "$ref": "#/$defs/traitIndex" },
-            "might": { "$ref": "#/$defs/traitIndex" },
-            "sanity": { "$ref": "#/$defs/traitIndex" },
-            "knowledge": { "$ref": "#/$defs/traitIndex" }
+            "speed": {
+              "$ref": "#/$defs/traitIndex"
+            },
+            "might": {
+              "$ref": "#/$defs/traitIndex"
+            },
+            "sanity": {
+              "$ref": "#/$defs/traitIndex"
+            },
+            "knowledge": {
+              "$ref": "#/$defs/traitIndex"
+            }
           }
         },
-        "pos": { "$ref": "#/$defs/pos" },
-        "alive": { "type": "boolean" },
-        "side": { "enum": ["explorer", "hero", "traitor"], "description": "explorer trước Haunt; hero/traitor sau." },
-        "cards": { "type": "array", "items": { "type": "string" }, "description": "cardId của Omen/Item đang giữ." }
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "alive": {
+          "type": "boolean"
+        },
+        "side": {
+          "enum": [
+            "explorer",
+            "hero",
+            "traitor",
+            "solo"
+          ],
+          "description": "explorer trước Haunt; hero/traitor sau; solo = mạnh ai nấy chơi."
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "cardId của Omen/Item đang giữ."
+        },
+        "escaped": {
+          "type": "boolean",
+          "description": "Đã thoát ra khỏi nhà (Haunt cho phép thoát)."
+        }
       }
     },
     "turn": {
       "type": "object",
-      "required": ["number", "playerId", "phase", "movesLeft", "hasAttacked", "usedSpecial", "usedCards", "monsters"],
+      "required": [
+        "number",
+        "playerId",
+        "phase",
+        "movesLeft",
+        "hasAttacked",
+        "usedSpecial",
+        "usedCards",
+        "monsters"
+      ],
       "additionalProperties": false,
       "properties": {
-        "number": { "type": "integer", "minimum": 1 },
-        "playerId": { "type": "string" },
-        "phase": { "enum": ["explorer", "monsters"] },
-        "movesLeft": { "type": "integer", "minimum": 0 },
-        "hasAttacked": { "type": "boolean" },
-        "usedSpecial": { "type": "boolean" },
-        "usedCards": { "type": "array", "items": { "type": "string" } },
+        "number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "playerId": {
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "explorer",
+            "monsters"
+          ]
+        },
+        "movesLeft": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hasAttacked": {
+          "type": "boolean"
+        },
+        "usedSpecial": {
+          "type": "boolean"
+        },
+        "usedCards": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "monsters": {
           "type": "object",
           "description": "Chỉ dùng trong lượt quái vật: monsterId -> số bước còn lại / đã tấn công chưa.",
           "additionalProperties": {
             "type": "object",
-            "required": ["movesLeft", "attacked"],
+            "required": [
+              "movesLeft",
+              "attacked"
+            ],
             "additionalProperties": false,
             "properties": {
-              "movesLeft": { "type": "integer", "minimum": 0 },
-              "attacked": { "type": "boolean" }
+              "movesLeft": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "attacked": {
+                "type": "boolean"
+              }
             }
           }
         }
@@ -222,40 +561,122 @@
     },
     "placedTile": {
       "type": "object",
-      "required": ["tileId", "floor", "x", "y", "rotation", "items"],
+      "required": [
+        "tileId",
+        "floor",
+        "x",
+        "y",
+        "rotation",
+        "items"
+      ],
       "additionalProperties": false,
       "properties": {
-        "tileId": { "type": "string" },
-        "floor": { "$ref": "#/$defs/floor" },
-        "x": { "type": "integer" },
-        "y": { "type": "integer" },
-        "rotation": { "type": "integer", "minimum": 0, "maximum": 3, "description": "Số lần xoay 90° theo chiều kim đồng hồ." },
-        "items": { "type": "array", "items": { "type": "string" }, "description": "Thẻ nằm trên sàn (của người đã chết)." },
-        "sealed": { "type": "boolean", "description": "Đánh dấu của Haunt #1: phòng đã yểm bùa." }
+        "tileId": {
+          "type": "string"
+        },
+        "floor": {
+          "$ref": "#/$defs/floor"
+        },
+        "x": {
+          "type": "integer"
+        },
+        "y": {
+          "type": "integer"
+        },
+        "rotation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3,
+          "description": "Số lần xoay 90° theo chiều kim đồng hồ."
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Thẻ nằm trên sàn (của người đã chết)."
+        },
+        "sealed": {
+          "type": "boolean",
+          "description": "Đánh dấu của Haunt #1: phòng đã yểm bùa."
+        }
       }
     },
     "cardPiles": {
       "type": "object",
-      "required": ["omen", "item", "event"],
+      "required": [
+        "omen",
+        "item",
+        "event"
+      ],
       "additionalProperties": false,
       "properties": {
-        "omen": { "type": "array", "items": { "type": "string" } },
-        "item": { "type": "array", "items": { "type": "string" } },
-        "event": { "type": "array", "items": { "type": "string" } }
+        "omen": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "item": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "event": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "monster": {
       "type": "object",
-      "required": ["id", "type", "name", "traits", "pos", "stunned", "recovering"],
+      "required": [
+        "id",
+        "type",
+        "name",
+        "traits",
+        "pos",
+        "stunned",
+        "recovering"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string" },
-        "type": { "type": "string" },
-        "name": { "type": "string" },
-        "traits": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
-        "pos": { "$ref": "#/$defs/pos" },
-        "stunned": { "type": "boolean" },
-        "recovering": { "type": "boolean", "description": "Đang bỏ lượt này, sẽ tỉnh lại khi lượt quái vật kết thúc." }
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "traits": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        },
+        "stunned": {
+          "type": "boolean"
+        },
+        "recovering": {
+          "type": "boolean",
+          "description": "Đang bỏ lượt này, sẽ tỉnh lại khi lượt quái vật kết thúc."
+        },
+        "ai": {
+          "type": "boolean",
+          "description": "Do game tự điều khiển (không phải Kẻ phản bội)."
+        }
       }
     },
     "pending": {
@@ -263,60 +684,261 @@
       "anyOf": [
         {
           "type": "object",
-          "required": ["type", "playerId", "tileId", "floor", "x", "y", "fromDir", "validRotations", "rotation"],
+          "required": [
+            "type",
+            "playerId",
+            "tileId",
+            "floor",
+            "x",
+            "y",
+            "fromDir",
+            "validRotations",
+            "rotation"
+          ],
           "additionalProperties": false,
           "properties": {
-            "type": { "const": "placeTile" },
-            "playerId": { "type": "string" },
-            "tileId": { "type": "string" },
-            "floor": { "$ref": "#/$defs/floor" },
-            "x": { "type": "integer" },
-            "y": { "type": "integer" },
-            "fromDir": { "type": "integer", "minimum": 0, "maximum": 3 },
-            "validRotations": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 0, "maximum": 3 } },
-            "rotation": { "type": "integer", "minimum": 0, "maximum": 3 }
+            "type": {
+              "const": "placeTile"
+            },
+            "playerId": {
+              "type": "string"
+            },
+            "tileId": {
+              "type": "string"
+            },
+            "floor": {
+              "$ref": "#/$defs/floor"
+            },
+            "x": {
+              "type": "integer"
+            },
+            "y": {
+              "type": "integer"
+            },
+            "fromDir": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            },
+            "validRotations": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3
+              }
+            },
+            "rotation": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            }
           }
         },
         {
           "type": "object",
-          "required": ["type", "playerId", "trait", "dice", "bonus", "label", "outcomes", "then", "source"],
+          "required": [
+            "type",
+            "playerId",
+            "trait",
+            "dice",
+            "bonus",
+            "label",
+            "outcomes",
+            "then",
+            "source"
+          ],
           "additionalProperties": false,
           "properties": {
-            "type": { "const": "roll" },
-            "playerId": { "type": "string" },
-            "trait": { "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/trait" }] },
-            "dice": { "type": ["integer", "null"] },
-            "bonus": { "type": "integer" },
-            "label": { "type": "string" },
-            "outcomes": { "type": ["array", "null"] },
-            "then": { "type": ["object", "null"] },
-            "source": { "type": ["string", "null"] }
+            "type": {
+              "const": "roll"
+            },
+            "playerId": {
+              "type": "string"
+            },
+            "trait": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/trait"
+                }
+              ]
+            },
+            "dice": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "bonus": {
+              "type": "integer"
+            },
+            "label": {
+              "type": "string"
+            },
+            "outcomes": {
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "then": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         },
         {
           "type": "object",
-          "required": ["type", "playerId", "damageType", "amount", "traits", "capacity", "source"],
+          "required": [
+            "type",
+            "playerId",
+            "damageType",
+            "amount",
+            "traits",
+            "capacity",
+            "source"
+          ],
           "additionalProperties": false,
           "properties": {
-            "type": { "const": "allocateDamage" },
-            "playerId": { "type": "string" },
-            "damageType": { "enum": ["physical", "mental", "general"] },
-            "amount": { "type": "integer", "minimum": 1 },
-            "traits": { "type": "array", "items": { "$ref": "#/$defs/trait" } },
-            "capacity": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
-            "source": { "type": ["string", "null"] }
+            "type": {
+              "const": "allocateDamage"
+            },
+            "playerId": {
+              "type": "string"
+            },
+            "damageType": {
+              "enum": [
+                "physical",
+                "mental",
+                "general"
+              ]
+            },
+            "amount": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "traits": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/trait"
+              }
+            },
+            "capacity": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         },
         {
           "type": "object",
-          "required": ["type", "playerId", "options", "amount", "source"],
+          "required": [
+            "type",
+            "playerId",
+            "options",
+            "amount",
+            "source"
+          ],
           "additionalProperties": false,
           "properties": {
-            "type": { "const": "chooseTrait" },
-            "playerId": { "type": "string" },
-            "options": { "type": "array", "items": { "$ref": "#/$defs/trait" } },
-            "amount": { "type": "integer" },
-            "source": { "type": ["string", "null"] }
+            "type": {
+              "const": "chooseTrait"
+            },
+            "playerId": {
+              "type": "string"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/trait"
+              }
+            },
+            "amount": {
+              "type": "integer"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "playerId",
+            "label",
+            "options",
+            "secret",
+            "then",
+            "source"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "choose"
+            },
+            "playerId": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "secret": {
+              "type": "boolean"
+            },
+            "then": {
+              "type": "object",
+              "required": [
+                "op"
+              ]
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         }
       ]

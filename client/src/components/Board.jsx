@@ -2,7 +2,10 @@
 // Bấm vào ô phát sáng để di chuyển / mở cửa; server quyết định mọi thứ còn lại.
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { DoorOpen, Flame, Ghost, Locate, Minus, Package, Plus, RotateCw } from 'lucide-react';
+import {
+  Ban, Box, Check, Coins, DoorOpen, Droplets, Flame, Flower2, Ghost, Landmark, Locate, Minus, Package, PersonStanding,
+  Plus, RotateCw, Shovel, Sparkles, Zap,
+} from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
 import { DIRS, FLOORS, FLOOR_LABEL, TILE_SIZE, mediaUrl, posKey, rotatedDoors } from '../lib/constants.js';
 import { Art, PlayerToken, SymbolIcon } from './ui.jsx';
@@ -19,6 +22,25 @@ const DOOR_STYLE = [
   { bottom: -3, left: '50%', width: 34, height: 7, transform: 'translateX(-50%)' },
   { left: -3, top: '50%', width: 7, height: 34, transform: 'translateY(-50%)' },
 ];
+
+// Dấu hiệu kịch bản trên phòng (haunt.data.marks), server đã lọc theo người xem.
+const MARK_ICON = {
+  coffin: [Box, 'text-stone-200'], flood: [Droplets, 'text-sky-300'], ash: [Ban, 'text-stone-300'], clear: [Check, 'text-emerald-300'],
+  dug: [Shovel, 'text-amber-200'], charm: [Sparkles, 'text-fuchsia-300'], revealed: [Zap, 'text-red-300'],
+  body: [PersonStanding, 'text-red-400'], altar: [Landmark, 'text-violet-300'], offering: [Flower2, 'text-amber-300'],
+  gold: [Coins, 'text-yellow-300'], exit: [DoorOpen, 'text-emerald-300'], token: [Package, 'text-candle'],
+};
+
+function RoomMarks({ marks }) {
+  return marks.map((m, i) => {
+    const [Icon, tint] = MARK_ICON[m.kind] ?? MARK_ICON.token;
+    return (
+      <span key={`${m.kind}-${i}`} title={m.label} className={`rounded-full bg-black/60 p-0.5 ${tint}`}>
+        <Icon size={14} aria-label={m.label} />
+      </span>
+    );
+  });
+}
 
 const SYMBOL_TINT = { omen: 'text-violet-300', event: 'text-amber-300', item: 'text-emerald-300' };
 
@@ -65,7 +87,7 @@ export default function Board() {
   const pending = game.pending;
   const myPlacement = pending?.type === 'placeTile' && pending.playerId === game.you;
 
-  const [floor, setFloor] = useState(me?.pos.floor ?? 'ground');
+  const [floor, setFloor] = useState(me?.pos?.floor ?? 'ground');
   const [view, setView] = useState({ x: 0, y: 0, scale: 1 });
   const containerRef = useRef(null);
   const drag = useRef(null);
@@ -92,9 +114,9 @@ export default function Board() {
   }, []);
 
   // Tự chuyển tab khi quân của mình đổi tầng.
-  const myFloor = me?.pos.floor;
-  const myX = me?.pos.x;
-  const myY = me?.pos.y;
+  const myFloor = me?.pos?.floor;
+  const myX = me?.pos?.x;
+  const myY = me?.pos?.y;
   useEffect(() => {
     if (!myFloor) return;
     setFloor(myFloor);
@@ -183,6 +205,16 @@ export default function Board() {
     if (!suppressClick.current) fn();
   };
 
+  // Đang phải chọn một phòng: tự chuyển sang tầng có lựa chọn nếu tầng đang xem không có.
+  const chooseFloors = pending?.type === 'choose' && pending.playerId === game.you
+    ? [...new Set(pending.options.filter((o) => o.pos && !o.disabled).map((o) => o.pos.floor))].join(',')
+    : '';
+  useEffect(() => {
+    const floors = chooseFloors ? chooseFloors.split(',') : [];
+    if (floors.length && !floors.includes(floor)) setFloor(floors[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chooseFloors]);
+
   // Các ô có thể bấm: bước đi của mình, hoặc của quái vật đang được chọn.
   const targets = useMemo(() => {
     const out = {};
@@ -191,18 +223,28 @@ export default function Board() {
       const cell = { floor, x: origin.x + DIRS[action.dir].dx, y: origin.y + DIRS[action.dir].dy };
       out[posKey(cell)] = { cell, action };
     };
+    if (pending?.type === 'choose' && pending.playerId === game.you) {
+      for (const o of pending.options) {
+        if (o.pos && !o.disabled && o.pos.floor === floor) {
+          out[posKey(o.pos)] = { cell: o.pos, action: { type: 'choose', optionId: o.id }, label: o.label };
+        }
+      }
+      return out;
+    }
     for (const action of game.legal) {
-      if (action.type === 'move' && me) add(me.pos, action);
+      if (action.type === 'move' && me?.pos) add(me.pos, action);
       if (action.type === 'monsterMove' && action.monsterId === selectedMonsterId) {
         const monster = game.monsters[action.monsterId];
         if (monster) add(monster.pos, action);
       }
     }
     return out;
-  }, [game.legal, game.monsters, me, floor, selectedMonsterId]);
+  }, [game.legal, game.monsters, me, floor, selectedMonsterId, pending]);
 
   const tiles = Object.values(game.board.tiles).filter((t) => t.floor === floor);
-  const players = Object.values(game.players);
+  // Không vẽ người đã thoát hoặc bị giấu vị trí (pos = null).
+  const players = Object.values(game.players).filter((p) => p.pos && !p.escaped);
+  const marks = game.haunt?.data?.marks ?? {};
   const monsters = Object.values(game.monsters);
   const controllable = new Set(game.legal.filter((a) => a.type.startsWith('monster')).map((a) => a.monsterId));
   const actorId = pending ? pending.playerId : game.turn.playerId;
@@ -266,6 +308,7 @@ export default function Board() {
                     })}
                   </div>
                   <div className="absolute top-7 right-1.5 flex flex-col items-end gap-1">
+                    {marks[key] && <RoomMarks marks={marks[key]} />}
                     {tile.sealed && (
                       <span title="Đã yểm bùa" className="flicker text-candle"><Flame size={16} aria-label="Đã yểm bùa" /></span>
                     )}
@@ -281,7 +324,7 @@ export default function Board() {
                     type="button"
                     onClick={guarded(() => act(target.action))}
                     className="absolute inset-1 rounded-sm border-2 border-candle bg-candle/10 hover:bg-candle/25"
-                    aria-label={`Đi tới ${def.name}`}
+                    aria-label={target.label ? `Chọn ${target.label}` : `Đi tới ${def.name}`}
                   />
                 )}
               </div>
@@ -368,7 +411,7 @@ export default function Board() {
           className="rounded p-1.5 text-bone hover:bg-stonework"
           aria-label="Về vị trí của tôi"
           onClick={() => {
-            if (me) setFloor(me.pos.floor);
+            if (me?.pos) setFloor(me.pos.floor);
             centerOn(me?.pos ?? { x: 0, y: 0 });
           }}
         >

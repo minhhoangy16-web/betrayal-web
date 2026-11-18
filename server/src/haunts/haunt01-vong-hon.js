@@ -105,7 +105,11 @@ export default {
 
   // Dữ liệu Haunt công khai cho mọi người chơi (hiển thị tiến độ trên UI).
   publicData(state) {
-    return { sealed: state.haunt.data.sealed, sealsRequired: state.haunt.data.sealsRequired };
+    const { sealed, sealsRequired } = state.haunt.data;
+    return {
+      sealed, sealsRequired,
+      meters: [{ id: 'sealed', label: 'Phòng Điềm báo đã yểm bùa', value: sealed.length, max: sealsRequired, tone: 'good' }],
+    };
   },
 
   // Chỉ số được phép tấn công. Trả về null để dùng luật mặc định.

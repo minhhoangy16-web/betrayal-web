@@ -102,11 +102,32 @@ function PendingPrompt({ game, catalog, act }) {
   if (pending.playerId !== game.you) {
     const what = {
       placeTile: 'xoay và đặt gạch', roll: 'đổ xúc xắc', allocateDamage: 'chia sát thương', chooseTrait: 'chọn chỉ số',
+      choose: pending.secret ? 'quyết định (bí mật)' : `quyết định: ${pending.label}`,
     }[pending.type];
     return (
       <p className="flex items-center gap-2 text-bone italic">
         <Hourglass size={16} className="shrink-0" aria-hidden="true" /> Đang chờ {who.name} {what}…
       </p>
+    );
+  }
+  if (pending.type === 'choose') {
+    return (
+      <div className="space-y-2">
+        <p className="font-semibold text-candle">{pending.label}</p>
+        {pending.secret && <p className="text-xs text-stone-500">Chỉ mình bạn thấy lựa chọn này.</p>}
+        {pending.options.some((o) => o.pos) && (
+          <p className="text-xs text-stone-500">Có thể bấm thẳng vào phòng sáng viền trên bàn cờ.</p>
+        )}
+        <div className="grid gap-1.5">
+          {pending.options.map((o) => (
+            <Button key={o.id} disabled={o.disabled} onClick={() => act({ type: 'choose', optionId: o.id })}
+              className="justify-start text-left">
+              <span className="flex-1">{o.label}</span>
+              {o.hint && <span className="text-xs text-stone-500">{o.hint}</span>}
+            </Button>
+          ))}
+        </div>
+      </div>
     );
   }
   if (pending.type === 'placeTile') {
@@ -322,6 +343,7 @@ export default function ActionPanel() {
         <Hourglass size={16} className="shrink-0" aria-hidden="true" />
         {game.turn.phase === 'monsters' ? `${current.name} đang điều khiển quái vật…` : `Đang là lượt của ${current.name}…`}
         {me && !me.alive && ' (Nhân vật của bạn đã chết.)'}
+        {me?.alive && me.escaped && ' (Bạn đã thoát khỏi ngôi nhà.)'}
       </p>
     );
   }

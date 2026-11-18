@@ -10,6 +10,7 @@ import { samePos } from './board.js';
 import { traitValue } from './traits.js';
 import { enqueueFront } from './effects.js';
 import { getHaunt } from '../haunts/index.js';
+import { hook, inPlay } from './hooks.js';
 
 // ref = { kind: 'player' | 'monster', id }
 export function unitOf(state, ref) {
@@ -27,21 +28,31 @@ export function attackTraitsFor(state, attackerRef, targetRef, weaponDef) {
   return custom ?? defaultAttackTraits(weaponDef);
 }
 
+// Hai người chơi có phải đối thủ của nhau không (kịch bản có thể đổi, vd. mạnh ai nấy chơi).
+export function areEnemies(state, a, b) {
+  const custom = hook(state, 'areEnemies', a, b);
+  if (custom !== undefined) return custom;
+  return a.side !== b.side;
+}
+
+const attackable = (state, ref) => hook(state, 'canBeAttacked', ref) !== false;
+
 // Mọi đòn tấn công hợp lệ của nhà thám hiểm đang tới lượt.
 export function explorerAttackOptions(state, playerId) {
   const me = state.players[playerId];
-  if (state.phase !== 'haunt' || !me.alive || state.turn.hasAttacked) return [];
+  if (state.phase !== 'haunt' || !inPlay(me) || state.turn.hasAttacked) return [];
   const attacker = { kind: 'player', id: playerId };
   const targets = [];
   for (const other of Object.values(state.players)) {
-    if (other.id !== playerId && other.alive && other.side !== me.side && samePos(other.pos, me.pos)) {
+    if (other.id !== playerId && inPlay(other) && areEnemies(state, me, other) && samePos(other.pos, me.pos)
+      && attackable(state, { kind: 'player', id: other.id })) {
       targets.push({ kind: 'player', id: other.id });
     }
   }
-  if (me.side === 'hero') {
-    for (const m of Object.values(state.monsters)) {
-      if (!m.stunned && samePos(m.pos, me.pos)) targets.push({ kind: 'monster', id: m.id });
-    }
+  for (const m of Object.values(state.monsters)) {
+    if (m.stunned || !samePos(m.pos, me.pos) || !attackable(state, { kind: 'monster', id: m.id })) continue;
+    const custom = hook(state, 'canAttackMonster', me, m);
+    if (custom ?? me.side !== 'traitor') targets.push({ kind: 'monster', id: m.id });
   }
   const weapons = [null, ...me.cards.filter((id) => CARDS_BY_ID[id].weapon)];
   const options = [];
@@ -63,11 +74,13 @@ export function monsterAttackOptions(state, monsterId) {
   const slot = state.turn.monsters[monsterId];
   if (!monster || !slot || monster.stunned || slot.attacked) return [];
   return Object.values(state.players)
-    .filter((p) => p.alive && p.side === 'hero' && samePos(p.pos, monster.pos))
+    .filter((p) => inPlay(p) && samePos(p.pos, monster.pos) && attackable(state, { kind: 'player', id: p.id })
+      && (hook(state, 'monsterCanTarget', monster, p) ?? p.side === 'hero'))
     .map((p) => ({ type: 'monsterAttack', monsterId, targetId: p.id }));
 }
 
-function inflict(state, ref, amount, trait) {
+function inflict(state, ref, amount, trait, winnerRef) {
+  if (hook(state, 'onCombatLoss', ref, amount, trait, winnerRef) === true) return;
   const unit = unitOf(state, ref);
   if (ref.kind === 'monster') {
     unit.stunned = true;
@@ -82,7 +95,8 @@ function inflict(state, ref, amount, trait) {
 export function resolveCombat(state, attackerRef, defenderRef, trait, bonusDice = 0) {
   const a = unitOf(state, attackerRef);
   const d = unitOf(state, defenderRef);
-  const ar = rollDice(state, unitTraitValue(state, attackerRef, trait) + bonusDice);
+  const bonus = bonusDice + (hook(state, 'attackBonus', attackerRef, defenderRef, trait) ?? 0);
+  const ar = rollDice(state, unitTraitValue(state, attackerRef, trait) + bonus);
   const dr = rollDice(state, unitTraitValue(state, defenderRef, trait));
   setLastRoll(state, {
     kind: 'combat', trait, label: `${a.name} tấn công ${d.name}`,
@@ -99,6 +113,8 @@ export function resolveCombat(state, attackerRef, defenderRef, trait, bonusDice 
     addLog(state, 'Hoà – không ai bị thương.', 'combat');
     return;
   }
-  const loser = ar.total > dr.total ? defenderRef : attackerRef;
-  inflict(state, loser, Math.abs(ar.total - dr.total), trait);
+  const [winner, loser] = ar.total > dr.total ? [attackerRef, defenderRef] : [defenderRef, attackerRef];
+  const amount = Math.abs(ar.total - dr.total);
+  hook(state, 'onCombatWin', winner, loser, amount, trait);
+  inflict(state, loser, amount, trait, winner);
 }

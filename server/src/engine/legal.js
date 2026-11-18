@@ -7,6 +7,7 @@ import { samePos, tileAt, resolveStep, hasTileForFloor } from './board.js';
 import { enumerateAllocations } from './effects.js';
 import { explorerAttackOptions, monsterAttackOptions } from './combat.js';
 import { getHaunt } from '../haunts/index.js';
+import { hook, inPlay } from './hooks.js';
 
 // Các bước đi có thể từ một vị trí: [{ dir, discover } | { linkTo }]
 function stepsFrom(state, pos, { allowDiscover, filter }) {
@@ -39,6 +40,8 @@ function pendingActions(pending) {
         .map((allocation) => ({ type: 'allocateDamage', allocation }));
     case 'chooseTrait':
       return pending.options.map((trait) => ({ type: 'chooseTrait', trait }));
+    case 'choose':
+      return pending.options.filter((o) => !o.disabled).map((o) => ({ type: 'choose', optionId: o.id }));
     default:
       return [];
   }
@@ -52,9 +55,18 @@ function monsterPhaseActions(state) {
     if (!slot || monster.stunned) continue;
     if (slot.movesLeft >= 1) {
       const filter = (pos) => haunt.canMonsterEnter?.(state, monster, pos) !== false;
-      for (const step of stepsFrom(state, monster.pos, { allowDiscover: false, filter })) {
-        const { discover, ...rest } = step;
-        out.push({ type: 'monsterMove', monsterId: monster.id, ...rest });
+      const custom = hook(state, 'monsterSteps', monster);
+      if (custom) {
+        for (const s of custom) {
+          if (!filter(s.pos)) continue;
+          out.push(s.linkTo ? { type: 'monsterMove', monsterId: monster.id, linkTo: s.linkTo }
+            : { type: 'monsterMove', monsterId: monster.id, dir: s.dir });
+        }
+      } else {
+        for (const step of stepsFrom(state, monster.pos, { allowDiscover: false, filter })) {
+          const { discover, ...rest } = step;
+          out.push({ type: 'monsterMove', monsterId: monster.id, ...rest });
+        }
       }
     }
     out.push(...monsterAttackOptions(state, monster.id));
@@ -71,7 +83,7 @@ function explorerPhaseActions(state, player) {
   for (const cardId of player.cards) {
     if (CARDS_BY_ID[cardId].use && !state.turn.usedCards.includes(cardId)) out.push({ type: 'useItem', cardId });
     for (const other of Object.values(state.players)) {
-      if (other.id !== player.id && other.alive && other.side === player.side && samePos(other.pos, player.pos)) {
+      if (other.id !== player.id && inPlay(other) && other.side === player.side && samePos(other.pos, player.pos)) {
         out.push({ type: 'giveItem', cardId, toPlayerId: other.id });
       }
     }
@@ -89,7 +101,7 @@ export function legalActions(state, playerId) {
   if (state.pending) return state.pending.playerId === playerId ? pendingActions(state.pending) : [];
   if (state.turn.playerId !== playerId) return [];
   if (state.turn.phase === 'monsters') return monsterPhaseActions(state);
-  return player.alive ? explorerPhaseActions(state, player) : [];
+  return inPlay(player) ? explorerPhaseActions(state, player) : [];
 }
 
 // Người đang phải hành động lúc này (người đang được hỏi, hoặc người đang tới lượt).

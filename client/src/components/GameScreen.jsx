@@ -11,6 +11,7 @@ import { Button } from './ui.jsx';
 import Board from './Board.jsx';
 import CharacterSheet from './TraitPanel.jsx';
 import ActionPanel from './ActionPanel.jsx';
+import HauntStatus from './HauntStatus.jsx';
 import HauntBook from './HauntBook.jsx';
 import DisconnectBanner from './DisconnectBanner.jsx';
 import { CardViewer } from './TableEffects.jsx';
@@ -80,10 +81,20 @@ function WinnerBanner() {
   const leave = useGameStore((s) => s.leave);
   const [hidden, setHidden] = useState(false);
   const me = game.players[game.you];
-  const heroesWon = game.winner.side === 'heroes';
-  const iWon = me && ((heroesWon && me.side === 'hero') || (!heroesWon && me.side === 'traitor'));
+  const { side, playerIds = [] } = game.winner;
+  const heroesWon = side === 'heroes' || side === 'players';
+  const iWon = me && (
+    side === 'heroes' ? me.side === 'hero'
+      : side === 'traitor' ? me.side === 'traitor'
+        : side === 'players' ? playerIds.includes(me.id) : false);
   const Icon = heroesWon ? Trophy : Skull;
-  const title = heroesWon ? 'Những người sống sót chiến thắng' : 'Kẻ phản bội chiến thắng';
+  const names = playerIds.map((id) => game.players[id]?.name).filter(Boolean).join(', ');
+  const title = {
+    heroes: 'Những người sống sót chiến thắng',
+    traitor: 'Kẻ phản bội chiến thắng',
+    players: names ? `${names} chiến thắng` : 'Có người chiến thắng',
+    house: 'Ngôi nhà chiến thắng',
+  }[side] ?? 'Ván chơi kết thúc';
 
   // Thu gọn để xem lại bàn cờ sau khi ván kết thúc.
   if (hidden) {
@@ -182,6 +193,7 @@ export default function GameScreen() {
           <aside className="flex min-h-0 flex-col gap-3">
             <div className="thin-scroll flex max-h-[62%] shrink-0 flex-col gap-3 overflow-y-auto">
               <ActionPanel />
+              <HauntStatus />
               <LastCard />
               <DiceTray />
             </div>
@@ -217,6 +229,7 @@ export default function GameScreen() {
             {tab === 'turn' && (
               <div className="flex flex-col gap-2">
                 <ActionPanel />
+                <HauntStatus />
                 <LastCard />
                 <DiceTray />
               </div>

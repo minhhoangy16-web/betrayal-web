@@ -4,6 +4,7 @@ import { TRAITS } from './constants.js';
 import { rollDice } from './dice.js';
 import { addLog, setLastRoll } from './log.js';
 import { traitValue } from './traits.js';
+import { randInt } from './rng.js';
 import { registerOp, setVictoryCheck } from './effects.js';
 import { getHaunt, selectHaunt } from '../haunts/index.js';
 
@@ -27,9 +28,12 @@ registerOp('hauntRoll', (state, it) => {
 });
 
 // rule: 'revealer' | 'leftOfRevealer' | 'highestTrait' | 'lowestTrait' (kèm trait)
+//       | 'random' (bất kỳ ai, kể cả người lật Haunt) | 'none' (không có Kẻ phản bội)
 export function pickTraitor(state, traitorRule, revealerId) {
   const order = state.turnOrder;
   const rule = traitorRule?.rule ?? 'revealer';
+  if (rule === 'none') return null;
+  if (rule === 'random') return order[randInt(state, order.length)];
   if (rule === 'leftOfRevealer') return order[(order.indexOf(revealerId) + 1) % order.length];
   if (rule === 'highestTrait' || rule === 'lowestTrait') {
     if (!TRAITS.includes(traitorRule.trait)) throw new Error('Thiếu trait cho luật chọn Traitor');
@@ -57,11 +61,20 @@ export function startHaunt(state, revealerId) {
     revealerId,
     traitorId,
     startedOnTurn: state.turn.number,
+    startedOnRound: state.round,
     pendingFirstTurn: true,
     data: {},
   };
-  for (const p of Object.values(state.players)) p.side = p.id === traitorId ? 'traitor' : 'hero';
-  addLog(state, `👁 Haunt «${haunt.name}» bắt đầu. Kẻ phản bội là ${state.players[traitorId].name}!`, 'haunt');
+  // Không có Kẻ phản bội: mọi người cùng phe 'hero', hoặc mỗi người một phe 'solo' (mạnh ai nấy chơi).
+  for (const p of Object.values(state.players)) p.side = p.id === traitorId ? 'traitor' : haunt.playerSide ?? 'hero';
+  if (haunt.hiddenTraitor) {
+    addLog(state, `👁 Haunt «${haunt.name}» bắt đầu. Một người trong các bạn không còn là chính mình…`, 'haunt');
+    addLog(state, 'Bạn chính là người bị nhập. Đừng để ai biết.', 'haunt', traitorId);
+  } else if (!traitorId) {
+    addLog(state, `👁 Haunt «${haunt.name}» bắt đầu. Lần này không có Kẻ phản bội.`, 'haunt');
+  } else {
+    addLog(state, `👁 Haunt «${haunt.name}» bắt đầu. Kẻ phản bội là ${state.players[traitorId].name}!`, 'haunt');
+  }
   haunt.setup(state);
 }
 
@@ -73,8 +86,17 @@ export function checkVictory(state) {
   state.phase = 'ended';
   state.pending = null;
   state.queue = [];
-  const who = result.side === 'heroes' ? 'Những người sống sót' : 'Kẻ phản bội';
-  addLog(state, `🏁 ${who} chiến thắng! ${result.reason}`, 'haunt');
+  addLog(state, `🏁 ${winnerLabel(state, result)} chiến thắng! ${result.reason}`, 'haunt');
 }
 
 setVictoryCheck(checkVictory);
+
+// winner = { side: 'heroes' | 'traitor' | 'players' | 'house', playerIds?, reason }
+//   players: một hoặc vài người thắng riêng (mạnh ai nấy chơi) – playerIds là danh sách người thắng.
+//   house: không ai thắng, ngôi nhà thắng.
+export function winnerLabel(state, result) {
+  if (result.side === 'heroes') return 'Những người sống sót';
+  if (result.side === 'traitor') return 'Kẻ phản bội';
+  if (result.side === 'house') return 'Ngôi nhà';
+  return (result.playerIds ?? []).map((id) => state.players[id]?.name).join(' và ');
+}

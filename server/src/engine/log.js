@@ -1,9 +1,12 @@
 const MAX_LOG = 300;
 
 // kind: 'info' | 'move' | 'card' | 'roll' | 'damage' | 'combat' | 'haunt' | 'system'
-export function addLog(state, text, kind = 'info') {
+// to: chỉ người chơi này thấy dòng nhật ký (thông tin bí mật của Haunt).
+export function addLog(state, text, kind = 'info', to = null) {
   state.logSeq += 1;
-  state.log.push({ seq: state.logSeq, kind, text, turn: state.turn?.number ?? 0 });
+  const entry = { seq: state.logSeq, kind, text, turn: state.turn?.number ?? 0 };
+  if (to) entry.to = to;
+  state.log.push(entry);
   if (state.log.length > MAX_LOG) state.log.splice(0, state.log.length - MAX_LOG);
 }
 

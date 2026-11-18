@@ -212,6 +212,25 @@ registerOp('teleport', (state, it) => {
   addLog(state, `${player.name} bị đưa tới ${TILES_BY_ID[it.tileId].name}.`, 'move');
 });
 
+// Hỏi một người chơi chọn một phương án. Dùng cho mọi lựa chọn của kịch bản Haunt: chọn phòng,
+// chọn mục tiêu, chọn cách làm lễ... it = { playerId, label, options: [{ id, label, pos?, disabled?,
+// hint? }], secret?, then: { op, ... } }. Khi người chơi chọn, op `then` chạy với `choice` = id.
+// secret: người khác chỉ thấy "đang chờ X quyết định", không thấy các phương án.
+registerOp('choose', (state, it) => {
+  const player = state.players[it.playerId];
+  if (!player) return;
+  const enabled = (it.options ?? []).filter((o) => !o.disabled);
+  if (!enabled.length) return;
+  if (enabled.length === 1 && !it.secret && !it.always) {
+    enqueueFront(state, [{ ...it.then, playerId: it.playerId, choice: enabled[0].id }]);
+    return;
+  }
+  state.pending = {
+    type: 'choose', playerId: it.playerId, label: it.label ?? 'Chọn', options: it.options,
+    secret: Boolean(it.secret), then: it.then, source: it.source ?? null,
+  };
+});
+
 // ---------------------------------------------------------------- trả lời pending
 
 function requirePending(state, playerId, type) {
@@ -271,6 +290,14 @@ export function resolveChooseTrait(state, playerId, trait) {
   if (!p.options.includes(trait)) throw new GameError('Chỉ số không nằm trong lựa chọn.');
   state.pending = null;
   shiftTrait(state, state.players[playerId], trait, p.amount);
+}
+
+export function resolveChoose(state, playerId, optionId) {
+  const p = requirePending(state, playerId, 'choose');
+  const option = p.options.find((o) => o.id === optionId);
+  if (!option || option.disabled) throw new GameError('Lựa chọn không hợp lệ.');
+  state.pending = null;
+  enqueueFront(state, [{ ...p.then, playerId, choice: optionId }]);
 }
 
 // Liệt kê mọi cách chia sát thương hợp lệ (dùng cho legalActions / bot / gợi ý UI).

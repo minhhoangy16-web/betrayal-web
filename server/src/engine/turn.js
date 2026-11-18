@@ -1,4 +1,6 @@
 // Vòng lượt: lượt nhà thám hiểm -> (nếu là Traitor có quái vật) lượt quái vật -> người kế tiếp.
+// Hết một vòng (người cuối cùng trong thứ tự ngồi đi xong) thì kịch bản có thể chạy "lượt của
+// ngôi nhà" qua hook onRoundEnd, trước khi người đầu tiên của vòng mới bắt đầu.
 
 import { TILES_BY_ID } from '../data/index.js';
 import { addLog, setLastRoll } from './log.js';
@@ -6,28 +8,38 @@ import { rollDice } from './dice.js';
 import { tileAt } from './board.js';
 import { traitValue } from './traits.js';
 import { registerOp, enqueueFront, toOps } from './effects.js';
+import { hook, inPlay } from './hooks.js';
+
+// Quái vật do Kẻ phản bội điều khiển (quái vật có ai: true do game tự điều khiển).
+export const traitorMonsters = (state) => Object.values(state.monsters).filter((m) => !m.ai);
 
 export function controlsMonsters(state, playerId) {
-  return Boolean(state.haunt) && state.haunt.traitorId === playerId && Object.keys(state.monsters).length > 0;
+  return Boolean(state.haunt) && state.haunt.traitorId === playerId && traitorMonsters(state).length > 0;
 }
+
+const canTakeTurn = (state, id) => inPlay(state.players[id]) || controlsMonsters(state, id);
 
 export function startTurn(state, playerId) {
   const player = state.players[playerId];
+  const active = inPlay(player);
   state.turn = {
     number: (state.turn?.number ?? 0) + 1,
     playerId,
     phase: 'explorer',
-    movesLeft: player.alive ? traitValue(player, 'speed') : 0,
+    movesLeft: active ? traitValue(player, 'speed') : 0,
     hasAttacked: false,
     usedSpecial: false,
     usedCards: [],
     monsters: {},
   };
-  if (player.alive) {
+  hook(state, 'onTurnStart', playerId);
+  if (active && !hook(state, 'skipExplorer', playerId)) {
     addLog(state, `— Lượt của ${player.name} (${state.turn.movesLeft} bước).`, 'system');
-  } else {
-    // Traitor đã chết vẫn điều khiển quái vật.
+  } else if (controlsMonsters(state, playerId)) {
+    // Traitor đã chết (hoặc không tự đi được) vẫn điều khiển quái vật.
     beginMonsterPhase(state);
+  } else {
+    enqueueFront(state, [{ op: 'afterExplorer' }]);
   }
 }
 
@@ -36,12 +48,13 @@ export function startTurn(state, playerId) {
 export function finishExplorerPhase(state) {
   const player = state.players[state.turn.playerId];
   const ops = [];
-  if (player.alive) {
+  if (inPlay(player)) {
     const def = TILES_BY_ID[tileAt(state, player.pos).tileId];
     if (def.effect?.trigger === 'endTurn') {
       addLog(state, `${player.name} kết thúc lượt tại ${def.name}.`, 'info');
       ops.push(...toOps(def.effect.effects, player.id, def.id));
     }
+    ops.push(...(hook(state, 'onExplorerTurnEnd', player) ?? []));
   }
   ops.push({ op: 'afterExplorer' });
   enqueueFront(state, ops);
@@ -51,11 +64,21 @@ registerOp('finish', (state) => finishExplorerPhase(state));
 
 registerOp('afterExplorer', (state) => {
   // Lượt mà Haunt vừa nổ ra: không có lượt quái vật, chuyển thẳng cho người bên trái Traitor.
-  if (!state.haunt?.pendingFirstTurn && controlsMonsters(state, state.turn.playerId)) {
+  if (state.turn.phase !== 'monsters' && !state.haunt?.pendingFirstTurn && controlsMonsters(state, state.turn.playerId)) {
     beginMonsterPhase(state);
   } else {
     advanceTurn(state);
   }
+});
+
+registerOp('roundEnd', (state) => {
+  hook(state, 'onRoundEnd');
+});
+
+// Bắt đầu lượt của một người sau lượt của ngôi nhà. Nếu người đó vừa chết thì tìm người kế tiếp.
+registerOp('beginTurn', (state, it) => {
+  if (canTakeTurn(state, it.playerId)) startTurn(state, it.playerId);
+  else advanceTurn(state, it.playerId);
 });
 
 export function beginMonsterPhase(state) {
@@ -63,7 +86,7 @@ export function beginMonsterPhase(state) {
   state.turn.movesLeft = 0;
   state.turn.monsters = {};
   addLog(state, '— Lượt quái vật.', 'system');
-  for (const monster of Object.values(state.monsters)) {
+  for (const monster of traitorMonsters(state)) {
     if (monster.stunned) {
       // Quái vật bị choáng bỏ lượt này và tỉnh lại khi lượt quái vật kết thúc.
       monster.recovering = true;
@@ -79,7 +102,7 @@ export function beginMonsterPhase(state) {
 }
 
 export function endMonsterPhase(state) {
-  for (const monster of Object.values(state.monsters)) {
+  for (const monster of traitorMonsters(state)) {
     if (monster.recovering) {
       monster.stunned = false;
       monster.recovering = false;
@@ -89,20 +112,27 @@ export function endMonsterPhase(state) {
   advanceTurn(state);
 }
 
-export function advanceTurn(state) {
+// fromId: tìm người kế tiếp tính từ người này (mặc định: người đang tới lượt).
+export function advanceTurn(state, fromId = state.turn.playerId) {
   const order = state.turnOrder;
-  let from = order.indexOf(state.turn.playerId);
+  let from = order.indexOf(fromId);
   if (state.haunt?.pendingFirstTurn) {
-    from = order.indexOf(state.haunt.traitorId);
+    from = order.indexOf(state.haunt.traitorId ?? state.haunt.revealerId);
     state.haunt.pendingFirstTurn = false;
   }
   for (let i = 1; i <= order.length; i++) {
     const raw = from + i;
     const id = order[raw % order.length];
-    if (state.players[id].alive || controlsMonsters(state, id)) {
-      if (raw >= order.length) state.round += 1;
-      startTurn(state, id);
-      return;
+    if (!canTakeTurn(state, id)) continue;
+    if (raw >= order.length) {
+      state.round += 1;
+      if (state.phase === 'haunt') {
+        // Lượt của ngôi nhà chạy trước người đầu tiên của vòng mới.
+        enqueueFront(state, [{ op: 'roundEnd' }, { op: 'beginTurn', playerId: id }]);
+        return;
+      }
     }
+    startTurn(state, id);
+    return;
   }
 }

@@ -2,8 +2,9 @@
 // (Traitor's Tome hoặc Secrets of Survival) nên ở đây không có gì để lộ.
 
 import { useEffect, useRef } from 'react';
-import { BookOpen, Flame, Skull, X } from 'lucide-react';
+import { BookOpen, Skull, X } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
+import { HauntMeters } from './HauntStatus.jsx';
 
 export default function HauntBook({ onClose }) {
   const haunt = useGameStore((s) => s.game?.haunt);
@@ -22,8 +23,11 @@ export default function HauntBook({ onClose }) {
   if (!haunt) return null;
   const book = haunt.book;
   const traitor = book?.kind === 'traitorTome';
-  const sealed = haunt.data?.sealed?.length;
-  const required = haunt.data?.sealsRequired;
+  const traitorLine = {
+    traitor: players[haunt.traitorId]?.name,
+    hidden: haunt.traitorId ? players[haunt.traitorId]?.name : 'đang giấu mặt',
+  }[haunt.mode ?? 'traitor'];
+  const modeLine = { coop: 'Không có kẻ phản bội – mọi người cùng chống lại ngôi nhà.', solo: 'Không có phe – mỗi người tự chơi cho mình.' }[haunt.mode];
 
   return (
     <div
@@ -51,16 +55,17 @@ export default function HauntBook({ onClose }) {
 
         <p className="text-xs tracking-[0.3em] text-stone-500 uppercase">Haunt</p>
         <h2 className="font-display text-2xl text-parchment">{haunt.name}</h2>
-        <p className="mt-1 text-sm text-bone">
-          Kẻ phản bội: <strong className="text-red-400">{players[haunt.traitorId]?.name}</strong>
-        </p>
-        <p className="mt-3 border-l-2 border-mortar pl-3 text-bone italic">{haunt.publicIntro}</p>
-
-        {required !== undefined && (
-          <p className="mt-3 flex items-center gap-2 text-sm text-candle">
-            <Flame size={15} aria-hidden="true" /> Phòng đã yểm bùa: {sealed}/{required}
+        {traitorLine && (
+          <p className="mt-1 text-sm text-bone">
+            Kẻ phản bội: <strong className="text-red-400">{traitorLine}</strong>
           </p>
         )}
+        {modeLine && <p className="mt-1 text-sm text-bone">{modeLine}</p>}
+        <p className="mt-3 border-l-2 border-mortar pl-3 text-bone italic">{haunt.publicIntro}</p>
+
+        <div className="mt-4 rounded border border-mortar/70 bg-black/20 p-3">
+          <HauntMeters data={haunt.data} />
+        </div>
 
         {book ? (
           <div className="mt-5 border-t border-mortar pt-4">

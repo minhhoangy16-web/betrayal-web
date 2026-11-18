@@ -20,7 +20,9 @@ export const DIRS = [
 
 export const DAMAGE_LABEL = { physical: 'thể chất', mental: 'tinh thần', general: 'tổng hợp' };
 export const CARD_TYPE_LABEL = { omen: 'Điềm báo', item: 'Vật phẩm', event: 'Sự kiện' };
-export const SIDE_LABEL = { explorer: 'Nhà thám hiểm', hero: 'Người sống sót', traitor: 'Kẻ phản bội' };
+export const SIDE_LABEL = {
+  explorer: 'Nhà thám hiểm', hero: 'Người sống sót', traitor: 'Kẻ phản bội', solo: 'Mạnh ai nấy chơi', unknown: 'Chưa rõ phe',
+};
 
 export const TILE_SIZE = 136;
 

@@ -2,6 +2,7 @@ import { CHARACTERS_BY_ID } from '../data/index.js';
 import { MAX_INDEX, TRAIT_LABEL } from './constants.js';
 import { addLog } from './log.js';
 import { tileAt } from './board.js';
+import { hook } from './hooks.js';
 
 export const characterOf = (player) => CHARACTERS_BY_ID[player.characterId];
 export const startIndex = (player, trait) => characterOf(player).traits[trait].start;
@@ -31,6 +32,7 @@ export function killPlayer(state, player) {
   if (tile && player.cards.length) tile.items.push(...player.cards);
   player.cards = [];
   addLog(state, `☠ ${player.name} đã chết.`, 'haunt');
+  hook(state, 'onPlayerDeath', player);
 }
 
 // Dịch chuyển chỉ số delta nấc (âm = giảm). Trả về số nấc thực sự thay đổi.

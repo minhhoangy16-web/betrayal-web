@@ -10,11 +10,12 @@ import {
 } from './board.js';
 import {
   enqueue, enqueueFront, toOps, gainCard, loseCard,
-  resolveRoll, resolveAllocateDamage, resolveChooseTrait,
+  resolveRoll, resolveAllocateDamage, resolveChooseTrait, resolveChoose,
 } from './effects.js';
 import { finishExplorerPhase, endMonsterPhase } from './turn.js';
-import { explorerAttackOptions, monsterAttackOptions, resolveCombat } from './combat.js';
+import { explorerAttackOptions, monsterAttackOptions, resolveCombat, areEnemies } from './combat.js';
 import { getHaunt } from '../haunts/index.js';
+import { hook, inPlay } from './hooks.js';
 
 // ---------------------------------------------------------------- kiểm tra chung
 
@@ -31,6 +32,7 @@ function requireExplorerTurn(state, playerId) {
   if (state.turn.phase !== 'explorer') throw new GameError('Đang là lượt quái vật.');
   const player = state.players[playerId];
   if (!player.alive) throw new GameError('Nhân vật của bạn đã chết.');
+  if (player.escaped) throw new GameError('Bạn đã thoát ra khỏi ngôi nhà.');
   return player;
 }
 
@@ -46,16 +48,18 @@ export function opponentsHere(state, player) {
   if (state.phase !== 'haunt') return 0;
   let n = 0;
   for (const other of Object.values(state.players)) {
-    if (other.id !== player.id && other.alive && other.side !== player.side && samePos(other.pos, player.pos)) n += 1;
+    if (other.id !== player.id && inPlay(other) && areEnemies(state, player, other) && samePos(other.pos, player.pos)) n += 1;
   }
-  if (player.side === 'hero') {
-    for (const m of Object.values(state.monsters)) if (!m.stunned && samePos(m.pos, player.pos)) n += 1;
+  for (const m of Object.values(state.monsters)) {
+    if (!m.stunned && samePos(m.pos, player.pos) && (hook(state, 'monsterCanTarget', m, player) ?? player.side === 'hero')) n += 1;
   }
   return n;
 }
 
-function payMove(state, player) {
-  state.turn.movesLeft = Math.max(0, state.turn.movesLeft - 1 - opponentsHere(state, player));
+// Trả bước khi rời phòng hiện tại để vào `toPos` (kịch bản có thể bắt trả thêm, vd. phòng ngập).
+function payMove(state, player, toPos) {
+  const extra = hook(state, 'moveCost', player, toPos) ?? 0;
+  state.turn.movesLeft = Math.max(0, state.turn.movesLeft - 1 - extra - opponentsHere(state, player));
 }
 
 const roomName = (state, pos) => TILES_BY_ID[tileAt(state, pos).tileId].name;
@@ -68,9 +72,10 @@ function move(state, playerId, action) {
   const step = resolveStep(state, player.pos, action);
 
   if (step.kind === 'move') {
-    payMove(state, player);
+    payMove(state, player, step.pos);
     player.pos = step.pos;
     addLog(state, `${player.name} đi tới ${roomName(state, step.pos)}.`, 'move');
+    hook(state, 'onPlayerEnter', player, step.pos);
     return;
   }
 
@@ -116,9 +121,10 @@ function placeTile(state, playerId, action) {
 
   state.pending = null;
   putTile(state, p.tileId, pos, rotation);
-  payMove(state, player);
+  payMove(state, player, pos);
   player.pos = pos;
   addLog(state, `${player.name} khám phá ra ${def.name}.`, 'move');
+  hook(state, 'onPlayerEnter', player, pos);
 
   const ops = [];
   if (def.effect?.trigger === 'discover') ops.push(...toOps(def.effect.effects, playerId, def.id));
@@ -216,14 +222,23 @@ function monsterMove(state, playerId, action) {
   requireMonsterTurn(state, playerId);
   const { monster, slot } = requireActiveMonster(state, action.monsterId);
   if (slot.movesLeft < 1) throw new GameError(`${monster.name} đã hết bước.`);
-  const step = resolveStep(state, monster.pos, action);
-  if (step.kind !== 'move') throw new GameError('Quái vật không thể khám phá phòng mới.');
-  if (getHaunt(state).canMonsterEnter?.(state, monster, step.pos) === false) {
+  let target;
+  const custom = hook(state, 'monsterSteps', monster);
+  if (custom) {
+    const match = custom.find((s) => (action.linkTo ? s.linkTo === action.linkTo : s.dir === action.dir));
+    if (!match) throw new GameError(`${monster.name} không đi hướng đó được.`);
+    target = match.pos;
+  } else {
+    const step = resolveStep(state, monster.pos, action);
+    if (step.kind !== 'move') throw new GameError('Quái vật không thể khám phá phòng mới.');
+    target = step.pos;
+  }
+  if (getHaunt(state).canMonsterEnter?.(state, monster, target) === false) {
     throw new GameError(`${monster.name} không thể vào phòng đó.`);
   }
   slot.movesLeft -= 1;
-  monster.pos = step.pos;
-  addLog(state, `${monster.name} di chuyển tới ${roomName(state, step.pos)}.`, 'move');
+  monster.pos = target;
+  addLog(state, `${monster.name} di chuyển tới ${roomName(state, target)}.`, 'move');
 }
 
 function monsterAttack(state, playerId, action) {
@@ -248,6 +263,7 @@ export const ACTIONS = {
   roll: (state, playerId) => resolveRoll(state, playerId),
   allocateDamage: (state, playerId, action) => resolveAllocateDamage(state, playerId, action.allocation),
   chooseTrait: (state, playerId, action) => resolveChooseTrait(state, playerId, action.trait),
+  choose: (state, playerId, action) => resolveChoose(state, playerId, action.optionId),
   useItem,
   giveItem,
   pickupItem,

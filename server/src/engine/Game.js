@@ -15,6 +15,7 @@ import { runQueue, enqueueFront } from './effects.js';
 import { startTurn } from './turn.js';
 import { checkVictory } from './haunt.js';
 import { ACTIONS } from './actions.js';
+import { inPlay } from './hooks.js';
 
 export { GameError } from './errors.js';
 export { getView } from './view.js';
@@ -103,9 +104,9 @@ export function createGame({ code, players, seed, rules = {} }) {
 function settle(state) {
   runQueue(state);
   checkVictory(state);
-  // Người đang tới lượt chết giữa lượt (ví dụ thua khi tự tấn công): chuyển lượt.
+  // Người đang tới lượt chết (hoặc thoát khỏi nhà) giữa lượt: chuyển lượt.
   const current = state.players[state.turn.playerId];
-  if (!state.winner && !state.pending && state.turn.phase === 'explorer' && !current.alive) {
+  if (!state.winner && !state.pending && state.turn.phase === 'explorer' && !inPlay(current)) {
     enqueueFront(state, [{ op: 'afterExplorer' }]);
     runQueue(state);
     checkVictory(state);

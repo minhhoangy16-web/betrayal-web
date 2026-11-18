@@ -12,6 +12,7 @@ export function PlayerList({ inspectedId, onInspect }) {
   const catalog = useGameStore((s) => s.catalog);
   const actorId = game.pending ? game.pending.playerId : game.turn.playerId;
   const online = Object.fromEntries((lobby?.players ?? []).map((p) => [p.id, p.connected]));
+  const carried = game.haunt?.data?.carried ?? {};
 
   return (
     <Panel title="Người chơi" icon={Users}>
@@ -38,8 +39,14 @@ export function PlayerList({ inspectedId, onInspect }) {
                   <div className="truncate text-xs text-stone-500">
                     {p.side === 'traitor'
                       ? <span className="font-semibold text-red-400">{SIDE_LABEL.traitor}</span>
-                      : p.side === 'hero' ? SIDE_LABEL.hero : character.name}
+                      : p.side === 'explorer' ? character.name : SIDE_LABEL[p.side] ?? character.name}
+                    {p.escaped && <span className="text-emerald-300"> · đã thoát</span>}
                   </div>
+                  {carried[id]?.length > 0 && (
+                    <div className="truncate text-xs text-candle" title={carried[id].join(', ')}>
+                      Mang: {carried[id].join(', ')}
+                    </div>
+                  )}
                 </div>
                 {p.alive ? (
                   <div className="grid grid-cols-4 gap-x-1.5 text-center text-xs text-bone">

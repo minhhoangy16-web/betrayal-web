@@ -163,7 +163,7 @@ test('Haunt Roll: số xúc xắc = số Omen đã lật, đạt ngưỡng thì 
 });
 
 function gameInHaunt(seed, players = 4) {
-  const state = newGame(players, seed, { hauntRollThreshold: 0 });
+  const state = newGame(players, seed, { hauntRollThreshold: 0, forcedHauntId: 'haunt-01' });
   // Chơi tới khi Haunt bắt đầu và lượt mới (sau Haunt) đã mở.
   playUntil(state, makeRng(seed), (s) => s.phase === 'haunt' && !s.pending && !s.haunt.pendingFirstTurn);
   assert.equal(state.phase, 'haunt');
