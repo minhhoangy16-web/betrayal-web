@@ -70,6 +70,8 @@ function monsterPhaseActions(state) {
       }
     }
     out.push(...monsterAttackOptions(state, monster.id));
+    // Chiêu riêng của quái vật (vd. Hồn ma «Hù», Ma cà rồng «Hút máu»).
+    for (const a of haunt.monsterSpecialActions?.(state, monster) ?? []) out.push({ ...a, type: 'monsterSpecial', monsterId: monster.id });
   }
   out.push({ type: 'endMonsterTurn' });
   return out;

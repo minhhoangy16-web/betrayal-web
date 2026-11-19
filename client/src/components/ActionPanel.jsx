@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import {
   ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Check, Dices, Flame, Footprints, Ghost, Hourglass, Layers,
-  Minus, Package, Plus, RotateCw, Swords,
+  Minus, Package, Plus, RotateCw, Sparkles, Swords,
 } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
 import { DAMAGE_LABEL, DIRS, TRAIT_LABEL } from '../lib/constants.js';
@@ -261,6 +261,7 @@ function MonsterActions({ game, catalog, act }) {
   }, [selected, firstActive, selectMonster]);
   const moves = game.legal.filter((a) => a.type === 'monsterMove' && a.monsterId === selected);
   const attacks = game.legal.filter((a) => a.type === 'monsterAttack' && a.monsterId === selected);
+  const monsterSpecials = game.legal.filter((a) => a.type === 'monsterSpecial' && a.monsterId === selected);
   return (
     <div className="space-y-4">
       <Section title="Quái vật của bạn">
@@ -298,6 +299,17 @@ function MonsterActions({ game, catalog, act }) {
           <Section title="Di chuyển quái vật">
             <MovePad moves={moves} catalog={catalog} onMove={act} />
           </Section>
+          {monsterSpecials.length > 0 && (
+            <Section title="Chiêu riêng">
+              <div className="flex flex-col gap-1">
+                {monsterSpecials.map((a) => (
+                  <Button key={`${a.actionId}-${a.targetId ?? ''}`} variant="candle" className="justify-start text-left" onClick={() => act(a)}>
+                    <Sparkles size={15} aria-hidden="true" /> {a.label}
+                  </Button>
+                ))}
+              </div>
+            </Section>
+          )}
           {attacks.length > 0 && (
             <Section title="Tấn công">
               <div className="flex flex-col gap-1">

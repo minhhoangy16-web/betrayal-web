@@ -13,8 +13,9 @@ import trucVong from './haunt-truc-vong.js';
 import tuongNhaMo from './haunt-tuong-nha-mo.js';
 import giaiNguyen from './haunt-giai-nguyen.js';
 import tuongThan from './haunt-tuong-than.js';
+import hoiQuaiVat from './haunt-hoi-quai-vat.js';
 
-const HAUNT_LIST = [haunt01, trungTang, maDa, loBan, maLai, coHon, maGiuCua, trucVong, tuongNhaMo, giaiNguyen, tuongThan];
+const HAUNT_LIST = [haunt01, trungTang, maDa, loBan, maLai, coHon, maGiuCua, trucVong, tuongNhaMo, giaiNguyen, tuongThan, hoiQuaiVat];
 
 // Số thứ tự hiển thị trên sách (giống số Haunt trong sách luật).
 HAUNT_LIST.forEach((h, i) => { h.number ??= i + 1; });

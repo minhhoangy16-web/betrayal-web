@@ -22,6 +22,9 @@
 //   attackResultBonus(state, attacker, target, trait) -> số cộng thẳng vào tổng điểm của bên tấn công
 //   onCombatWin(state, winnerRef, loserRef, amount, trait)  trước khi bên thua chịu hậu quả
 //   onCombatLoss(state, loserRef, amount, trait, winnerRef) -> true nếu kịch bản tự xử lý bên thua
+//   monsterAttackTrait(state, monster, player) -> chỉ số quái vật dùng khi tấn công (mặc định might)
+//   monsterSpecialActions(state, monster) -> [{actionId, targetId?, label}] (chiêu riêng trong lượt quái)
+//   performMonsterSpecial(state, playerId, monster, slot, action)
 //   maskView(state, viewerId, view)           sửa view gửi cho một người (giấu thông tin)
 
 let resolver = () => null;

@@ -133,6 +133,7 @@ gốc vào kho code.
 | 12 Tượng nhà mồ | «Ú òa» trượt: 1 xúc xắc sát thương thay vì 2; lượt tượng diễn ra cuối mỗi vòng | 2 xúc xắc → bot chỉ thắng 31% | ~47% |
 | 4 Giải nguyền | Làm lễ cần 11+ (gốc 13+), 7–10 không gì, 0–6 phạt; bà môi giới Tinh thần 5 (gốc 6); lượt quỷ ở cuối vòng | bản gốc bot gần như không thắng | ~31% (bot kém người thật) |
 | 9 Tượng thần | Giữ nguyên | – | (ai cũng là địch) |
+| 15 Đêm hội quái vật | Vũ khí khắc chế theo thẻ của game (Hồn ma: Bùa hộ mệnh / Vòng cổ bạc; Ma cà rồng: Súng lục cũ / Rìu cứu hoả; Người sói: Dao tế lễ / Mã tấu), cầm đúng vũ khí được +2 xúc xắc | gốc dùng thẻ không có trong game; không +2 thì bot ~5% | ~28% |
 
 Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
 (phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).

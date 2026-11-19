@@ -247,7 +247,18 @@ function monsterAttack(state, playerId, action) {
   const option = monsterAttackOptions(state, monster.id).find((o) => o.targetId === action.targetId);
   if (!option) throw new GameError('Mục tiêu không hợp lệ hoặc quái vật đã tấn công rồi.');
   slot.attacked = true;
-  resolveCombat(state, { kind: 'monster', id: monster.id }, { kind: 'player', id: action.targetId }, 'might');
+  const trait = hook(state, 'monsterAttackTrait', monster, state.players[action.targetId]) ?? 'might';
+  resolveCombat(state, { kind: 'monster', id: monster.id }, { kind: 'player', id: action.targetId }, trait);
+}
+
+function monsterSpecial(state, playerId, action) {
+  requireMonsterTurn(state, playerId);
+  const { monster, slot } = requireActiveMonster(state, action.monsterId);
+  const haunt = getHaunt(state);
+  const option = (haunt.monsterSpecialActions?.(state, monster) ?? [])
+    .find((a) => a.actionId === action.actionId && (a.targetId ?? null) === (action.targetId ?? null));
+  if (!option) throw new GameError(`${monster.name} không làm vậy được lúc này.`);
+  haunt.performMonsterSpecial(state, playerId, monster, slot, action);
 }
 
 function endMonsterTurn(state, playerId) {
@@ -271,5 +282,6 @@ export const ACTIONS = {
   special,
   monsterMove,
   monsterAttack,
+  monsterSpecial,
   endMonsterTurn,
 };

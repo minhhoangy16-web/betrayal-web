@@ -54,10 +54,16 @@ function decidePending(state, actor, options, rand) {
     const worst = (a) => Math.min(...Object.entries(a.allocation).map(([t, n]) => traits[t] - n));
     return options.reduce((b, a) => (worst(a) > worst(b) ? a : b));
   }
+  if (p.type === 'choose' && state.haunt) {
+    const pref = getHaunt(state)?.botChoose?.(state, actor, p);
+    if (pref && options.some((o) => o.optionId === pref)) return { type: 'choose', optionId: pref };
+  }
   return pick(options, rand);
 }
 
 function decideMonsters(state, options, rand) {
+  const specialMove = options.find((o) => o.type === 'monsterSpecial');
+  if (specialMove && rand() < 0.7) return specialMove;
   const attack = options.find((o) => o.type === 'monsterAttack');
   if (attack) return attack;
   const moves = options.filter((o) => o.type === 'monsterMove');
