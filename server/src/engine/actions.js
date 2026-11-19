@@ -72,6 +72,7 @@ function move(state, playerId, action) {
   const step = resolveStep(state, player.pos, action);
 
   if (step.kind === 'move') {
+    if (hook(state, 'canPlayerEnter', player, step.pos) === false) throw new GameError('Bạn không thể đi vào phòng đó lúc này.');
     payMove(state, player, step.pos);
     player.pos = step.pos;
     addLog(state, `${player.name} đi tới ${roomName(state, step.pos)}.`, 'move');

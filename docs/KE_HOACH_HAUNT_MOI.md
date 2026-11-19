@@ -121,7 +121,7 @@ gốc vào kho code.
 
 - [x] Đợt 1: định dạng sách mới + khung thông báo kết thúc; đổi 8 kịch bản cũ sang định dạng mới
 - [x] Đợt 2: tầm nhìn + Tượng nhà mồ (5/12), Giải nguyền (4), Tượng thần tranh đoạt (9)
-- [ ] Đợt 3: Ba con quái (15), Chiến dịch dưới hầm (22), Bộ giáp (25), Song trùng (40), Sên vũ trụ (35)
+- [x] Đợt 3: Ba con quái (15), Chiến dịch dưới hầm (22), Bộ giáp (25), Song trùng (40), Sên vũ trụ (35)
 - [ ] Đợt 4: Đám cưới ma (11), Hôn lễ hồn ma (30), Chiều không gian (34), Nhẫn ảo ảnh (18)
 - [ ] Đợt 5: Kẻ phản bội ẩn bằng thẻ số: Vòng lặp (2), Bụi dịch (3); Trốn tìm (10)
 - [ ] Đợt 6: 2 thẻ kịch bản mới, xếp lại bảng của 6 thẻ cũ, đo cân bằng toàn bộ
@@ -136,6 +136,8 @@ gốc vào kho code.
 | 15 Đêm hội quái vật | Vũ khí khắc chế theo thẻ của game (Hồn ma: Bùa hộ mệnh / Vòng cổ bạc; Ma cà rồng: Súng lục cũ / Rìu cứu hoả; Người sói: Dao tế lễ / Mã tấu), cầm đúng vũ khí được +2 xúc xắc | gốc dùng thẻ không có trong game; không +2 thì bot ~5% | ~28% |
 | 25 Bộ giáp mượn thời | Tìm nguyên liệu 5+ (gốc 4+), phá bùa 6+ (gốc 5+), cần 2/3/4/4 nguyên liệu (gốc 1/2/3/4); Kẻ phản bội sống lại cuối vòng | bản gốc bot thắng 87% | ~47% |
 | 40 Song trùng | Bản sao có chỉ số ban đầu hạ một nấc, tấn công bằng Sức mạnh hoặc Tinh thần (gốc: chỉ số bất kỳ) | bản gốc bot ~17% | ~56% |
+| 22 Chiến dịch dưới hầm | Phòng thí nghiệm = Phòng làm việc (nếu ở tầng trệt) hoặc Tiền sảnh; game không có lối lên khác nên cầu thang hầm bị khoá tới khi «Phá cửa hầm» (Sức mạnh 6+); thoát ở Sảnh vào / Vườn hoang; bỏ «Đánh lạc hướng» và «Xem bản đồ» (cần đặt gạch tay) | thiếu gạch tương ứng trong game | ~40% |
+| 35 Sên vũ trụ | Tìm muối 4+ (gốc 5+), phá tổ 8+ (gốc 9+); tổ đặt ngẫu nhiên; sên chỉ tấn công bằng «Bám gáy» | bản gốc bot ~15% | ~28% |
 
 Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
 (phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).

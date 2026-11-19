@@ -80,7 +80,8 @@ function monsterPhaseActions(state) {
 function explorerPhaseActions(state, player) {
   const out = [];
   if (state.turn.movesLeft >= 1) {
-    for (const step of stepsFrom(state, player.pos, { allowDiscover: true })) out.push({ type: 'move', ...step });
+    const filter = (pos) => hook(state, 'canPlayerEnter', player, pos) !== false;
+    for (const step of stepsFrom(state, player.pos, { allowDiscover: true, filter })) out.push({ type: 'move', ...step });
   }
   for (const cardId of player.cards) {
     if (CARDS_BY_ID[cardId].use && !state.turn.usedCards.includes(cardId)) out.push({ type: 'useItem', cardId });
