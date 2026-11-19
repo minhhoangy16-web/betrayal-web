@@ -4,6 +4,7 @@
 // Nội dung viết mới hoàn toàn cho game này.
 
 const H = {
+  damcuoi: 'haunt-dam-cuoi-ma',
   honle: 'haunt-hon-le-hon-ma',
   sen: 'haunt-sen-vu-tru',
   duoiham: 'haunt-duoi-ham',
@@ -43,7 +44,7 @@ export const SCENARIOS = [
     purpose: 'Tìm ra bản di chúc và hiểu vì sao ông chọn chính các bạn.',
     table: table([
       [H.loban, H.tuong], [H.trucvong, H.malai], [H.giainguyen, H.trung], [H.giucua, H.trucvong], [H.tuongthan, H.vong],
-      [H.loban, H.mada], [H.bogiap, H.quaivat], [H.giucua, H.cohon], [H.trucvong, H.mada],
+      [H.loban, H.mada], [H.bogiap, H.quaivat], [H.damcuoi, H.cohon], [H.trucvong, H.mada],
       [H.honle, H.sen], [H.mada, H.loban], [H.duoiham, H.songtrung],
     ]),
   },
@@ -59,7 +60,7 @@ export const SCENARIOS = [
     purpose: 'Quay được thứ gì đó thật, rồi sống sót để đăng lên.',
     table: table([
       [H.trucvong, H.vong], [H.trucvong, H.malai], [H.quaivat, H.giainguyen], [H.giucua, H.trucvong], [H.cohon, H.tuongthan],
-      [H.duoiham, H.tuong], [H.malai, H.trung], [H.songtrung, H.bogiap], [H.trucvong, H.mada],
+      [H.duoiham, H.tuong], [H.damcuoi, H.trung], [H.songtrung, H.bogiap], [H.trucvong, H.mada],
       [H.cohon, H.trucvong], [H.honle, H.sen], [H.loban, H.malai],
     ]),
   },
@@ -74,7 +75,7 @@ export const SCENARIOS = [
       'Không ai trả lời khi các bạn gọi. Chỉ có tiếng nước nhỏ giọt ở đâu đó dưới sàn.',
     purpose: 'Trú qua đêm nay, chờ trời sáng để tìm đường xuống núi.',
     table: table([
-      [H.loban, H.tuongthan], [H.malai, H.trucvong], [H.vong, H.tuong], [H.giucua, H.trucvong], [H.sen, H.giainguyen],
+      [H.damcuoi, H.tuongthan], [H.malai, H.trucvong], [H.vong, H.tuong], [H.giucua, H.trucvong], [H.sen, H.giainguyen],
       [H.mada, H.loban], [H.bogiap, H.quaivat], [H.honle, H.cohon], [H.trucvong, H.mada],
       [H.trucvong, H.trung], [H.giucua, H.mada], [H.duoiham, H.songtrung],
     ]),
@@ -91,7 +92,7 @@ export const SCENARIOS = [
     purpose: 'Tìm Hạnh, hoặc ít nhất là tìm ra chuyện gì đã xảy ra.',
     table: table([
       [H.trung, H.tuong], [H.trucvong, H.malai], [H.duoiham, H.giainguyen], [H.trucvong, H.giucua], [H.quaivat, H.tuongthan],
-      [H.loban, H.honle], [H.malai, H.vong], [H.cohon, H.sen], [H.trucvong, H.malai],
+      [H.damcuoi, H.honle], [H.malai, H.vong], [H.cohon, H.sen], [H.trucvong, H.malai],
       [H.songtrung, H.bogiap], [H.loban, H.trucvong], [H.mada, H.giucua],
     ]),
   },
@@ -106,7 +107,7 @@ export const SCENARIOS = [
       'Mâm lễ đã bày sẵn ở sảnh. Ba nén nhang vừa thắp đã tắt cùng một lúc.',
     purpose: 'Làm xong lễ và giữ lời hứa với gia chủ: ở lại tới sáng.',
     table: table([
-      [H.loban, H.giainguyen], [H.trucvong, H.trung], [H.tuongthan, H.vong], [H.tuong, H.giucua], [H.cohon, H.malai],
+      [H.loban, H.giainguyen], [H.trucvong, H.trung], [H.tuongthan, H.vong], [H.tuong, H.giucua], [H.cohon, H.damcuoi],
       [H.bogiap, H.quaivat], [H.honle, H.sen], [H.cohon, H.trung], [H.trucvong, H.mada],
       [H.vong, H.malai], [H.duoiham, H.songtrung], [H.trucvong, H.mada],
     ]),
@@ -124,7 +125,7 @@ export const SCENARIOS = [
     table: table([
       [H.loban, H.tuongthan], [H.trucvong, H.malai], [H.tuong, H.trung], [H.giucua, H.trucvong], [H.giainguyen, H.sen],
       [H.loban, H.mada], [H.bogiap, H.quaivat], [H.mada, H.cohon], [H.trucvong, H.mada],
-      [H.giucua, H.honle], [H.trucvong, H.vong], [H.duoiham, H.songtrung],
+      [H.damcuoi, H.honle], [H.trucvong, H.vong], [H.duoiham, H.songtrung],
     ]),
   },
 ];
