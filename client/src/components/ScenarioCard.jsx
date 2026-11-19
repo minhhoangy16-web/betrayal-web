@@ -2,10 +2,10 @@
 // mở lại được bằng nút «Kịch bản» trên thanh trạng thái. Kèm bảng Haunt riêng của thẻ.
 
 import { useEffect, useRef, useState } from 'react';
-import { CloudRain, Dices, Flame, Moon, ScrollText, Search, Video, X } from 'lucide-react';
+import { Clapperboard, CloudRain, Dices, Flame, Mail, Moon, ScrollText, Search, Video, X } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
 
-export const SCENARIO_ICON = { scroll: ScrollText, video: Video, rain: CloudRain, search: Search, flame: Flame, moon: Moon, random: Dices };
+export const SCENARIO_ICON = { scroll: ScrollText, video: Video, rain: CloudRain, search: Search, flame: Flame, moon: Moon, film: Clapperboard, mail: Mail, random: Dices };
 
 const PAPER = {
   backgroundColor: '#e6d6ad',

@@ -130,6 +130,37 @@ export const SCENARIOS = [
       [H.damcuoi, H.honle], [H.trucvong, H.vong], [H.duoiham, H.songtrung],
     ]),
   },
+  {
+    id: 'doan-phim',
+    title: 'Đoàn phim cuối cùng',
+    icon: 'film',
+    tagline: 'Một cuộn phim không nhãn, kèm lời nhắn: «Quay nốt cảnh cuối giúp tôi.»',
+    story:
+      'Một đoàn phim nhỏ thuê căn nhà hoang để quay phim kinh dị kinh phí thấp. Đêm qua đạo diễn biến mất, ' +
+      'chỉ còn máy quay vẫn chạy trên chân máy giữa Sảnh vào. Các bạn là những người còn lại của đoàn, ' +
+      'quay lại để lấy đồ và xem cuộn băng cuối cùng.',
+    purpose: 'Tìm đạo diễn và hiểu vì sao đạo cụ trong cảnh quay cứ tự đổi chỗ.',
+    table: table([
+      [H.tuongthan, H.loban], [H.tuong, H.trucvong], [H.trucvong, H.aoanh], [H.damcuoi, H.malai], [H.chieu, H.mada],
+      [H.cohon, H.vong], [H.quaivat, H.trung], [H.giucua, H.duoiham], [H.aoanh, H.tuong],
+      [H.songtrung, H.damcuoi], [H.vong, H.bogiap], [H.honle, H.sen],
+    ]),
+  },
+  {
+    id: 'thu-moi-gio',
+    title: 'Thư mời đám giỗ',
+    icon: 'mail',
+    tagline: 'Mỗi người nhận một phong thư giấy dó mời dự giỗ, nét chữ Hán Nôm đã phai.',
+    story:
+      'Lá thư mời các bạn về căn nhà cổ để ăn giỗ một người mất đúng một trăm năm trước. Không ai trong nhóm quen người đó. ' +
+      'Khi tới nơi, mâm cỗ đã bày sẵn và còn nóng, nhưng nhà không một bóng người.',
+    purpose: 'Tìm ra ai đã gửi thư, và vì sao lại là các bạn.',
+    table: table([
+      [H.trung, H.giainguyen], [H.damcuoi, H.duoiham], [H.giainguyen, H.trucvong], [H.honle, H.giucua], [H.tuong, H.malai],
+      [H.trucvong, H.cohon], [H.loban, H.tuong], [H.chieu, H.mada], [H.vong, H.songtrung],
+      [H.sen, H.quaivat], [H.cohon, H.trung], [H.mada, H.bogiap],
+    ]),
+  },
 ];
 
 export const SCENARIOS_BY_ID = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));

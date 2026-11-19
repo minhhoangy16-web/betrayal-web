@@ -125,7 +125,8 @@ gốc vào kho code.
 - [x] Đợt 4 (trừ 18): Đám cưới ma (11), Hôn lễ hồn ma (30), Chiều không gian (34)
 - [x] Nhẫn ảo ảnh (18)
 - [ ] Đợt 5: Kẻ phản bội ẩn bằng thẻ số: Vòng lặp (2), Bụi dịch (3); Trốn tìm (10)
-- [ ] Đợt 6: 2 thẻ kịch bản mới, xếp lại bảng của 6 thẻ cũ, đo cân bằng toàn bộ
+- [x] 2 thẻ kịch bản mới (Đoàn phim cuối cùng, Thư mời đám giỗ)
+- [ ] Xếp lại bảng của 6 thẻ cũ cho cân đối (hiện mới chèn tự động bằng script), đo cân bằng toàn bộ
 
 ## Điểm lệch so với luật gốc (đã đo bằng bot)
 
