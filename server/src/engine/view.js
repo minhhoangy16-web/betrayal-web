@@ -136,7 +136,7 @@ export function getView(state, viewerId) {
     haunt: hauntView(state, viewer),
     lastRoll: state.lastRoll,
     lastCard: state.lastCard,
-    log: state.log.filter((l) => !l.to || l.to === viewerId).slice(-LOG_TAIL),
+    log: state.log.filter((l) => (!l.to || l.to === viewerId) && !l.hideFrom?.includes(viewerId)).map(({ hideFrom, ...l }) => l).slice(-LOG_TAIL),
     winner: state.winner,
     legal: viewer ? legalActions(state, viewer.id) : [],
   };

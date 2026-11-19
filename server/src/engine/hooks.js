@@ -11,6 +11,7 @@
 //   onRoundEnd(state)                         sau khi người cuối cùng trong vòng đi xong
 //   onPlayerEnter(state, player, pos)         sau khi người chơi bước vào một phòng
 //   onPlayerDeath(state, player)              khi một người chơi chết
+//   traitFloor(state, player, trait) -> nấc thấp nhất chỉ số được tụt xuống
 //   canPlayerEnter(state, player, toPos) -> false để chặn người chơi đi vào phòng (từ phòng hiện tại)
 //   moveCost(state, player, toPos) -> số      số bước phải trả thêm khi vào phòng
 //   areEnemies(state, a, b) -> bool           hai người chơi có được đánh nhau không

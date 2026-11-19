@@ -27,7 +27,7 @@ registerOp('hauntRoll', (state, it) => {
   if (triggered) startHaunt(state, player.id);
 });
 
-// rule: 'revealer' | 'leftOfRevealer' | 'highestTrait' | 'lowestTrait' (kèm trait)
+// rule: 'revealer' | 'leftOfRevealer' | 'highestTrait' | 'lowestTrait' (kèm trait, excludeRevealer?)
 //       | 'random' (bất kỳ ai, kể cả người lật Haunt) | 'none' (không có Kẻ phản bội)
 export function pickTraitor(state, traitorRule, revealerId) {
   const order = state.turnOrder;
@@ -43,6 +43,7 @@ export function pickTraitor(state, traitorRule, revealerId) {
     let best = null;
     for (let i = 0; i < order.length; i++) {
       const p = state.players[order[(start + i) % order.length]];
+      if (traitorRule.excludeRevealer && p.id === revealerId && order.length > 1) continue;
       const score = sign * traitValue(p, traitorRule.trait);
       if (!best || score > best.score) best = { id: p.id, score };
     }

@@ -138,6 +138,7 @@ gốc vào kho code.
 | 40 Song trùng | Bản sao có chỉ số ban đầu hạ một nấc, tấn công bằng Sức mạnh hoặc Tinh thần (gốc: chỉ số bất kỳ) | bản gốc bot ~17% | ~56% |
 | 22 Chiến dịch dưới hầm | Phòng thí nghiệm = Phòng làm việc (nếu ở tầng trệt) hoặc Tiền sảnh; game không có lối lên khác nên cầu thang hầm bị khoá tới khi «Phá cửa hầm» (Sức mạnh 6+); thoát ở Sảnh vào / Vườn hoang; bỏ «Đánh lạc hướng» và «Xem bản đồ» (cần đặt gạch tay) | thiếu gạch tương ứng trong game | ~40% |
 | 35 Sên vũ trụ | Tìm muối 4+ (gốc 5+), phá tổ 8+ (gốc 9+); tổ đặt ngẫu nhiên; sên chỉ tấn công bằng «Bám gáy» | bản gốc bot ~15% | ~28% |
+| 30 Hôn lễ hồn ma | Bàn thờ đặt ngẫu nhiên lúc bắt đầu (cách Sảnh vào ≥ 3 phòng) thay vì phòng cuối cùng được khám phá, không cắt chồng gạch; Phù dâu ma 1/1/2/3 con, Sức mạnh 3; người giữ nhẫn +2 xúc xắc khi bị hồn ma đánh | bản gốc bot ~0% (khám phá hết chồng gạch quá lâu) | ~28% |
 
 Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
 (phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).

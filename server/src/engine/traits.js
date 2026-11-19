@@ -39,7 +39,9 @@ export function killPlayer(state, player) {
 export function shiftTrait(state, player, trait, delta) {
   if (!player.alive || delta === 0) return 0;
   const before = player.traits[trait];
-  const after = Math.max(minIndex(state), Math.min(MAX_INDEX, before + delta));
+  // Kịch bản có thể đặt mức sàn riêng (vd. Kẻ phản bội không tụt dưới mức ban đầu).
+  const floor = Math.max(minIndex(state), hook(state, 'traitFloor', player, trait) ?? -Infinity);
+  const after = Math.max(Math.min(floor, before), Math.min(MAX_INDEX, before + delta));
   player.traits[trait] = after;
   const moved = after - before;
   if (moved !== 0) {

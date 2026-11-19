@@ -197,3 +197,23 @@ test('Tầm nhìn: các phòng nối thẳng hàng qua cửa', async () => {
   assert.ok(los.has(posKey(tilePos(s, 'grand-staircase'))));
   assert.ok(!los.has(posKey(tilePos(s, 'upper-landing'))), 'không nhìn xuyên tầng');
 });
+
+test('Hôn lễ hồn ma: Kẻ phản bội không thấy thẻ Điềm báo và không biết ai giữ nhẫn', async () => {
+  const { CARDS_BY_ID } = await import('../src/data/index.js');
+  const s = newGame(4, 31, { minPlayers: 3, hauntRollThreshold: 99, forcedHauntId: 'haunt-hon-le-hon-ma' });
+  const rand = makeRng(31);
+  for (let n = 0; n < 20000 && !s.haunt; n++) {
+    if (s.phase === 'explore' && s.round >= 2 && !s.pending) s.rules.hauntRollThreshold = 0;
+    const a = currentActor(s);
+    applyAction(s, a, smartAction(s, a, rand));
+  }
+  const t = s.haunt.traitorId;
+  const v = getView(s, t);
+  for (const p of Object.values(v.players)) {
+    if (p.id === t || p.side !== 'hero') continue;
+    assert.ok(!p.cards.some((c) => CARDS_BY_ID[c].type === 'omen'));
+  }
+  const ring = s.haunt.data.ring;
+  assert.ok(!JSON.stringify(v.haunt.data).includes('Nhẫn cưới') || !v.haunt.data.carried?.[ring]);
+  assert.ok(getView(s, ring).haunt.data.carried[ring].includes('Nhẫn cưới'));
+});

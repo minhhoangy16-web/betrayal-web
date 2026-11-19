@@ -96,6 +96,9 @@ export default function PlayerBag() {
         )}
 
         <h3 className="mt-4 font-display text-sm tracking-widest text-bone uppercase">Thẻ ({player.cards.length})</h3>
+        {player.hiddenOmens > 0 && (
+          <p className="mt-1 text-sm text-violet-300 italic">+ {player.hiddenOmens} thẻ Điềm báo bị giấu với bạn.</p>
+        )}
         {player.cards.length === 0 ? (
           <p className="mt-1 text-sm text-stone-500 italic">Chưa có thẻ nào.</p>
         ) : (

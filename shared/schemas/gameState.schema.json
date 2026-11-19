@@ -340,6 +340,11 @@
             "type": "string",
             "description": "Người đang đi lượt lúc ghi dòng nhật ký."
           },
+          "hideFrom": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Những người chơi không được thấy dòng này."
+          },
           "to": {
             "type": "string",
             "description": "Chỉ người chơi này thấy dòng nhật ký."
