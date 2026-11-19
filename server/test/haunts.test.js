@@ -217,3 +217,20 @@ test('Hôn lễ hồn ma: Kẻ phản bội không thấy thẻ Điềm báo và
   assert.ok(!JSON.stringify(v.haunt.data).includes('Nhẫn cưới') || !v.haunt.data.carried?.[ring]);
   assert.ok(getView(s, ring).haunt.data.carried[ring].includes('Nhẫn cưới'));
 });
+
+test('Nhẫn ảo ảnh: người sống sót không biết ảo ảnh nào là thật', () => {
+  const s = newGame(4, 41, { minPlayers: 3, hauntRollThreshold: 99, forcedHauntId: 'haunt-nhan-ao-anh' });
+  const rand = makeRng(41);
+  for (let n = 0; n < 20000 && !s.haunt; n++) {
+    if (s.phase === 'explore' && s.round >= 2 && !s.pending) s.rules.hauntRollThreshold = 0;
+    const a = currentActor(s);
+    applyAction(s, a, smartAction(s, a, rand));
+  }
+  const t = s.haunt.traitorId;
+  const hero = s.turnOrder.find((id) => id !== t);
+  const v = getView(s, hero);
+  assert.equal(v.players[t].pos, null);
+  assert.ok(!JSON.stringify(v).includes(s.haunt.data.real) || Object.keys(v.monsters).length > 1);
+  assert.ok(!JSON.stringify(v.haunt.data).includes('Bạn thật'));
+  assert.ok(JSON.stringify(getView(s, t).haunt.data).includes('Bạn thật'));
+});

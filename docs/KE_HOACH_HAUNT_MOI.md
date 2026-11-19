@@ -123,7 +123,7 @@ gốc vào kho code.
 - [x] Đợt 2: tầm nhìn + Tượng nhà mồ (5/12), Giải nguyền (4), Tượng thần tranh đoạt (9)
 - [x] Đợt 3: Ba con quái (15), Chiến dịch dưới hầm (22), Bộ giáp (25), Song trùng (40), Sên vũ trụ (35)
 - [x] Đợt 4 (trừ 18): Đám cưới ma (11), Hôn lễ hồn ma (30), Chiều không gian (34)
-- [ ] Nhẫn ảo ảnh (18)
+- [x] Nhẫn ảo ảnh (18)
 - [ ] Đợt 5: Kẻ phản bội ẩn bằng thẻ số: Vòng lặp (2), Bụi dịch (3); Trốn tìm (10)
 - [ ] Đợt 6: 2 thẻ kịch bản mới, xếp lại bảng của 6 thẻ cũ, đo cân bằng toàn bộ
 
@@ -142,6 +142,7 @@ gốc vào kho code.
 | 30 Hôn lễ hồn ma | Bàn thờ đặt ngẫu nhiên lúc bắt đầu (cách Sảnh vào ≥ 3 phòng) thay vì phòng cuối cùng được khám phá, không cắt chồng gạch; Phù dâu ma 1/1/2/3 con, Sức mạnh 3; người giữ nhẫn +2 xúc xắc khi bị hồn ma đánh | bản gốc bot ~0% (khám phá hết chồng gạch quá lâu) | ~28% |
 | 11 Đám cưới ma | Xé thiệp 5+, cần 4/5 tấm (kế hoạch: 4+, 3/4 tấm) | kế hoạch cũ bot thắng 85% | ~40% |
 | 34 Chiều không gian thứ hai | Giữ nguyên các tầng (không gom gạch, không dời gạch); «Bóp méo» hất mỗi người sang phòng bên cạnh ngẫu nhiên; thanh đếm bắt đầu 7/6/6/5 (gốc 6/3/1/0) vì không có cơ chế mở phòng liên tục như bản gốc; tìm bạn 8+ (gốc 9+) | bản gốc bot 0% | ~31% |
+| 18 Nhẫn ảo ảnh | Số ảo ảnh = số người chơi; «Gọi Nhẫn» ở Nhà nguyện / Phòng tế lễ (game không có Hầm két) | thiếu gạch | ~57% |
 
 Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
 (phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).
