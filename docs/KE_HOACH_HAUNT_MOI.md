@@ -124,7 +124,7 @@ gốc vào kho code.
 - [x] Đợt 3: Ba con quái (15), Chiến dịch dưới hầm (22), Bộ giáp (25), Song trùng (40), Sên vũ trụ (35)
 - [x] Đợt 4 (trừ 18): Đám cưới ma (11), Hôn lễ hồn ma (30), Chiều không gian (34)
 - [x] Nhẫn ảo ảnh (18)
-- [ ] Đợt 5: Kẻ phản bội ẩn bằng thẻ số: Vòng lặp (2), Bụi dịch (3); Trốn tìm (10)
+- [x] Đợt 5: Kẻ phản bội ẩn bằng thẻ số: Vòng lặp (2), Bụi dịch (3); Trốn tìm (10)
 - [x] 2 thẻ kịch bản mới (Đoàn phim cuối cùng, Thư mời đám giỗ)
 - [ ] Xếp lại bảng của 6 thẻ cũ cho cân đối (hiện mới chèn tự động bằng script), đo cân bằng toàn bộ
 
@@ -146,6 +146,7 @@ gốc vào kho code.
 | 18 Nhẫn ảo ảnh | Số ảo ảnh = số người chơi; «Gọi Nhẫn» ở Nhà nguyện / Phòng tế lễ (game không có Hầm két) | thiếu gạch | ~57% |
 | 2 Vòng lặp thời gian | Vòng lặp quay ở cuối mỗi vòng (gốc: cuối lượt người lật Haunt, dễ kẹt khi người đó chết); phòng nhiễu loạn = mọi phòng Điềm báo (gốc 5 phòng định trước); phá nhẫn 6+ (gốc 7+); thanh đếm 8/7/6/5 (gốc 6/5/4/3); khi còn giấu mặt không ai tấn công được ai; bị lộ do nhẫn vỡ thì không được hồi chỉ số | bản gốc bot ~10% | ~30% |
 | 3 Bụi dịch | Phòng nghiên cứu = mọi phòng Điềm báo, 4+ (gốc 5+); chế thuốc 12+ ở Phòng đọc/Thư viện/Lò sưởi/Tháp; người nhiễm chết thành «Kẻ sốt» do máy điều khiển (gốc: người chơi chết tự điều khiển); không ai tấn công được ai | – | ~40% |
+| 10 Trốn tìm với Ma xó | Kịch bản tự viết (không có trong sách). Đồ chơi ở phòng Vật phẩm/Sự kiện, lục 5+; cần trả 5 món; trốn 5+; hết 10 vòng thì Ma xó thắng; bot Ma xó chỉ đi theo tiếng động nghe được | bản đầu bot ~97% | ~52% |
 
 Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
 (phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).

@@ -234,3 +234,45 @@ test('Nhẫn ảo ảnh: người sống sót không biết ảo ảnh nào là 
   assert.ok(!JSON.stringify(v.haunt.data).includes('Bạn thật'));
   assert.ok(JSON.stringify(getView(s, t).haunt.data).includes('Bạn thật'));
 });
+
+function hauntStarted(hauntId, seed) {
+  const s = newGame(4, seed, { minPlayers: 3, hauntRollThreshold: 99, forcedHauntId: hauntId });
+  const rand = makeRng(seed);
+  while (!s.winner && !(s.haunt && !s.pending)) {
+    if (s.round >= 3) s.rules.hauntRollThreshold = 0;
+    const a = currentActor(s);
+    applyAction(s, a, smartAction(s, a, rand));
+  }
+  return s.haunt && !s.winner ? s : null;
+}
+
+test('Trốn tìm: Ma xó không thấy vị trí người sống sót ở phòng khác', () => {
+  for (let seed = 1; seed <= 30; seed++) {
+    const s = hauntStarted('haunt-tron-tim', seed);
+    if (!s) continue;
+    const t = s.haunt.traitorId;
+    const hero = s.turnOrder.find((id) => id !== t && s.players[id].alive && posKey(s.players[id].pos) !== posKey(s.players[t].pos));
+    if (!hero) continue;
+    assert.equal(getView(s, t).players[hero].pos, null);
+    assert.ok(getView(s, hero).players[hero].pos);
+    assert.ok(getView(s, hero).players[t].pos);
+    assert.ok(!getView(s, t).log.some((l) => l.actor === hero && l.kind === 'move'));
+    return;
+  }
+  assert.fail('không tạo được tình huống kiểm thử');
+});
+
+test('Bụi dịch: chỉ chính mình biết mình đã nhiễm và thấy thẻ bệnh của mình', () => {
+  for (let seed = 1; seed <= 30; seed++) {
+    const s = hauntStarted('haunt-bui-dich', seed);
+    if (!s) continue;
+    const sick = s.haunt.data.infected[0];
+    const other = s.turnOrder.find((id) => id !== sick && !s.haunt.data.infected.includes(id));
+    if (!sick || !other) continue;
+    assert.notEqual(getView(s, other).players[sick].side, 'traitor');
+    assert.equal(getView(s, sick).players[sick].side, 'traitor');
+    assert.ok(!JSON.stringify(getView(s, other).haunt).includes('NHIỄM'));
+    return;
+  }
+  assert.fail('không tạo được tình huống kiểm thử');
+});
