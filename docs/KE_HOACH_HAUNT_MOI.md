@@ -144,6 +144,7 @@ gốc vào kho code.
 | 11 Đám cưới ma | Xé thiệp 5+, cần 4/5 tấm (kế hoạch: 4+, 3/4 tấm) | kế hoạch cũ bot thắng 85% | ~40% |
 | 34 Chiều không gian thứ hai | Giữ nguyên các tầng (không gom gạch, không dời gạch); «Bóp méo» hất mỗi người sang phòng bên cạnh ngẫu nhiên; thanh đếm bắt đầu 7/6/6/5 (gốc 6/3/1/0) vì không có cơ chế mở phòng liên tục như bản gốc; tìm bạn 8+ (gốc 9+) | bản gốc bot 0% | ~31% |
 | 18 Nhẫn ảo ảnh | Số ảo ảnh = số người chơi; «Gọi Nhẫn» ở Nhà nguyện / Phòng tế lễ (game không có Hầm két) | thiếu gạch | ~57% |
+| 2 Vòng lặp thời gian | Vòng lặp quay ở cuối mỗi vòng (gốc: cuối lượt người lật Haunt, dễ kẹt khi người đó chết); phòng nhiễu loạn = mọi phòng Điềm báo (gốc 5 phòng định trước); phá nhẫn 6+ (gốc 7+); thanh đếm 8/7/6/5 (gốc 6/5/4/3); khi còn giấu mặt không ai tấn công được ai; bị lộ do nhẫn vỡ thì không được hồi chỉ số | bản gốc bot ~10% | ~30% |
 
 Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
 (phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).
