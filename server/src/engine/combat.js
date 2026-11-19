@@ -97,7 +97,11 @@ export function resolveCombat(state, attackerRef, defenderRef, trait, bonusDice 
   const d = unitOf(state, defenderRef);
   const bonus = bonusDice + (hook(state, 'attackBonus', attackerRef, defenderRef, trait) ?? 0);
   const ar = rollDice(state, unitTraitValue(state, attackerRef, trait) + bonus);
-  const dr = rollDice(state, unitTraitValue(state, defenderRef, trait));
+  const defBonus = hook(state, 'defenseBonus', attackerRef, defenderRef, trait) ?? 0;
+  const dr = rollDice(state, unitTraitValue(state, defenderRef, trait) + defBonus);
+  // Cộng thẳng vào kết quả (không phải thêm xúc xắc), vd. Tượng thần cộng giá trị thanh đếm.
+  const extra = hook(state, 'attackResultBonus', attackerRef, defenderRef, trait) ?? 0;
+  if (extra) ar.total += extra;
   setLastRoll(state, {
     kind: 'combat', trait, label: `${a.name} tấn công ${d.name}`,
     attacker: { ...attackerRef, name: a.name, dice: ar.dice, total: ar.total },
@@ -106,7 +110,7 @@ export function resolveCombat(state, attackerRef, defenderRef, trait, bonusDice 
   addLog(
     state,
     `⚔ ${a.name} tấn công ${d.name} bằng ${TRAIT_LABEL[trait]}: ` +
-      `[${ar.dice.join(', ')}] = ${ar.total} đấu [${dr.dice.join(', ')}] = ${dr.total}.`,
+      `[${ar.dice.join(', ')}]${extra ? ` +${extra}` : ''} = ${ar.total} đấu [${dr.dice.join(', ')}] = ${dr.total}.`,
     'combat',
   );
   if (ar.total === dr.total) {

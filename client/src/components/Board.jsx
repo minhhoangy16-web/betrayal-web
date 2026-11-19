@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Ban, Box, Check, Coins, DoorOpen, Droplets, Flame, Flower2, Ghost, Landmark, Locate, Minus, Package, PersonStanding,
-  Plus, RotateCw, Shovel, Sparkles, Zap,
+  Plus, RotateCw, Shovel, Sparkles, Zap, Eye, Egg, FlaskConical,
 } from 'lucide-react';
 import { useGameStore } from '../store/useGameStore.js';
 import { DIRS, FLOORS, FLOOR_LABEL, TILE_SIZE, mediaUrl, posKey, rotatedDoors } from '../lib/constants.js';
@@ -29,6 +29,7 @@ const MARK_ICON = {
   dug: [Shovel, 'text-amber-200'], charm: [Sparkles, 'text-fuchsia-300'], revealed: [Zap, 'text-red-300'],
   body: [PersonStanding, 'text-red-400'], altar: [Landmark, 'text-violet-300'], offering: [Flower2, 'text-amber-300'],
   gold: [Coins, 'text-yellow-300'], exit: [DoorOpen, 'text-emerald-300'], token: [Package, 'text-candle'],
+  watched: [Eye, 'text-sky-200'], cleansed: [Flame, 'text-orange-300'], nest: [Egg, 'text-lime-300'], lab: [FlaskConical, 'text-cyan-300'],
 };
 
 function RoomMarks({ marks }) {

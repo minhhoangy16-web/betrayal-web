@@ -18,6 +18,8 @@
 //   monsterCanTarget(state, monster, player)  quái vật có được đánh người chơi này không
 //   monsterSteps(state, monster) -> steps[]   ghi đè các bước đi của quái vật ({dir|linkTo, pos})
 //   attackBonus(state, attacker, target, trait) -> số xúc xắc cộng thêm
+//   defenseBonus(state, attacker, target, trait) -> số xúc xắc cộng thêm cho bên bị đánh
+//   attackResultBonus(state, attacker, target, trait) -> số cộng thẳng vào tổng điểm của bên tấn công
 //   onCombatWin(state, winnerRef, loserRef, amount, trait)  trước khi bên thua chịu hậu quả
 //   onCombatLoss(state, loserRef, amount, trait, winnerRef) -> true nếu kịch bản tự xử lý bên thua
 //   maskView(state, viewerId, view)           sửa view gửi cho một người (giấu thông tin)

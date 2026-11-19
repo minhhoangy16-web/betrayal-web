@@ -91,7 +91,8 @@ function decideExplorer(state, actor, options, rand) {
     return end;
   }
   const specials = options.filter((o) => o.type === 'special');
-  let real = specials.filter((a) => !isTokenAction(a));
+  const skip = state.haunt ? getHaunt(state)?.botSkip : null;
+  let real = specials.filter((a) => !isTokenAction(a) && !(skip && skip(state, me, a)));
   // Trục vong: ưu tiên làm lễ; tố giác thỉnh thoảng thôi (người thật sẽ bàn bạc trước khi tố).
   if (state.haunt?.id === 'haunt-truc-vong') {
     const rite = real.find((a) => a.actionId === 'rite');
@@ -101,16 +102,20 @@ function decideExplorer(state, actor, options, rand) {
   if (real.length) return pick(real, rand);
   const pickUp = specials.find((a) => a.actionId === 'pickToken');
   if (pickUp) return pickUp;
-  let attacks = options.filter((o) => o.type === 'attack');
+  let attacks = options.filter((o) => o.type === 'attack' && !(skip && skip(state, me, o)));
   // Mạnh ai nấy chơi: chỉ đánh người đang giữ vật của Haunt (để cướp), không đánh bừa.
-  if (me.side === 'solo') {
+  if (me.side === 'solo' && !getHaunt(state)?.freeForAll) {
     const held = (id) => Object.values(state.haunt.data.tokens ?? {}).some((t) => t.holder === id);
     attacks = attacks.filter((a) => a.targetType === 'player' && held(a.targetId));
   }
   if (attacks.length) return attacks[0];
   if (moves.length) {
     let targets;
-    if (state.haunt?.id === 'haunt-truc-vong' && !(me.side === 'traitor' && state.haunt.data.revealed)) {
+    // Kịch bản có thể gợi ý phòng nên tới (botTargets) để bot chơi gần với người thật hơn.
+    const hinted = state.haunt ? getHaunt(state)?.botTargets?.(state, me) : null;
+    if (hinted?.length) {
+      targets = hinted.filter((k) => k !== posKey(me.pos));
+    } else if (state.haunt?.id === 'haunt-truc-vong' && !(me.side === 'traitor' && state.haunt.data.revealed)) {
       targets = trucVongTargets(state, me);
     } else if (me.side === 'traitor') {
       targets = Object.values(state.players).filter((p) => inPlay(p) && p.id !== me.id).map((p) => posKey(p.pos));

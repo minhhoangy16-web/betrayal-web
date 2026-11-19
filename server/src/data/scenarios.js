@@ -6,6 +6,7 @@
 const H = {
   vong: 'haunt-01', trung: 'haunt-trung-tang', mada: 'haunt-ma-da', loban: 'haunt-lo-ban',
   malai: 'haunt-ma-lai', cohon: 'haunt-co-hon', giucua: 'haunt-ma-giu-cua', trucvong: 'haunt-truc-vong',
+  tuong: 'haunt-tuong-nha-mo', giainguyen: 'haunt-giai-nguyen', tuongthan: 'haunt-tuong-than',
 };
 
 const table = (rows) => ({
@@ -35,7 +36,7 @@ export const SCENARIOS = [
       'Người làng dưới chân đồi đồn rằng ông chôn cả gia tài dưới nền nhà, và chưa người thợ nào làm cho ông được trả đủ công.',
     purpose: 'Tìm ra bản di chúc và hiểu vì sao ông chọn chính các bạn.',
     table: table([
-      [H.loban, H.trung], [H.trucvong, H.malai], [H.vong, H.trung], [H.giucua, H.trucvong], [H.cohon, H.vong],
+      [H.loban, H.tuong], [H.trucvong, H.malai], [H.giainguyen, H.trung], [H.giucua, H.trucvong], [H.tuongthan, H.vong],
       [H.loban, H.mada], [H.malai, H.giucua], [H.giucua, H.cohon], [H.trucvong, H.mada],
       [H.malai, H.cohon], [H.mada, H.loban], [H.trung, H.vong],
     ]),
@@ -51,8 +52,8 @@ export const SCENARIOS = [
       'nhưng máy quay vẫn đang ghi, và có ai đó vừa thả tim trong phần bình luận.',
     purpose: 'Quay được thứ gì đó thật, rồi sống sót để đăng lên.',
     table: table([
-      [H.trucvong, H.vong], [H.trucvong, H.malai], [H.vong, H.cohon], [H.giucua, H.trucvong], [H.cohon, H.vong],
-      [H.loban, H.cohon], [H.malai, H.trung], [H.mada, H.cohon], [H.trucvong, H.mada],
+      [H.trucvong, H.vong], [H.trucvong, H.malai], [H.vong, H.giainguyen], [H.giucua, H.trucvong], [H.cohon, H.tuongthan],
+      [H.loban, H.tuong], [H.malai, H.trung], [H.mada, H.cohon], [H.trucvong, H.mada],
       [H.cohon, H.trucvong], [H.vong, H.giucua], [H.loban, H.malai],
     ]),
   },
@@ -67,7 +68,7 @@ export const SCENARIOS = [
       'Không ai trả lời khi các bạn gọi. Chỉ có tiếng nước nhỏ giọt ở đâu đó dưới sàn.',
     purpose: 'Trú qua đêm nay, chờ trời sáng để tìm đường xuống núi.',
     table: table([
-      [H.loban, H.mada], [H.malai, H.trucvong], [H.vong, H.mada], [H.giucua, H.trucvong], [H.cohon, H.malai],
+      [H.loban, H.tuongthan], [H.malai, H.trucvong], [H.vong, H.tuong], [H.giucua, H.trucvong], [H.cohon, H.giainguyen],
       [H.mada, H.loban], [H.malai, H.trung], [H.mada, H.cohon], [H.trucvong, H.mada],
       [H.trucvong, H.trung], [H.giucua, H.mada], [H.malai, H.vong],
     ]),
@@ -83,7 +84,7 @@ export const SCENARIOS = [
       'Các bạn tìm thấy xe máy của Hạnh dựng ngay trước cổng, chìa khoá vẫn cắm trong ổ.',
     purpose: 'Tìm Hạnh, hoặc ít nhất là tìm ra chuyện gì đã xảy ra.',
     table: table([
-      [H.trung, H.malai], [H.trucvong, H.malai], [H.vong, H.trung], [H.trucvong, H.giucua], [H.vong, H.cohon],
+      [H.trung, H.tuong], [H.trucvong, H.malai], [H.vong, H.giainguyen], [H.trucvong, H.giucua], [H.vong, H.tuongthan],
       [H.loban, H.mada], [H.malai, H.vong], [H.cohon, H.mada], [H.trucvong, H.malai],
       [H.trung, H.cohon], [H.loban, H.trucvong], [H.mada, H.giucua],
     ]),
@@ -99,7 +100,7 @@ export const SCENARIOS = [
       'Mâm lễ đã bày sẵn ở sảnh. Ba nén nhang vừa thắp đã tắt cùng một lúc.',
     purpose: 'Làm xong lễ và giữ lời hứa với gia chủ: ở lại tới sáng.',
     table: table([
-      [H.loban, H.trung], [H.trucvong, H.trung], [H.trung, H.vong], [H.loban, H.giucua], [H.cohon, H.malai],
+      [H.loban, H.giainguyen], [H.trucvong, H.trung], [H.tuongthan, H.vong], [H.tuong, H.giucua], [H.cohon, H.malai],
       [H.loban, H.mada], [H.malai, H.cohon], [H.cohon, H.trung], [H.trucvong, H.mada],
       [H.vong, H.malai], [H.cohon, H.loban], [H.trucvong, H.mada],
     ]),
@@ -115,7 +116,7 @@ export const SCENARIOS = [
       'Đúng nửa đêm, người đưa các bạn tới khoá cổng ngoài lại, rồi lái xe đi mất.',
     purpose: 'Ở lại tới sáng. Đừng tin ai quá nhiều.',
     table: table([
-      [H.loban, H.trung], [H.trucvong, H.malai], [H.vong, H.trung], [H.giucua, H.trucvong], [H.cohon, H.vong],
+      [H.loban, H.tuongthan], [H.trucvong, H.malai], [H.tuong, H.trung], [H.giucua, H.trucvong], [H.giainguyen, H.vong],
       [H.loban, H.mada], [H.malai, H.giucua], [H.mada, H.cohon], [H.trucvong, H.mada],
       [H.giucua, H.trung], [H.trucvong, H.vong], [H.mada, H.cohon],
     ]),

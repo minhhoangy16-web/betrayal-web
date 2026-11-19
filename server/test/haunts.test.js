@@ -1,3 +1,4 @@
+import { posKey } from '../src/engine/board.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyAction, currentActor, getView } from '../src/engine/Game.js';
@@ -118,6 +119,7 @@ test('Trục vong: không ai ngoài Kẻ bị nhập biết danh tính, lựa ch
 test('Thẻ kịch bản: bảng Haunt đầy đủ, hợp lệ, và kịch bản được chọn khi tạo ván', async () => {
   const { SCENARIOS } = await import('../src/data/scenarios.js');
   const { DECK_IDS } = await import('../src/data/index.js');
+  const usedAll = new Set();
   for (const sc of SCENARIOS) {
     assert.deepEqual(Object.keys(sc.table).sort(), [...DECK_IDS.omen].sort(), sc.id);
     const used = new Set();
@@ -127,9 +129,12 @@ test('Thẻ kịch bản: bảng Haunt đầy đủ, hợp lệ, và kịch bả
       // Kịch bản cần nhiều người phải có phương án thay ở cột còn lại.
       if (row.some((id) => HAUNTS[id].minPlayers)) assert.ok(row.some((id) => !HAUNTS[id].minPlayers), `${sc.id}/${omen}`);
     }
-    assert.equal(used.size, Object.keys(HAUNTS).length, `${sc.id} phải dùng đủ mọi Haunt`);
+    assert.ok(used.size >= 8, `${sc.id} phải dùng ít nhất 8 Haunt khác nhau`);
+    for (const id of used) usedAll.add(id);
     assert.ok(sc.title && sc.story && sc.purpose && sc.tagline);
   }
+  // Haunt nào cũng phải có mặt trong ít nhất một thẻ kịch bản.
+  assert.equal(usedAll.size, Object.keys(HAUNTS).length);
   const s = newGame(3, 5, { minPlayers: 3 });
   assert.ok(SCENARIOS.some((sc) => sc.id === s.scenarioId));
   assert.equal(getView(s, s.turnOrder[0]).scenarioId, s.scenarioId);
@@ -180,4 +185,15 @@ test('Sách Haunt: đoạn kết không gửi xuống khi đang chơi, chỉ hi�
   const v = getView(s, s.turnOrder[0]).haunt;
   assert.equal(v.ending.tone, 'win');
   assert.ok(v.ending.text.length > 20);
+});
+
+test('Tầm nhìn: các phòng nối thẳng hàng qua cửa', async () => {
+  const { lineOfSight, tilePos } = await import('../src/haunts/helpers.js');
+  const s = newGame(3, 1, { minPlayers: 3 });
+  const hall = tilePos(s, 'entrance-hall');
+  const los = lineOfSight(s, hall);
+  assert.ok(los.has(`${hall.floor}:${hall.x}:${hall.y}`));
+  assert.ok(los.has(posKey(tilePos(s, 'foyer'))));
+  assert.ok(los.has(posKey(tilePos(s, 'grand-staircase'))));
+  assert.ok(!los.has(posKey(tilePos(s, 'upper-landing'))), 'không nhìn xuyên tầng');
 });

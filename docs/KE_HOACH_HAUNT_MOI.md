@@ -120,8 +120,19 @@ gốc vào kho code.
 ## Thứ tự làm (đánh dấu khi xong)
 
 - [x] Đợt 1: định dạng sách mới + khung thông báo kết thúc; đổi 8 kịch bản cũ sang định dạng mới
-- [ ] Đợt 2: tầm nhìn + Tượng nhà mồ (5/12), Giải nguyền (4), Tượng thần tranh đoạt (9)
+- [x] Đợt 2: tầm nhìn + Tượng nhà mồ (5/12), Giải nguyền (4), Tượng thần tranh đoạt (9)
 - [ ] Đợt 3: Ba con quái (15), Chiến dịch dưới hầm (22), Bộ giáp (25), Song trùng (40), Sên vũ trụ (35)
 - [ ] Đợt 4: Đám cưới ma (11), Hôn lễ hồn ma (30), Chiều không gian (34), Nhẫn ảo ảnh (18)
 - [ ] Đợt 5: Kẻ phản bội ẩn bằng thẻ số: Vòng lặp (2), Bụi dịch (3); Trốn tìm (10)
 - [ ] Đợt 6: 2 thẻ kịch bản mới, xếp lại bảng của 6 thẻ cũ, đo cân bằng toàn bộ
+
+## Điểm lệch so với luật gốc (đã đo bằng bot)
+
+| Haunt | Lệch | Lý do | Bot: phe sống sót thắng |
+| --- | --- | --- | --- |
+| 12 Tượng nhà mồ | «Ú òa» trượt: 1 xúc xắc sát thương thay vì 2; lượt tượng diễn ra cuối mỗi vòng | 2 xúc xắc → bot chỉ thắng 31% | ~47% |
+| 4 Giải nguyền | Làm lễ cần 11+ (gốc 13+), 7–10 không gì, 0–6 phạt; bà môi giới Tinh thần 5 (gốc 6); lượt quỷ ở cuối vòng | bản gốc bot gần như không thắng | ~31% (bot kém người thật) |
+| 9 Tượng thần | Giữ nguyên | – | (ai cũng là địch) |
+
+Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
+(phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).

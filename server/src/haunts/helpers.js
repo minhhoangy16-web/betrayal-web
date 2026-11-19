@@ -62,6 +62,28 @@ export function doorSteps(state, pos) {
   return out;
 }
 
+// Tầm nhìn (line of sight): chính phòng đang đứng, cộng các phòng nối thẳng hàng theo một hướng
+// (cùng tầng), mỗi cặp phòng liền nhau đều thông cửa. Trả về Set các posKey.
+export function lineOfSight(state, pos) {
+  const seen = new Set([posKey(pos)]);
+  for (let dir = 0; dir < 4; dir++) {
+    let cur = pos;
+    for (let guard = 0; guard < 30; guard++) {
+      let r;
+      try {
+        r = resolveStep(state, cur, { dir });
+      } catch (err) {
+        if (!(err instanceof GameError)) throw err;
+        break;
+      }
+      if (r.kind !== 'move') break;
+      cur = r.pos;
+      seen.add(posKey(cur));
+    }
+  }
+  return seen;
+}
+
 // Phòng kề cạnh cùng tầng dù có tường hay không (bay xuyên tường), cộng cầu thang.
 export function wallSteps(state, pos) {
   const out = [];
