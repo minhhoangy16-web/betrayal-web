@@ -134,6 +134,8 @@ gốc vào kho code.
 | 4 Giải nguyền | Làm lễ cần 11+ (gốc 13+), 7–10 không gì, 0–6 phạt; bà môi giới Tinh thần 5 (gốc 6); lượt quỷ ở cuối vòng | bản gốc bot gần như không thắng | ~31% (bot kém người thật) |
 | 9 Tượng thần | Giữ nguyên | – | (ai cũng là địch) |
 | 15 Đêm hội quái vật | Vũ khí khắc chế theo thẻ của game (Hồn ma: Bùa hộ mệnh / Vòng cổ bạc; Ma cà rồng: Súng lục cũ / Rìu cứu hoả; Người sói: Dao tế lễ / Mã tấu), cầm đúng vũ khí được +2 xúc xắc | gốc dùng thẻ không có trong game; không +2 thì bot ~5% | ~28% |
+| 25 Bộ giáp mượn thời | Tìm nguyên liệu 5+ (gốc 4+), phá bùa 6+ (gốc 5+), cần 2/3/4/4 nguyên liệu (gốc 1/2/3/4); Kẻ phản bội sống lại cuối vòng | bản gốc bot thắng 87% | ~47% |
+| 40 Song trùng | Bản sao có chỉ số ban đầu hạ một nấc, tấn công bằng Sức mạnh hoặc Tinh thần (gốc: chỉ số bất kỳ) | bản gốc bot ~17% | ~56% |
 
 Bot đo cân bằng có thêm hai chỗ nối tuỳ chọn trong module Haunt (chỉ test dùng): `botTargets(state, me)`
 (phòng nên tới) và `botSkip(state, me, action)` (bỏ hành động người thật sẽ không làm).

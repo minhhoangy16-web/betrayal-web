@@ -93,6 +93,12 @@ export function beginMonsterPhase(state) {
       state.turn.monsters[monster.id] = { movesLeft: 0, attacked: true };
       continue;
     }
+    // Kịch bản có thể cho quái vật đi đúng số bước cố định (không đổ xúc xắc).
+    const fixed = hook(state, 'monsterMoveCount', monster);
+    if (fixed != null) {
+      state.turn.monsters[monster.id] = { movesLeft: fixed, attacked: false };
+      continue;
+    }
     const r = rollDice(state, monster.traits.speed);
     const moves = Math.max(1, r.total);
     setLastRoll(state, { kind: 'monsterMove', monsterId: monster.id, dice: r.dice, total: r.total, label: monster.name });
