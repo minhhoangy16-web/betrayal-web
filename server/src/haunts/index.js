@@ -13,6 +13,9 @@ import trucVong from './haunt-truc-vong.js';
 
 const HAUNT_LIST = [haunt01, trungTang, maDa, loBan, maLai, coHon, maGiuCua, trucVong];
 
+// Số thứ tự hiển thị trên sách (giống số Haunt trong sách luật).
+HAUNT_LIST.forEach((h, i) => { h.number ??= i + 1; });
+
 export const HAUNTS = Object.fromEntries(HAUNT_LIST.map((h) => [h.id, h]));
 
 // Module Haunt đang chạy của ván (hoặc null trước khi Haunt bắt đầu).

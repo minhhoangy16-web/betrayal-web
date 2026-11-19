@@ -106,8 +106,17 @@ export default {
     'Một người trong các bạn gục xuống rồi biến mất vào bóng tối. Một lúc sau, ở chỗ họ vừa đứng, một cái đầu người ' +
     'lơ lửng hiện ra, mắt sáng xanh, lủng lẳng phía dưới là một mớ ruột gan.',
 
+  // Khung quái vật trong sách (công khai cho cả bàn).
+  monsterCards: [{ name: HEAD.name, controller: 'Kẻ phản bội', traits: HEAD.traits, rules: [
+      'Bay xuyên tường sang phòng kề cạnh cùng tầng.',
+      'Không vào được phòng đã rắc tro.',
+      'Mỗi lần thắng trận, Sức mạnh +1 (tối đa 7). Thua thì bị choáng một lượt.',
+    ] }],
+
   traitorTome: {
     title: 'Sách Kẻ phản bội – Ma lai',
+    ifWin:
+      'Gà gáy. Cái đầu lặng lẽ tìm về thân xác, nối lại liền như chưa từng rời đi. Sáng hôm sau bạn ngồi ăn sáng cùng những người còn lại, và không ai dám hỏi đêm qua bạn ở đâu.',
     story: 'Cơn đói đêm nay không chịu đợi được nữa. Bạn đã giấu thân xác thật kỹ; hãy ăn cho no rồi quay về trước khi gà gáy.',
     objective: `Bạn thắng khi trời sáng (sau ${ROUNDS_TO_DAWN} vòng) mà Đầu ma lai đang ở cùng phòng với Thân xác và đã có đủ số người chết (một nửa số người sống sót lúc đầu, làm tròn xuống, ít nhất 1 người). Hoặc khi mọi người sống sót chết trước lúc đó.`,
     lose: [
@@ -136,6 +145,8 @@ export default {
 
   survivalSecrets: {
     title: 'Sách Người sống sót – Ma lai',
+    ifWin:
+      'Thân xác bị úp sấp, cái đầu không tìm được đường về. Khi mặt trời lên, chỉ còn một vệt khói mỏng tan trong nắng. Người bạn của các bạn sẽ không bao giờ trở lại nữa.',
     story: 'Một người bạn đã thành ma lai. Thân xác của nó nằm đâu đó trong nhà, trống rỗng và đang chờ cái đầu quay về. Vệt máu kéo dài trên sàn sẽ dẫn bạn tới nó.',
     objective: `Các bạn thắng khi úp ngược được Thân xác (thắng ngay). Hoặc cầm cự tới lúc trời sáng (sau ${ROUNDS_TO_DAWN} vòng) mà Đầu ma lai chưa về tới Thân xác, hay chưa đủ số người chết.`,
     lose: [

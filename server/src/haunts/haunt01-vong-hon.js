@@ -79,9 +79,18 @@ export default {
     'số các bạn đang mỉm cười chào đón chúng.',
 
   // Sách Kẻ phản bội (chỉ người đó thấy) và sách Người sống sót. Các mục: objective (thắng khi),
+  // Khung quái vật trong sách (công khai cho cả bàn).
+  monsterCards: [{ name: WRAITH.name, controller: 'Kẻ phản bội', traits: WRAITH.traits, rules: [
+      'Đầu lượt quái vật, đổ Tốc độ để biết số bước (ít nhất 1).',
+      'Không vào được phòng đã yểm bùa.',
+      'Người sống sót đánh nó bằng Tinh thần. Thua trận thì bị choáng một lượt.',
+    ] }],
+
   // lose (thua khi), setup (khi Haunt bắt đầu), rules (luật riêng), tips (mẹo).
   traitorTome: {
     title: 'Sách Kẻ phản bội – Vong hồn dưới hầm',
+    ifWin:
+      'Ngọn nến cuối cùng tắt lịm. Trong bóng tối, bạn nghe dòng họ chủ nhà thì thầm cảm ơn. Căn hầm lại có thêm những người hầu mới, và bạn thì được tự do ra về, ít ra là đêm nay.',
     story:
       'Bạn đã nghe chúng gọi từ lúc bước qua cửa. Dòng họ chủ nhà hứa trả lại cho bạn những gì đã mất, ' +
       'miễn là không ai còn sống để rời khỏi đây.',
@@ -112,6 +121,8 @@ export default {
 
   survivalSecrets: {
     title: 'Sách Người sống sót – Vong hồn dưới hầm',
+    ifWin:
+      'Ngọn nến cuối cùng bùng lên xanh lét rồi cháy đều. Tiếng cào cấu dưới hầm im bặt. Các bạn đi ra cửa, không ai dám ngoảnh lại nhìn những bóng nến vẫn chập chờn sau ô cửa kính.',
     story:
       'Trong cuốn gia phả có một trang bị xé: nghi thức yểm bùa bằng nến tại những nơi điềm gở từng xuất hiện. ' +
       'Đủ số ngọn nến thì ngôi nhà sẽ ngủ yên trở lại.',

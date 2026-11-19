@@ -146,6 +146,8 @@ export default {
 
   traitorTome: {
     title: 'Sách của Kẻ bị nhập – Trục vong',
+    ifWin:
+      'Âm khí phủ kín ngôi nhà. Những người kia lần lượt gục xuống, còn bạn mỉm cười bằng nụ cười không phải của mình. Vong đã tìm được một thân xác vừa vặn.',
     story: 'Một vong hồn đã vào ở trong bạn, và nó không muốn đi. Đừng để ai biết.',
     objective: `Bạn thắng khi Âm khí chạm ${END}, hoặc khi có ${DEATHS} người khác chết, hoặc khi không còn ai khác sống sót.`,
     lose: [
@@ -174,6 +176,8 @@ export default {
 
   survivalSecrets: {
     title: 'Sách của người sống sót – Trục vong',
+    ifWin:
+      'Nén nhang cuối cùng cháy hết. Người bạn bị nhập khuỵu xuống, mở mắt ra và hỏi chuyện gì vừa xảy ra. Không ai trả lời. Các bạn chỉ dìu nhau ra khỏi nhà.',
     story: 'Một người trong nhóm không còn là chính họ. Có thể là bất kỳ ai, trừ bạn.',
     objective: `Các bạn thắng khi làm thành công ${RITES} lễ trục vong, hoặc khi Kẻ bị nhập chết (tố giác đúng để họ lộ mặt rồi đánh tới chết).`,
     lose: [

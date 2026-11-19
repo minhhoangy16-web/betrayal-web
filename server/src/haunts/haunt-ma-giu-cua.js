@@ -140,10 +140,20 @@ export default {
     'Sàn nhà nứt ra, lộ một miệng hũ sành đầy vàng lá. Ai cũng nhìn thấy, và ai cũng nhìn nhau. ' +
     'Từ dưới hầm vọng lên tiếng một đứa trẻ đang đếm: «Một hũ… hai hũ…»',
 
+  // Khung quái vật trong sách (công khai cho cả bàn).
+  monsterCards: [{ name: GUARD.name, controller: 'Ngôi nhà', traits: GUARD.traits, rules: [
+      'Cuối mỗi vòng đi 4 bước về phía người giữ nhiều hũ nhất rồi tấn công.',
+      'Thắng thì giật 1 hũ và chôn lại ở phòng ngẫu nhiên. Thua thì choáng một vòng.',
+    ] }],
+
   traitorTome: null,
 
   survivalSecrets: {
     title: 'Sách chung – Ma giữ của',
+    ifWin:
+      'Gà gáy, đứa trẻ canh của biến mất. Người giữ được vàng bước ra khỏi nhà, cố không nghĩ tới tiếng khóc thút thít vẫn vọng theo sau lưng.',
+    ifLose:
+      'Gà gáy mà không ai mang được vàng ra. Đứa trẻ canh của ngồi đếm lại từng hũ, rồi chôn chúng xuống nền nhà, cùng với những kẻ tham lam.',
     story: 'Chủ cũ của ngôi nhà chôn vàng dưới nền và yểm một linh hồn trẻ con canh giữ. Đêm nay mạnh ai nấy đào.',
     objective: `Mỗi người chơi cho riêng mình. Bạn thắng một mình nếu là người đầu tiên đứng ở Sảnh vào với ít nhất ${JARS_TO_LEAVE} hũ vàng và chọn «Rời khỏi nhà». Nếu chưa ai rời được, lúc gà gáy (sau ${ROUNDS} vòng) người còn sống giữ nhiều hũ nhất thắng (bằng nhau thì cùng thắng).`,
     lose: [

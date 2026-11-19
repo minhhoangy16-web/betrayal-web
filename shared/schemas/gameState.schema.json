@@ -208,6 +208,10 @@
             "startedOnTurn": {
               "type": "integer"
             },
+            "triggerCardId": {
+              "type": ["string", "null"],
+              "description": "Thẻ Điềm báo đã kích hoạt Haunt."
+            },
             "pendingFirstTurn": {
               "type": "boolean"
             },

@@ -91,6 +91,7 @@ function WinnerBanner() {
   const [hidden, setHidden] = useState(false);
   const me = game.players[game.you];
   const { side, playerIds = [] } = game.winner;
+  const ending = game.haunt?.ending;
   const heroesWon = side === 'heroes' || side === 'players';
   const iWon = me && (
     side === 'heroes' ? me.side === 'hero'
@@ -122,12 +123,18 @@ function WinnerBanner() {
   }
   return (
     <div className="pointer-events-none absolute inset-0 z-[60] flex items-center justify-center bg-black/50 px-4">
-      <div className={`pointer-events-auto max-w-lg rounded-md border-2 p-5 text-center shadow-2xl
+      <div className={`thin-scroll pointer-events-auto max-h-[90dvh] max-w-lg overflow-y-auto rounded-md border-2 p-5 text-center shadow-2xl
         ${heroesWon ? 'border-candle bg-[#221c14]' : 'border-blood bg-[#1d0f0f]'}`}>
         <Icon size={34} className={`mx-auto ${heroesWon ? 'text-candle' : 'text-red-400'}`} aria-hidden="true" />
         <h2 className="mt-2 font-display text-2xl text-parchment">{title}</h2>
         <p className="mt-1 text-bone italic">{game.winner.reason}</p>
         {me && <p className="mt-2 font-semibold">{iWon ? 'Bạn đã thắng.' : 'Bạn đã thua.'}</p>}
+        {ending?.text && (
+          <div className={`mt-3 rounded border p-3 text-left ${ending.tone === 'win' ? 'border-candle/60 bg-candle/10' : 'border-blood/70 bg-blood/15'}`}>
+            <p className={`font-display text-sm tracking-widest uppercase ${ending.tone === 'win' ? 'text-candle' : 'text-red-300'}`}>{ending.title}</p>
+            <p className="mt-1 leading-relaxed text-parchment italic">{ending.text}</p>
+          </div>
+        )}
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           <Button onClick={() => setHidden(true)}>Xem bàn cờ</Button>
           {me && (

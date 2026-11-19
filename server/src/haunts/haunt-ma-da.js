@@ -96,8 +96,16 @@ export default {
     'Nước đen trào lên từ miệng giếng dưới hầm, lạnh và tanh mùi bùn. ' +
     'Một người trong các bạn ướt sũng từ đầu đến chân, dù không hề xuống hầm.',
 
+  // Khung quái vật trong sách (công khai cho cả bàn).
+  monsterCards: [{ name: WATER_GHOST.name, controller: 'Kẻ phản bội', traits: WATER_GHOST.traits, rules: [
+      'Chỉ đi trong phòng ngập nước.',
+      'Thua trận thì bị choáng một lượt.',
+    ] }],
+
   traitorTome: {
     title: 'Sách Kẻ phản bội – Ma da',
+    ifWin:
+      'Nước dâng tới trần. Những bàn tay lạnh ngắt kéo từng người xuống. Khi mặt nước phẳng lại, bạn thấy mình nhẹ bẫng: cuối cùng đã có người ở lại thay.',
     story: 'Bạn đã chết đuối dưới cái giếng này từ lâu. Đủ người chết thay thì bạn mới được đi.',
     objective: 'Bạn thắng khi có quá nhiều người sống sót chết, tới mức số còn lại không đủ để thoát (bảng tình hình ghi đúng số người chết cần có).',
     lose: [
@@ -122,6 +130,8 @@ export default {
 
   survivalSecrets: {
     title: 'Sách Người sống sót – Ma da',
+    ifWin:
+      'Các bạn ngã sõng soài trên bãi cỏ ướt, ho ra toàn nước bùn. Sau lưng, ngôi nhà chìm dần trong biển nước đen, chỉ còn tiếng ai đó gọi tên các bạn từ dưới đáy.',
     story: 'Nước sẽ không dừng lại. Ở lại là chết đuối, nên phải ra khỏi ngôi nhà này.',
     objective: 'Các bạn thắng khi ít nhất một nửa số người sống sót (làm tròn lên) thoát ra ngoài: 3 người cần 2 người thoát, 4 người cần 2, 5 người cần 3.',
     lose: [

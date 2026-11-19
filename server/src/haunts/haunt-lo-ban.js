@@ -107,6 +107,8 @@ export default {
 
   traitorTome: {
     title: 'Sách Kẻ phản bội – Bùa Lỗ Ban',
+    ifWin:
+      'Xà nhà gãy rắc, mái ngói đổ ập xuống. Bạn đứng giữa đống đổ nát, trên tay là lá bùa cuối cùng còn nguyên vẹn. Món nợ công của ông cố đã được trả đủ.',
     story: 'Ông cố bạn là thợ cả dựng ngôi nhà này, và ông chưa bao giờ được trả đủ công. Những lá bùa ông để lại vẫn còn linh.',
     objective: `Bạn thắng khi Đồng hồ nhà sập chạm ${END}, hoặc khi mọi người sống sót đều chết.`,
     lose: [
@@ -132,6 +134,8 @@ export default {
 
   survivalSecrets: {
     title: 'Sách Người sống sót – Bùa Lỗ Ban',
+    ifWin:
+      'Lá bùa cuối cùng cháy thành tro. Những cây cột thôi rên rỉ, và ngôi nhà lún xuống một chút như vừa trút được hơi thở dài. Lần này nó sẽ đứng vững.',
     story: 'Bùa giấu trong kèo cột của một số căn phòng. Còn bùa thì ngôi nhà còn sập dần.',
     objective: 'Các bạn thắng khi tìm và đốt hết mọi lá bùa trong nhà (có số người sống sót + 1 lá).',
     lose: [

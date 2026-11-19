@@ -151,10 +151,21 @@ export default {
     'Đồng hồ điểm mười hai tiếng dù kim đã gỉ từ lâu. Ngoài cửa sổ, trăng rằm đỏ như máu. ' +
     'Từ khắp các xó tối vang lên tiếng thì thầm: «Đói… đói…»',
 
+  // Khung quái vật trong sách (công khai cho cả bàn).
+  monsterCards: [{ name: GHOST.name, controller: 'Ngôi nhà', traits: GHOST.traits, rules: [
+      'Đi 3 bước về phía người gần nhất (người cầm lễ hút chúng hơn).',
+      'Đánh bằng Tinh thần. Thua trận thì tan biến.',
+      'Thắng người đang cầm lễ thì giật mất một lễ.',
+    ] }],
+
   traitorTome: null,
 
   survivalSecrets: {
     title: 'Sách chung – Cô hồn tháng Bảy',
+    ifWin:
+      'Vàng mã cháy rực trước sân. Những bóng người gầy guộc nhận lễ rồi lặng lẽ tan vào màn sương. Các bạn ngồi bệt xuống bậc thềm, mệt lả, nhưng còn sống.',
+    ifLose:
+      'Âm khí đặc quánh như sương. Mâm cúng đổ nghiêng, và những bàn tay xương xẩu tranh nhau kéo các bạn về phía cánh cửa ngục vừa mở.',
     story: 'Rằm tháng Bảy, cửa ngục mở. Những vong hồn không ai thờ cúng đang kéo về đòi ăn. Cúng cho đủ rồi đốt vàng mã tiễn họ đi.',
     objective: `Cả bàn thắng khi dâng đủ lễ lên Mâm cúng ở Sảnh vào (số lễ = số người chơi + 3), rồi đốt vàng mã thành công, trước khi Âm khí chạm ${END}.`,
     lose: [

@@ -62,6 +62,7 @@ export function startHaunt(state, revealerId) {
     traitorId,
     startedOnTurn: state.turn.number,
     startedOnRound: state.round,
+    triggerCardId: state.lastCard?.cardId ?? null,
     pendingFirstTurn: true,
     data: {},
   };

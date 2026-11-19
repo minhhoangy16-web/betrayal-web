@@ -161,3 +161,23 @@ test('Trục vong: phải có nhang mới làm lễ được; trao nhang không 
   // Không tìm nhang ở Bàn thờ.
   assert.ok(!legal().some((a) => a.actionId === 'search'));
 });
+
+test('Sách Haunt: đoạn kết không gửi xuống khi đang chơi, chỉ hiện khi ván kết thúc', () => {
+  const s = newGame(4, 21, { minPlayers: 3, hauntRollThreshold: 99, forcedHauntId: 'haunt-trung-tang' });
+  const rand = makeRng(21);
+  for (let n = 0; n < 20000 && !s.haunt; n++) {
+    if (s.phase === 'explore' && s.round >= 2 && !s.pending) s.rules.hauntRollThreshold = 0;
+    const a = currentActor(s);
+    applyAction(s, a, smartAction(s, a, rand));
+  }
+  for (const id of s.turnOrder) {
+    const v = getView(s, id).haunt;
+    assert.ok(v.book && !('ifWin' in v.book) && !('ifLose' in v.book));
+    assert.equal(v.ending, null);
+    assert.ok(v.number >= 1 && v.traitorRule);
+  }
+  s.winner = { side: 'heroes', reason: 'test' };
+  const v = getView(s, s.turnOrder[0]).haunt;
+  assert.equal(v.ending.tone, 'win');
+  assert.ok(v.ending.text.length > 20);
+});

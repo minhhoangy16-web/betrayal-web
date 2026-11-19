@@ -17,25 +17,65 @@ export function traitorHiddenFrom(state, viewerId) {
   return Boolean(h && getHaunt(state)?.hiddenTraitor && !h.data?.revealed && h.traitorId !== viewerId);
 }
 
+// Đoạn kết («Nếu bạn thắng / thua») không nằm trong sách lúc chơi: chỉ gửi khi ván đã kết thúc.
+const stripEndings = (book) => {
+  if (!book) return null;
+  const { ifWin, ifLose, ...rest } = book;
+  return rest;
+};
+
+const TRAITOR_RULE_LABEL = {
+  revealer: 'Người lật Haunt',
+  leftOfRevealer: 'Người ngồi bên trái người lật Haunt',
+  random: 'Ngẫu nhiên (giấu mặt)',
+  none: 'Không có',
+};
+const TRAIT_WORD = { might: 'Sức mạnh', speed: 'Tốc độ', sanity: 'Tinh thần', knowledge: 'Tri thức' };
+
+function traitorRuleLabel(haunt) {
+  if (haunt.traitorLabel) return haunt.traitorLabel;
+  const rule = haunt.traitor?.rule ?? 'revealer';
+  if (rule === 'highestTrait') return `${TRAIT_WORD[haunt.traitor.trait]} cao nhất`;
+  if (rule === 'lowestTrait') return `${TRAIT_WORD[haunt.traitor.trait]} thấp nhất`;
+  return TRAITOR_RULE_LABEL[rule] ?? 'Người lật Haunt';
+}
+
+// Khung thông báo kết thúc: đoạn kết của phe thắng (hoặc đoạn «cả bàn thua»).
+function endingFor(state, haunt) {
+  const w = state.winner;
+  if (!w) return null;
+  const tome = haunt.traitorTome ?? {};
+  const secrets = haunt.survivalSecrets ?? {};
+  if (w.side === 'heroes') return { tone: 'win', title: 'Nếu phe sống sót thắng', text: secrets.ifWin };
+  if (w.side === 'traitor') return { tone: 'lose', title: 'Nếu Kẻ phản bội thắng', text: tome.ifWin ?? secrets.ifLose };
+  if (w.side === 'players') return { tone: 'win', title: 'Kết cục', text: secrets.ifWin };
+  return { tone: 'lose', title: 'Nếu ngôi nhà thắng', text: secrets.ifLose ?? tome.ifWin };
+}
+
 function hauntView(state, viewer) {
   if (!state.haunt) return null;
   const haunt = getHaunt(state);
   // Chỉ gửi đúng một cuốn sách, theo phe của người xem. Khán giả không nhận cuốn nào.
   let book = null;
-  if (viewer?.side === 'traitor') book = { kind: 'traitorTome', ...haunt.traitorTome };
-  else if (viewer && viewer.side !== 'explorer') book = { kind: 'survivalSecrets', ...haunt.survivalSecrets };
+  if (viewer?.side === 'traitor') book = { kind: 'traitorTome', ...stripEndings(haunt.traitorTome) };
+  else if (viewer && viewer.side !== 'explorer') book = { kind: 'survivalSecrets', ...stripEndings(haunt.survivalSecrets) };
   const hidden = traitorHiddenFrom(state, viewer?.id);
   return {
     id: state.haunt.id,
     name: state.haunt.name,
+    number: haunt.number ?? null,
     mode: haunt.mode ?? 'traitor', // 'traitor' | 'hidden' | 'coop' | 'solo'
     revealerId: state.haunt.revealerId,
     traitorId: hidden ? null : state.haunt.traitorId,
+    traitorRule: traitorRuleLabel(haunt),
+    triggerCardId: state.haunt.triggerCardId ?? null,
     // Kẻ phản bội vẫn đang giấu mặt (công khai: ai cũng biết là đã có người lộ mặt hay chưa).
     secretTraitor: Boolean(haunt.hiddenTraitor && !state.haunt.data?.revealed),
     publicIntro: haunt.publicIntro,
     data: haunt.publicData ? haunt.publicData(state, viewer?.id ?? null) : {},
     book,
+    monsters: haunt.monsterCards ?? [],
+    ending: endingFor(state, haunt),
   };
 }
 

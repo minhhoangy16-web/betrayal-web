@@ -112,8 +112,16 @@ export default {
     'Tiếng mõ lâm râm vang lên từ một căn phòng không ai mở. Giữa nhà hiện ra một cỗ quan tài sơn đen, nắp hé mở. ' +
     'Một người trong các bạn không còn thở nữa mà vẫn đứng dậy được.',
 
+  // Khung quái vật trong sách (công khai cho cả bàn).
+  monsterCards: [{ name: COFFIN_WALKER.name, controller: 'Kẻ phản bội', traits: COFFIN_WALKER.traits, rules: [
+      'Không chết: thua trận thì bị choáng một lượt.',
+      'Đánh bằng Sức mạnh. Người cầm Gạo muối +2 xúc xắc khi đánh nó.',
+    ] }],
+
   traitorTome: {
     title: 'Sách Kẻ phản bội – Trùng tang',
+    ifWin:
+      'Tiếng chuông đồng hồ điểm lần cuối. Từng người ngã xuống đúng chỗ họ đứng. Thần Trùng đã đủ người, và bạn biết năm sau nó sẽ lại gõ cửa nhà khác.',
     story: 'Thần Trùng đã chọn bạn làm người dẫn đường. Chỉ cần trì hoãn đủ lâu, cả nhà sẽ đi theo bạn.',
     objective: `Bạn thắng khi Đồng hồ trùng chạm ${END}, hoặc khi mọi người sống sót đều chết.`,
     lose: [
@@ -140,6 +148,8 @@ export default {
 
   survivalSecrets: {
     title: 'Sách Người sống sót – Trùng tang',
+    ifWin:
+      'Hình nhân bốc cháy trong quan tài, khói trắng cuộn lên mái nhà. Đồng hồ ngừng chạy. Lần đầu tiên trong đêm, các bạn nghe thấy tiếng gà gáy ở xa.',
     story: 'Theo lệ xưa, muốn giải trùng phải có gạo muối, bùa gỗ đào và một hình nhân để Thần Trùng bắt thay người sống.',
     objective: `Các bạn thắng khi đưa đủ ba lễ vật vào phòng có Quan tài và làm lễ giải trùng thành công trước khi Đồng hồ trùng chạm ${END}.`,
     lose: [
