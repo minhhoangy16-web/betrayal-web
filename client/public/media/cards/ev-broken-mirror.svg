@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+<defs><radialGradient id="g" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#4a4033"/><stop offset="100%" stop-color="#1e1407"/></radialGradient></defs>
+<rect width="300" height="300" rx="16" fill="url(#g)"/>
+<rect x="8" y="8" width="284" height="284" rx="11" fill="none" stroke="#c9963a" stroke-width="2.5" opacity="0.9"/>
+<path d="M 20 54 L 20 20 L 54 20" fill="none" stroke="#c9963a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 280 54 L 280 20 L 246 20" fill="none" stroke="#c9963a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 20 246 L 20 280 L 54 280" fill="none" stroke="#c9963a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 280 246 L 280 280 L 246 280" fill="none" stroke="#c9963a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="150" cy="150" r="112" fill="#000" opacity="0.22"/>
+<g transform="translate(50 50)"><ellipse cx="100" cy="100" rx="62" ry="82" fill="#8a7340"/><ellipse cx="100" cy="100" rx="52" ry="72" fill="#7c97a8"/><path d="M 100 100 L 70 40 M 100 100 L 140 52 M 100 100 L 152 112 M 100 100 L 120 170 M 100 100 L 64 160 M 100 100 L 50 92" fill="none" stroke="#151211" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polygon points="100,100 140,52 152,112" fill="#d6e5e8" opacity="0.35"/><polygon points="160,170 176,150 182,176" fill="#9fb6bd"/><polygon points="30,172 44,160 40,184" fill="#9fb6bd"/></g>
+</svg>

@@ -320,6 +320,60 @@ const ROOMS = {
     Array.from({ length: 10 }, (_, i) => rect(20 + i * 50, 200, 16, 112, '#3a2a1e')).join('') + line(0, 218, S, 218, '#6b7178', 6) + line(0, 294, S, 294, '#6b7178', 6) +
     Array.from({ length: 14 }, () => { const top = r() < 0.5; return circ(40 + r() * 430, top ? 50 + r() * 90 : 372 + r() * 90, 12 + r() * 26, shade('#4a443d', (r() - 0.5) * 0.1)); }).join('') +
     rect(100, WALL, 20, 160, '#33241a') + rect(392, WALL, 20, 160, '#33241a') + rect(100, 328, 20, 160, '#33241a') + rect(392, 328, 20, 160, '#33241a') },
+
+  // ---- Phòng bổ sung
+  'ancestral-hall': { floor: ['wood', '#4a2e22'], draw: () =>
+    P.table(WALL + 6, 150, 70, 212, '#5a1f1a') + rect(WALL + 14, 160, 54, 192, '#7a2d22', { rx: 3 }) +
+    [180, 220, 260, 300, 340].map((y) => rect(WALL + 22, y - 14, 16, 30, '#c9a24a', { rx: 3 }) + rect(WALL + 25, y - 10, 10, 22, '#3a1a12')).join('') +
+    circ(WALL + 56, 256, 14, '#8a7340') + [250, 256, 262].map((x) => line(WALL + 56 + (x - 256), 256, WALL + 56 + (x - 256) * 2, 236, '#b8ab90', 2)).join('') +
+    P.candle(WALL + 50, 176) + P.candle(WALL + 50, 336) + P.rug(150, 196, 200, 120, '#5c2328') +
+    [[200, 256], [260, 256], [320, 256]].map(([x, y]) => circ(x, y, 18, '#3a2a3a') + circ(x, y, 12, '#4d3a4d')).join('') + P.cobweb(2) },
+  'doll-room': { floor: ['wood', '#5a4232'], draw: (r) =>
+    P.shelf(60, WALL, 392, 34, r, ['#d8cdb6', '#b13a2e', '#8a6a4a', '#3b6e8a', '#e9dfc6']) + P.shelf(S - WALL - 34, 80, 34, 340, r, ['#d8cdb6', '#b13a2e', '#8a6a4a', '#e9dfc6']) +
+    P.roundRug(220, 250, 80, '#6b3a4a') +
+    [[180, 220, 0], [250, 200, 30], [270, 290, -40], [190, 300, 70]].map(([x, y, a]) => group(
+      `<ellipse cx="0" cy="12" rx="14" ry="20" fill="#7a2d2d"/>` + circ(0, -14, 13, '#e9dfc6') + circ(-4, -16, 2.5, '#151211') + circ(4, -16, 2.5, '#151211'), `translate(${x} ${y}) rotate(${a})`)).join('') +
+    rect(80, 400, 80, 60, '#000', { opacity: 0.3, rx: 6, transform: 'translate(5 7)' }) + rect(80, 400, 80, 60, '#d8cdb6', { rx: 6 }) + rect(88, 408, 64, 44, '#9fb6bd', { rx: 4 }) + P.cobweb(2) },
+  'dry-well': { floor: ['stone', '#36332f'], draw: (r) =>
+    circ(260, 262, 92, '#000', { opacity: 0.35 }) + circ(256, 256, 90, '#5a554e') + circ(256, 256, 74, '#6a655d') + circ(256, 256, 62, '#050403') +
+    circ(256, 256, 62, 'none', { stroke: '#1d130d', 'stroke-width': 6 }) + line(150, 170, 362, 170, '#4c3422', 12) + rect(244, 170, 24, 60, '#3a2415') + line(256, 230, 256, 250, '#b8ab90', 3) +
+    Array.from({ length: 12 }, () => circ(60 + r() * 390, 360 + r() * 110, 6 + r() * 14, shade('#4a443d', (r() - 0.5) * 0.12))).join('') + P.cobweb(2) + P.cobweb(3) },
+  courtyard: { floor: ['ground', '#2c3a22', '#3a4a2c'], draw: (r) =>
+    rect(206, 0, 100, S, '#55504a') + rect(0, 206, S, 100, '#55504a') + circ(256, 256, 76, '#55504a') +
+    P.plant(256, 256, 62, r, '#2f4a2a') + circ(256, 256, 16, '#3a2a1e') +
+    [[100, 100], [412, 100], [100, 412], [412, 412]].map(([x, y]) => P.plant(x, y, 46, r, '#2c4a2a')).join('') +
+    [[150, 380], [380, 150]].map(([x, y]) => P.bench(x - 40, y - 10, 80, 20)).join('') },
+  'music-room': { floor: ['wood', '#4d3626', 34], draw: () =>
+    rect(90, 46, 200, 120, '#000', { opacity: 0.35, rx: 10, transform: 'translate(6 8)' }) + path('M 90 56 Q 90 46 100 46 L 280 46 Q 290 46 290 56 L 290 120 Q 250 166 160 166 L 100 166 Q 90 166 90 156 Z', { fill: '#151211' }) +
+    rect(96, 140, 180, 22, '#e9dfc6') + Array.from({ length: 13 }, (_, i) => rect(102 + i * 13, 140, 7, 13, '#151211')).join('') + P.chair(186, 196, '#3a2415') +
+    path('M 380 350 Q 420 300 410 230 L 440 230 L 440 440 L 380 440 Z', { fill: '#8a7340' }) + [0, 1, 2, 3, 4].map((i) => line(392 + i * 10, 330 - i * 20, 392 + i * 10, 440, '#e9dfc6', 1.5)).join('') +
+    P.roundRug(220, 350, 70, '#3f2a45') + group(path('M -50 -12 Q -10 -30 50 -6 L 50 6 Q -10 30 -50 12 Z', { fill: '#7a4a2a' }) + line(-46, 0, 56, 0, '#d6a531', 1.5), 'translate(220 350) rotate(-25)') + P.candle(80, 440) },
+  bathroom: { floor: ['checker', '#7a7670', '#4a4743', 10], draw: () =>
+    rect(150, 340, 212, 130, '#000', { opacity: 0.35, rx: 50, transform: 'translate(6 8)' }) + rect(150, 340, 212, 130, '#d8d4ca', { rx: 50 }) + rect(166, 356, 180, 98, '#6a1a1a', { rx: 40 }) +
+    path('M 190 380 Q 230 370 260 400 Q 300 420 330 400', stroke(3, '#8b1a1a')) + rect(244, 446, 24, 20, '#9aa3a8') +
+    rect(WALL + 6, 90, 70, 60, '#d8d4ca', { rx: 8 }) + `<ellipse cx="${WALL + 41}" cy="120" rx="22" ry="16" fill="#9aa3a8"/>` + circ(WALL + 41, 122, 4, '#22201e') + P.mirror(WALL, 70, 8, 100) +
+    rect(400, 80, 60, 74, '#d8d4ca', { rx: 24 }) + rect(408, 54, 44, 30, '#d8d4ca', { rx: 6 }) +
+    [[300, 260, 10], [320, 300, 6], [280, 310, 7]].map(([x, y, s]) => circ(x, y, s, '#8b1a1a', { opacity: 0.7 })).join('') },
+  'collapsed-corridor': { floor: ['wood', '#3e2e24', 40], draw: (r) =>
+    poly([[WALL, 60], [190, 120], [210, 200], [150, 300], [180, 420], [WALL, 470]], '#2b2420') +
+    poly([[S - WALL, 40], [330, 150], [360, 250], [310, 330], [350, 470], [S - WALL, 480]], '#2b2420') +
+    Array.from({ length: 22 }, () => { const left = r() < 0.5; return rect(left ? 40 + r() * 140 : 320 + r() * 150, 60 + r() * 400, 14 + r() * 26, 10 + r() * 16, shade('#6a5a4a', (r() - 0.5) * 0.15), { transform: `rotate(${Math.round(r() * 90)} 256 256)`, opacity: 0.9 }); }).join('') +
+    group(rect(-130, -9, 260, 18, '#4c3422'), 'translate(256 230) rotate(28)') + P.hole(280, 380, 30, 18) + P.cobweb(0) },
+  laundry: { floor: ['stone', '#47463f', 64], draw: () =>
+    [[90, 380], [180, 430]].map(([x, y]) => circ(x + 5, y + 7, 46, '#000', { opacity: 0.35 }) + circ(x, y, 46, '#6b7178') + circ(x, y, 36, '#3b4a6b') + circ(x - 10, y - 8, 10, '#d6e5e8', { opacity: 0.4 })).join('') +
+    line(60, 90, 360, 90, '#b8ab90', 2) + line(60, 150, 360, 150, '#b8ab90', 2) +
+    [[90, 90, '#d8cdb6'], [150, 90, '#7a2d2d'], [230, 90, '#3b6e8a'], [300, 90, '#d8cdb6'], [110, 150, '#5b3a5e'], [200, 150, '#d8cdb6'], [280, 150, '#4a6a3a']].map(([x, y, c]) => rect(x - 22, y, 44, 34, c, { opacity: 0.9 })).join('') +
+    [[380, 400], [440, 330]].map(([x, y]) => `<ellipse cx="${x + 4}" cy="${y + 6}" rx="36" ry="28" fill="#000" opacity="0.3"/><ellipse cx="${x}" cy="${y}" rx="36" ry="28" fill="#8a6a3a"/><ellipse cx="${x}" cy="${y}" rx="26" ry="18" fill="#d8cdb6"/>`).join('') },
+  'cold-room': { floor: ['checker', '#7f8a90', '#5d686e', 6], draw: (r) =>
+    [70, 140, 370, 440].map((x) => line(x, 40, x, 470, '#9aa3a8', 6)).join('') +
+    [[70, 100], [70, 260], [140, 180], [140, 380], [370, 140], [370, 330], [440, 230], [440, 420]].map(([x, y]) =>
+      `<ellipse cx="${x + 4}" cy="${y + 6}" rx="18" ry="34" fill="#000" opacity="0.35"/><ellipse cx="${x}" cy="${y}" rx="18" ry="34" fill="#7a3a3a"/><ellipse cx="${x}" cy="${y}" rx="10" ry="22" fill="#b86a6a"/>` + line(x, y - 34, x, y - 44, '#d6e5e8', 3)).join('') +
+    Array.from({ length: 40 }, () => circ(30 + r() * 450, 30 + r() * 450, 3 + r() * 10, '#e6f2f6', { opacity: 0.18 })).join('') + P.glow(256, 256, 160, '#9fd6e8') },
+  'rotten-balcony': { floor: ['wood', '#3a2b20', 52], draw: (r) =>
+    rect(0, 0, S, 120, '#14181f') + Array.from({ length: 18 }, () => circ(r() * S, r() * 110, 1.5, '#e9dfc6', { opacity: 0.7 })).join('') + circ(420, 60, 26, '#e9dfc6', { opacity: 0.8 }) +
+    rect(0, 112, S, 14, '#2a1c12') + Array.from({ length: 16 }, (_, i) => rect(10 + i * 32, 120, 8, 24, '#2a1c12')).join('') + rect(0, 140, S, 10, '#2a1c12') +
+    P.hole(150, 260, 50, 28) + P.hole(370, 330, 38, 22) + P.hole(240, 420, 22, 14) +
+    group(rect(-60, -10, 120, 20, '#2a1e16'), 'translate(150 330) rotate(24)') + P.plant(70, 400, 30, r, '#2f3a22') },
 };
 
 // ---------------------------------------------------------------- gạch phòng
@@ -426,6 +480,50 @@ const GLYPHS = {
     rect(48, 88, 104, 36, '#050403') + poly([[40, 104], [160, 104], [176, 132], [24, 132]], '#7a5636') + rect(24, 132, 152, 10, '#5a3a22') + circ(100, 138, 6, '#c9a24a') + path('M 84 100 l 6 -12 l 8 8 l 8 -14', stroke(3, '#f2b84b')),
   'ev-waking-nightmare': () => path('M 20 100 Q 100 20 180 100 Q 100 180 20 100 Z', { fill: INK }) + circ(100, 100, 40, '#8b1a1a') + `<ellipse cx="100" cy="100" rx="12" ry="34" fill="#151211"/>` + circ(86, 84, 8, INK, { opacity: 0.6 }) +
     path('M 30 60 L 44 74 M 64 34 L 72 54 M 100 24 L 100 44 M 136 34 L 128 54 M 170 60 L 156 74', stroke(4)),
+  // --- Thẻ bổ sung
+  'om-black-cat': () => `<ellipse cx="100" cy="128" rx="48" ry="44" fill="#151211"/>` + circ(100, 74, 36, '#151211') + poly([[70, 54], [74, 20], [92, 46]], '#151211') + poly([[130, 54], [126, 20], [108, 46]], '#151211') +
+    `<ellipse cx="86" cy="72" rx="8" ry="10" fill="#d6c34a"/><ellipse cx="114" cy="72" rx="8" ry="10" fill="#d6c34a"/><ellipse cx="86" cy="72" rx="2.5" ry="8" fill="#151211"/><ellipse cx="114" cy="72" rx="2.5" ry="8" fill="#151211"/>` +
+    path('M 146 150 Q 182 140 172 100 Q 168 84 156 92', stroke(10, '#151211')) + path('M 60 84 L 30 78 M 60 92 L 32 96 M 140 84 L 170 78 M 140 92 L 168 96', stroke(2, INK)),
+  'om-funeral-portrait': () => rect(40, 24, 120, 150, '#151211', { rx: 4 }) + rect(52, 36, 96, 126, '#6b6560') + `<ellipse cx="100" cy="88" rx="26" ry="32" fill="#4a4540"/>` +
+    path('M 64 162 Q 68 128 100 126 Q 132 128 136 162 Z', { fill: '#3a3632' }) + path('M 40 24 L 80 24 L 40 64 Z', { fill: '#151211' }) + path('M 120 24 L 160 24 L 160 64 Z', { fill: '#151211' }) +
+    path('M 40 60 L 76 24 M 124 24 L 160 60', stroke(6, INK)) + rect(80, 174, 40, 14, '#8b1a1a', { rx: 3 }),
+  'om-dead-hairpin': () => group(rect(-5, -10, 10, 140, '#c9a24a', { rx: 4 }) + path('M -5 126 L 0 142 L 5 126 Z', { fill: '#c9a24a' }), 'translate(108 40) rotate(28)') +
+    group([0, 72, 144, 216, 288].map((a) => `<ellipse cx="0" cy="-18" rx="11" ry="20" fill="#d8cdb6" transform="rotate(${a})"/>`).join('') + circ(0, 0, 10, '#8b1a1a'), 'translate(78 66)') +
+    path('M 68 90 Q 60 120 70 150 M 84 92 Q 80 130 92 160', stroke(3, '#8b1a1a')),
+  'it-hell-coin': () => circ(100, 100, 70, '#c9a24a') + circ(100, 100, 58, 'none', { stroke: '#8a7340', 'stroke-width': 4 }) + rect(84, 84, 32, 32, '#2b2114') +
+    [[100, 54], [146, 100], [100, 146], [54, 100]].map(([x, y]) => rect(x - 8, y - 8, 16, 16, '#8a7340', { rx: 2, transform: `rotate(45 ${x} ${y})` })).join('') + path('M 60 70 Q 70 50 96 44', stroke(4, '#f2d78a')),
+  'it-rusty-machete': () => group(path('M -14 -90 Q 30 -60 26 30 L -8 40 Q -2 -30 -14 -90 Z', { fill: '#8a7a6a' }) + path('M 6 -40 L 10 -20 M -2 -60 L 6 -50 M 14 0 L 20 14', stroke(5, '#7a3a1a')) +
+    rect(-14, 40, 30, 10, '#3a2415', { rx: 3 }) + rect(-10, 50, 22, 50, '#5a3a22', { rx: 6 }) + circ(1, 64, 3, '#c9a24a') + circ(1, 84, 3, '#c9a24a'), 'translate(96 96) rotate(30)'),
+  'ev-chandelier': () => line(100, 10, 100, 50, INK, 4) + path('M 40 90 Q 100 130 160 90', stroke(6, '#c9a24a')) + path('M 60 70 Q 100 100 140 70', stroke(5, '#c9a24a')) + circ(100, 56, 10, '#c9a24a') +
+    [40, 70, 100, 130, 160].map((x, i) => rect(x - 4, (i % 2 ? 76 : 86) - 18, 8, 18, INK) + circ(x, (i % 2 ? 76 : 86) - 24, 5, '#f2b84b')).join('') +
+    [[60, 150], [100, 168], [140, 152], [84, 180], [122, 186]].map(([x, y]) => poly([[x, y - 8], [x + 6, y], [x, y + 8], [x - 6, y]], '#d6e5e8')).join('') + path('M 30 130 L 50 120 M 170 130 L 150 120', stroke(4)),
+  'ev-ghost-wedding': () => path('M 60 180 Q 62 90 80 70 Q 100 50 120 70 Q 138 90 140 180 Q 120 166 100 180 Q 80 166 60 180 Z', { fill: INK, opacity: 0.85 }) +
+    path('M 64 80 Q 100 20 136 80 L 150 160 Q 100 120 50 160 Z', { fill: '#d6e5e8', opacity: 0.35 }) + circ(88, 92, 5, '#151211') + circ(112, 92, 5, '#151211') +
+    rect(84, 128, 32, 32, '#8b1a1a') + path('M 92 136 L 108 136 M 92 144 L 108 144 M 92 152 L 108 152 M 100 132 L 100 156', stroke(2, '#c9a24a')),
+  'ev-paper-effigy': () => poly([[100, 20], [126, 42], [118, 70], [82, 70], [74, 42]], INK) + circ(90, 46, 4, '#8b1a1a') + circ(110, 46, 4, '#8b1a1a') + path('M 92 60 Q 100 64 108 60', stroke(2, '#8b1a1a')) +
+    poly([[70, 76], [130, 76], [150, 176], [50, 176]], '#b13a2e') + poly([[70, 76], [40, 130], [54, 136], [80, 96]], '#d6a531') + poly([[130, 76], [160, 130], [146, 136], [120, 96]], '#d6a531') +
+    [100, 120, 140, 160].map((y) => line(60 + (y - 76) * 0.1, y, 140 - (y - 76) * 0.1, y, '#7a1a1a', 2)).join('') + path('M 150 30 Q 170 40 166 60 M 160 56 L 166 62 L 172 54', stroke(3, INK)),
+  'ev-rats': () => [[60, 80, -20], [130, 70, 15], [90, 140, 5], [150, 140, -30]].map(([x, y, a]) => group(
+    `<ellipse cx="0" cy="0" rx="30" ry="18" fill="#5a524b"/>` + `<ellipse cx="28" cy="-2" rx="12" ry="9" fill="#5a524b"/>` + circ(20, -14, 6, '#7a6e64') + circ(34, -4, 2.5, '#8b1a1a') +
+    path('M -28 4 Q -50 10 -56 -6', stroke(3, '#b8a090')), `translate(${x} ${y}) rotate(${a})`)).join(''),
+  'ev-mold': () => rect(20, 20, 160, 160, '#4a443d', { rx: 6 }) + [[60, 60, 30], [120, 80, 40], [80, 130, 34], [150, 150, 22], [40, 150, 18]].map(([x, y, s]) =>
+    circ(x, y, s, '#3d5a2f', { opacity: 0.85 }) + circ(x + s * 0.3, y - s * 0.2, s * 0.5, '#5a7a3a', { opacity: 0.8 }) + circ(x - s * 0.3, y + s * 0.3, s * 0.25, '#7a9a4a')).join(''),
+  'ev-weeping': () => rect(44, 20, 112, 166, '#5a3a22', { rx: 4 }) + line(100, 24, 100, 182, '#3a2415', 4) + circ(92, 104, 5, '#c9a24a') + circ(108, 104, 5, '#c9a24a') +
+    rect(100, 24, 54, 158, '#050403', { opacity: 0.6 }) + circ(122, 90, 4, INK) + circ(136, 90, 4, INK) + path('M 120 98 Q 118 120 122 136 M 136 98 Q 138 116 134 132', stroke(2.5, '#9fb6bd')),
+  'ev-slide-down': () => poly([[14, 70], [186, 130], [186, 170], [14, 110]], '#5a3a22') + [0, 1, 2, 3].map((i) => line(14 + i * 43, 70 + i * 15, 14 + i * 43, 110 + i * 15, '#3a2415', 3)).join('') +
+    circ(70, 60, 14, INK) + path('M 70 74 L 90 100 M 80 86 L 60 104 M 90 100 L 112 104 M 90 100 L 96 124', stroke(7)) + path('M 130 50 L 170 70 M 140 36 L 180 56', stroke(4, '#9fb6bd')),
+  'ev-cold-breath': () => path('M 40 180 Q 40 110 80 100 Q 120 96 124 140 L 124 180 Z', { fill: '#3a352f' }) + circ(84, 74, 30, '#3a352f') +
+    path('M 140 40 Q 170 50 160 70 Q 150 86 170 98 M 130 60 Q 150 70 140 88 Q 132 104 150 114', stroke(5, '#9fb6bd')) + `<ellipse cx="158" cy="44" rx="16" ry="10" fill="#9fb6bd" opacity="0.4"/>`,
+  'ev-broken-mirror': () => `<ellipse cx="100" cy="100" rx="62" ry="82" fill="#8a7340"/><ellipse cx="100" cy="100" rx="52" ry="72" fill="#7c97a8"/>` +
+    path('M 100 100 L 70 40 M 100 100 L 140 52 M 100 100 L 152 112 M 100 100 L 120 170 M 100 100 L 64 160 M 100 100 L 50 92', stroke(3, '#151211')) +
+    poly([[100, 100], [140, 52], [152, 112]], '#d6e5e8', { opacity: 0.35 }) + poly([[160, 170], [176, 150], [182, 176]], '#9fb6bd') + poly([[30, 172], [44, 160], [40, 184]], '#9fb6bd'),
+  'ev-overturned-bowl': () => `<ellipse cx="100" cy="150" rx="78" ry="16" fill="#5a3a22"/>` + path('M 46 146 Q 50 80 100 78 Q 150 80 154 146 Z', { fill: INK }) + path('M 50 120 L 150 120', stroke(5, '#3b6e8a')) +
+    [[34, 160], [168, 158], [150, 172], [56, 174]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="5" ry="3" fill="${INK}"/>`).join('') + line(70, 30, 140, 70, '#c9a24a', 4) + line(80, 24, 150, 60, '#c9a24a', 4),
+  'ev-sleep-paralysis': () => rect(20, 130, 160, 40, '#4a5560', { rx: 8 }) + rect(24, 116, 50, 24, '#d8cdb6', { rx: 8 }) + circ(50, 112, 16, INK) +
+    path('M 90 128 Q 80 60 110 40 Q 150 30 160 70 Q 168 110 150 130 Z', { fill: '#151211' }) + circ(118, 66, 5, '#8b1a1a') + circ(140, 64, 5, '#8b1a1a') + path('M 96 110 Q 70 120 60 112', stroke(6, '#151211')),
+  'ev-possessed-doll': () => circ(100, 52, 30, INK) + path('M 72 40 Q 100 10 128 40 L 128 30 Q 100 0 72 30 Z', { fill: '#5a3a22' }) + circ(88, 52, 6, '#151211') + circ(112, 52, 6, '#151211') +
+    path('M 92 68 Q 100 74 108 68', stroke(2.5, '#8b1a1a')) + path('M 60 84 L 140 84 L 156 150 L 44 150 Z', { fill: '#7a2d2d' }) + path('M 70 150 L 62 186 M 130 150 L 142 186', stroke(10, INK)) +
+    path('M 60 90 L 30 120 M 140 90 L 172 70', stroke(9, INK)) + path('M 150 180 l 10 -4 M 40 186 l -10 -2', stroke(3, '#b8ab90')),
 };
 
 const CARD_STYLE = {
